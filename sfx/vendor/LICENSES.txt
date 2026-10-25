@@ -1,0 +1,17 @@
+sfx/vendor/instruments/*.js — 乐器采样数据
+---------------------------------------------------------------
+来源：WebAudioFont 数据集（https://github.com/surikov/webaudiofontdata，
+Sergey Surikov 整理），其中的 FluidR3_GM 音色。
+
+FluidR3 (original version) Copyright (c) 2000-2002 Frank Wen
+FluidR3Mono (mono conversion) Copyright (c) 2014-2017 Michael Cowgill
+
+FluidR3 / FluidR3Mono 以 MIT 许可证发布（见 MuseScore 仓库
+share/sound/FluidR3Mono_License.md 中的说明）。使用、复制本数据时须保留
+上述版权与许可声明。
+
+说明：
+- 本仓库没有使用 WebAudioFont 的播放器代码（GPL-3.0-or-later），
+  采样播放由 sfx/sampler.js 自行实现。
+- webaudiofontdata 数据集自身的许可文本未在本仓库核对原文；
+  如要对外分发，请先自行确认。

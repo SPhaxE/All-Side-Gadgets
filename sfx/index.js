@@ -2,7 +2,7 @@
 import { mulberry32, encodeWav } from './core.js';
 import { SOUNDS } from './sounds.js';
 import { TRACKS, loopLength, buildLoop } from './loops.js';
-import { loadInstruments, resetPlayer } from './instruments.js';
+import { loadInstruments } from './instruments.js';
 
 export { SOUNDS, TRACKS, encodeWav, loadInstruments };
 export const SFX_NAMES = Object.keys(SOUNDS);
@@ -37,7 +37,6 @@ export async function render(key, { sampleRate = 44100 } = {}) {
   if (track) buildLoop(ctx, master, 0, mulberry32(track.seed), track);
   else SOUNDS[key].build(ctx, master, 0, mulberry32(seedOf(key)));
   const buf = await ctx.startRendering();
-  resetPlayer();
   if (!track) {
     // 末尾 50ms 淡出，避免采样余音被截断出现爆音
     const n = Math.floor(0.05 * sampleRate);
