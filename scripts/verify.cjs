@@ -75,7 +75,7 @@ const MIME = { '.js': 'text/javascript', '.html': 'text/html' };
   await html.goto('http://sfx.test/');
   await html.click('#sfx button >> nth=0');
   await html.click('#loops button >> nth=0');
-  await html.waitForTimeout(1500);
+  await html.waitForTimeout(4000);
   await html.click('#stop');
   check('page', errors.length === 0, errors.join('; '));
 

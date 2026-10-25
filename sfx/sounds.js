@@ -1,14 +1,17 @@
-// 12 个程序化合成音效。build(ctx, out, t0, rnd)：只往 out 接节点，不创建 AudioContext，
-// 这样实时播放和离线渲染共用同一份代码。
-import { env, osc, noise, filter, gain } from './core.js';
+// 12 个音效，全部由真实乐器采样演奏而成（GM 音色），乐器选择贴合各自的主题。
+// build(ctx, out, t0, rnd)：只往 out 接节点，不创建 AudioContext，实时和离线共用。
+import { filter, gain } from './core.js';
+import { note } from './instruments.js';
 
 const exp = (p, a, b, t0, t1) => {
   p.setValueAtTime(a, t0);
   p.exponentialRampToValueAtTime(b, t1);
 };
+const rise = (n, steps) => Array.from({ length: steps }, (_, i) => ({ when: ((i + 1) / steps) * n.when, delta: ((i + 1) / steps) * n.delta }));
+const glide = (when, delta) => rise({ when, delta }, 8);
 
-// 噪声 + 带通扫频，woosh 类共用
-function sweep(ctx, out, t0, dur, q, [f0, f1, f2], attack, peak, pan = 0) {
+// 海浪采样 + 带通扫频，做出 woosh 的“风声”
+function whoosh(ctx, out, t0, dur, q, [f0, f1, f2], attack, vol, pan = 0) {
   const bp = filter(ctx, 'bandpass', f0, q);
   const g = gain(ctx, 0);
   const p = ctx.createStereoPanner();
@@ -16,127 +19,88 @@ function sweep(ctx, out, t0, dur, q, [f0, f1, f2], attack, peak, pan = 0) {
   exp(bp.frequency, f0, f1, t0, t0 + attack);
   exp(bp.frequency, f1, f2, t0 + attack, t0 + dur);
   g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(peak, t0 + attack);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + attack);
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   if (pan) { p.pan.setValueAtTime(-pan, t0); p.pan.linearRampToValueAtTime(pan, t0 + dur); }
-  noise(ctx, t0, t0 + dur, bp);
+  note(ctx, bp, 'sea', t0, 68, dur, 1);
 }
 
-const click = (ctx, out, t, len, hp, peak) => {
-  const g = gain(ctx, 0, out);
-  env(g.gain, t, { peak, a: 0.0005, d: len, dur: len, r: 0.002 });
-  noise(ctx, t, t + len + 0.01, filter(ctx, 'highpass', hp, 0.707, g));
-};
-
 export const SOUNDS = {
-  '8 Bit Talking': { duration: 1.3, build(ctx, out, t0, rnd) {
-    const lp = filter(ctx, 'lowpass', 4000, 0.707, out);
-    const o = osc(ctx, 'square', 400, t0, t0 + 1.2, lp);
-    const g = gain(ctx, 0, lp); o.disconnect(); o.connect(g);
-    for (let t = 0; t < 1.2; t += 0.04 + rnd() * 0.03) {
-      o.frequency.setValueAtTime(200 + rnd() * 600, t0 + t);
-      g.gain.setValueAtTime(rnd() < 0.2 ? 0 : 0.25, t0 + t);
-    }
-    g.gain.setValueAtTime(0, t0 + 1.2);
-  } },
-  'Old Flash': { duration: 1.3, build(ctx, out, t0) {
-    const g = gain(ctx, 0.12, out);
-    const o = osc(ctx, 'sine', 2000, t0, t0 + 0.8, g);
-    exp(o.frequency, 2000, 8000, t0, t0 + 0.8);
-    g.gain.setValueAtTime(0, t0 + 0.8);
-    const b = gain(ctx, 0, out);
-    env(b.gain, t0 + 0.8, { peak: 0.7, a: 0.002, d: 0.3, dur: 0.03, r: 0.3 });
-    noise(ctx, t0 + 0.8, t0 + 1.3, filter(ctx, 'highpass', 1000, 0.707, b));
-  } },
-  'Cinematic Woosh': { duration: 2.0, build(ctx, out, t0) {
-    sweep(ctx, out, t0, 1.8, 2, [200, 3000, 400], 0.6, 0.7, 1);
-    const g = gain(ctx, 0, out);
-    env(g.gain, t0, { peak: 0.5, a: 0.5, d: 1.2, dur: 1.5, r: 0.3 });
-    const o = osc(ctx, 'sine', 60, t0, t0 + 1.9, g);
-    exp(o.frequency, 60, 40, t0, t0 + 1.8);
-  } },
-  'Night Vision': { duration: 1.8, build(ctx, out, t0) {
-    click(ctx, out, t0, 0.005, 800, 0.6);
-    const g = gain(ctx, 0.08, out);
-    const o = osc(ctx, 'sine', 1000, t0, t0 + 1.0, g);
-    exp(o.frequency, 1000, 12000, t0, t0 + 1.0);
-    g.gain.setValueAtTime(0, t0 + 1.0);
-    const h = gain(ctx, 0, out);
-    env(h.gain, t0, { peak: 0.15, a: 0.3, d: 1.2, s: 0.5, dur: 1.4, r: 0.35 });
-    noise(ctx, t0, t0 + 1.8, filter(ctx, 'highpass', 3000, 0.707, h));
-  } },
-  Nextel: { duration: 0.35, build(ctx, out, t0) {
-    const lp = filter(ctx, 'lowpass', 5000, 0.707, out);
-    [1900, 2400].forEach((f, i) => {
-      const g = gain(ctx, 0, lp), t = t0 + i * 0.14;
-      env(g.gain, t, { peak: 0.3, a: 0.003, d: 0.05, s: 0.9, dur: 0.06, r: 0.01 });
-      osc(ctx, 'square', f, t, t + 0.08, g);
-    });
-  } },
-  'Digital Text': { duration: 0.9, build(ctx, out, t0, rnd) {
-    for (let t = 0; t < 0.8; t += 0.03 + rnd() * 0.02) {
-      const g = gain(ctx, 0, out), d = 0.015 + rnd() * 0.01;
-      env(g.gain, t0 + t, { peak: 0.2, a: 0.001, d, dur: d, r: 0.002 });
-      osc(ctx, 'square', 1500 + rnd() * 1500, t0 + t, t0 + t + d + 0.01, g);
+  // 方波主音（GM Lead 1）随机跳音，像 8 位游戏角色说话
+  '8 Bit Talking': { duration: 1.5, build(ctx, out, t0, rnd) {
+    for (let t = 0; t < 1.2; t += 0.055 + rnd() * 0.03) {
+      if (rnd() < 0.18) continue;
+      note(ctx, out, 'square', t0 + t, 55 + Math.floor(rnd() * 24), 0.05, 0.5);
     }
   } },
-  Riser: { duration: 3.1, build(ctx, out, t0) {
-    const lp = filter(ctx, 'lowpass', 300, 0.707);
-    const g = gain(ctx, 0, out);
-    lp.connect(g);
-    exp(lp.frequency, 300, 8000, t0, t0 + 3);
+  // 老式闪光灯：充电啸叫（扫频 pad）上滑，接 镲 + 边击 的“啪”
+  'Old Flash': { duration: 1.8, build(ctx, out, t0) {
+    note(ctx, out, 'sweep', t0, 72, 0.85, 0.35, glide(0.8, 22));
+    note(ctx, out, 'glock', t0 + 0.1, 96, 0.7, 0.18, glide(0.7, 4));
+    note(ctx, out, 'side', t0 + 0.85, 37, 0.1, 0.9);
+    note(ctx, out, 'crash', t0 + 0.85, 49, 0.4, 0.6);
+  } },
+  // 电影感“嗖”：海浪扫频 + 定音鼓重击 + 镲尾
+  'Cinematic Woosh': { duration: 2.6, build(ctx, out, t0) {
+    whoosh(ctx, out, t0, 1.8, 1.5, [200, 3200, 400], 0.8, 0.9, 1);
+    note(ctx, out, 'timpani', t0 + 0.8, 36, 1.2, 0.9);
+    note(ctx, out, 'crash', t0 + 0.85, 49, 1.2, 0.4);
+  } },
+  // 夜视仪开机：电流声 + 扫频 pad 上升
+  'Night Vision': { duration: 2.2, build(ctx, out, t0) {
+    note(ctx, out, 'side', t0, 37, 0.1, 0.6);
+    note(ctx, out, 'sweep', t0 + 0.02, 60, 1.4, 0.45, glide(1.0, 24));
+    note(ctx, out, 'celesta', t0 + 1.05, 96, 0.8, 0.25);
+  } },
+  // 对讲机“滴滴”：两声方波短鸣，第二声更高
+  Nextel: { duration: 0.5, build(ctx, out, t0) {
+    note(ctx, out, 'square', t0, 76, 0.07, 0.55);
+    note(ctx, out, 'square', t0 + 0.13, 81, 0.08, 0.55);
+  } },
+  // 屏幕打字：木琴高音快速敲击
+  'Digital Text': { duration: 1.1, build(ctx, out, t0, rnd) {
+    for (let t = 0; t < 0.8; t += 0.03 + rnd() * 0.025) note(ctx, out, 'xylo', t0 + t, 84 + Math.floor(rnd() * 14), 0.03, 0.45);
+  } },
+  // 升起：颤音弦乐滑音上行 + 渐快军鼓滚奏，结尾定音鼓 + 镲
+  Riser: { duration: 4.2, build(ctx, out, t0) {
+    const g = gain(ctx, 0.0001, out);
     g.gain.setValueAtTime(0.0001, t0);
-    g.gain.linearRampToValueAtTime(0.2, t0 + 3);
-    g.gain.setValueAtTime(0, t0 + 3.001);
-    [-10, 0, 10].forEach((c) => {
-      const o = osc(ctx, 'sawtooth', 100, t0, t0 + 3.01, lp);
-      o.detune.value = c;
-      exp(o.frequency, 100, 800, t0, t0 + 3);
-    });
-    const hp = filter(ctx, 'highpass', 500, 0.707, g);
-    exp(hp.frequency, 500, 6000, t0, t0 + 3);
-    noise(ctx, t0, t0 + 3.01, hp);
+    g.gain.exponentialRampToValueAtTime(1, t0 + 3);
+    g.gain.setValueAtTime(1, t0 + 3.01);
+    note(ctx, g, 'tremolo', t0, 48, 3.1, 0.7, glide(3, 24));
+    note(ctx, g, 'tremolo', t0, 55, 3.1, 0.5, glide(3, 24));
+    for (let t = 0, gap = 0.2; t < 3; t += gap, gap = Math.max(0.03, gap * 0.9)) note(ctx, g, 'snare', t0 + t, 38, 0.1, 0.35);
+    note(ctx, out, 'timpani', t0 + 3.05, 40, 1.0, 0.9);
+    note(ctx, out, 'crash', t0 + 3.05, 49, 1.0, 0.5);
   } },
-  Counter: { duration: 1.6, build(ctx, out, t0) {
-    let t = 0, gap = 0.06;
-    while (t < 1.0) {
-      const g = gain(ctx, 0, out);
-      env(g.gain, t0 + t, { peak: 0.3, a: 0.001, d: 0.01, dur: 0.01, r: 0.002 });
-      osc(ctx, 'triangle', 1000 + (t / 1.0) * 1000, t0 + t, t0 + t + 0.02, g);
-      t += gap; gap = Math.max(0.03, gap - 0.003);
-    }
-    const g = gain(ctx, 0, out);
-    env(g.gain, t0 + t, { peak: 0.45, a: 0.002, d: 0.5, dur: 0.01, r: 0.1 });
-    osc(ctx, 'sine', 2000, t0 + t, t0 + t + 0.7, g);
+  // 计数器：木鱼渐快滴答，结束一记钟琴“叮”
+  Counter: { duration: 2.2, build(ctx, out, t0) {
+    let t = 0, gap = 0.07;
+    for (; t < 1.0; t += gap, gap = Math.max(0.035, gap - 0.003)) note(ctx, out, 'wood', t0 + t, 76, 0.05, 0.55);
+    note(ctx, out, 'glock', t0 + t, 96, 1.2, 0.5);
   } },
-  'Bicycle Chain': { duration: 1.6, build(ctx, out, t0, rnd) {
+  // 自行车链条：沙锤（cabasa）刮擦节奏，由快渐慢
+  'Bicycle Chain': { duration: 1.9, build(ctx, out, t0, rnd) {
     for (let t = 0; t < 1.5; ) {
-      const g = gain(ctx, 0, out), r = 30 - 22 * (t / 1.5);
-      env(g.gain, t0 + t, { peak: 0.5 * (0.7 + rnd() * 0.6), a: 0.0005, d: 0.004, dur: 0.004, r: 0.002 });
-      noise(ctx, t0 + t, t0 + t + 0.02, filter(ctx, 'bandpass', 3000 + rnd() * 2000, 5, g));
-      t += 1 / r;
+      note(ctx, out, 'cabasa', t0 + t, 69, 0.08, 0.35 + rnd() * 0.3);
+      t += 1 / (30 - 22 * (t / 1.5));
     }
   } },
-  'Camera Click': { duration: 0.3, build(ctx, out, t0) {
-    [[0, 1], [0.08, 0.6]].forEach(([dt, k]) => {
-      click(ctx, out, t0 + dt, 0.01, 2000, 0.6 * k);
-      const g = gain(ctx, 0, out);
-      env(g.gain, t0 + dt, { peak: 0.5 * k, a: 0.001, d: 0.02, dur: 0.02, r: 0.005 });
-      osc(ctx, 'sine', 150, t0 + dt, t0 + dt + 0.03, g);
-    });
+  // 相机快门：边击 + 踩镲两下，第二下轻一点
+  'Camera Click': { duration: 0.5, build(ctx, out, t0) {
+    note(ctx, out, 'side', t0, 37, 0.1, 0.9);
+    note(ctx, out, 'hat', t0, 42, 0.05, 0.5);
+    note(ctx, out, 'side', t0 + 0.08, 37, 0.1, 0.55);
+    note(ctx, out, 'hat', t0 + 0.08, 42, 0.05, 0.3);
   } },
-  Shine: { duration: 1.4, build(ctx, out, t0, rnd) {
-    const n = 4 + Math.floor(rnd() * 3);
-    for (let i = 0; i < n; i++) {
-      const g = gain(ctx, 0, out), d = 0.4 + rnd() * 0.4, t = t0 + i * 0.05;
-      env(g.gain, t, { peak: 0.22, a: 0.002, d, dur: 0.01, r: 0.01 });
-      osc(ctx, i % 2 ? 'triangle' : 'sine', 2000 + (i * 4000) / n, t, t + d + 0.05, g);
-    }
-    const g = gain(ctx, 0, out);
-    env(g.gain, t0, { peak: 0.1, a: 0.002, d: 0.3, dur: 0.01, r: 0.01 });
-    noise(ctx, t0, t0 + 0.4, filter(ctx, 'highpass', 6000, 0.707, g));
+  // 闪亮：钟琴与钢片琴向上琶音，加三角铁闪光
+  Shine: { duration: 2.4, build(ctx, out, t0, rnd) {
+    const scale = [84, 88, 91, 93, 96, 100];
+    scale.forEach((m, i) => note(ctx, out, i % 2 ? 'celesta' : 'glock', t0 + i * 0.055, m, 0.6 + rnd() * 0.3, 0.45));
+    note(ctx, out, 'tri', t0, 81, 1.0, 0.5);
   } },
-  Woosh: { duration: 0.7, build(ctx, out, t0) {
-    sweep(ctx, out, t0, 0.5, 2, [500, 2000, 600], 0.15, 0.6);
+  // 短促“嗖”：海浪扫频
+  Woosh: { duration: 0.8, build(ctx, out, t0) {
+    whoosh(ctx, out, t0, 0.6, 1.5, [500, 2200, 700], 0.18, 0.9);
   } },
 };

@@ -17,10 +17,39 @@
 <h1>Sound Lab</h1>
 <h2>Sounds You Need</h2><div class="grid" id="sfx"></div>
 <h2>Musical Story Loops <button id="stop">停止</button></h2><div class="grid" id="loops"></div>
+<script src="./sfx/vendor/WebAudioFontPlayer.js"></script>
+<script src="./sfx/vendor/instruments/0000_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0080_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0090_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0130_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0420_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0430_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0440_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0450_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0460_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0470_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0520_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0800_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0890_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/0950_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/1220_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12836_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12837_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12838_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12842_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12849_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12869_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12875_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12876_0_FluidR3_GM_sf2_file.js"></script>
+<script src="./sfx/vendor/instruments/12881_0_FluidR3_GM_sf2_file.js"></script>
 <script type="module">
 import { createSfx, SFX_NAMES, TRACKS } from './sfx/index.js';
 let sfx;
 const get = () => (sfx ||= createSfx());
+const status = document.createElement('p');
+status.textContent = '正在加载乐器音色…';
+document.body.insertBefore(status, document.getElementById('sfx'));
+get().ready.then(() => status.remove(), (e) => (status.textContent = '音色加载失败：' + e.message));
 const mk = (parent, label, fn) => {
   const b = document.createElement('button');
   b.textContent = label;
