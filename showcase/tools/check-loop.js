@@ -18,15 +18,17 @@ a=np.asarray(Image.open(sys.argv[1]).convert('RGB'),dtype=np.float32); b=np.asar
 print(float(np.abs(a-b).mean()))`;
 const diff = (a, b) => parseFloat(execFileSync('python3', ['-I', '-c', py, a, b]).toString());
 (async () => {
-  const seam = [N - 3, N - 2, N - 1, 0, 1, 2], base = [900, 901, 902, 903, 904, 905], base2 = [1800, 1801, 1802, 1803];
-  const A = await session([...seam, ...base, ...base2, 700, 2000, 700], 'seq');
+  const seam = [N - 3, N - 2, N - 1, 0, 1, 2], base = [900, 901, 902, 903, 904, 905], base2 = [1800, 1801, 1802, 1803], base3 = [2590, 2591, 2592, 2593, 2594];   // base3 = mid scene 20 (fractal), same content as the seam neighbourhood
+  const A = await session([...seam, ...base, ...base2, ...base3, 700, 2000, 700], 'seq');
   const d = (F, l) => l.slice(1).map((f, i) => diff(F[l[i]], F[f]));
-  const ds = d(A, seam), db = d(A, base), db2 = d(A, base2);
+  const ds = d(A, seam), db = d(A, base), db2 = d(A, base2), db3 = d(A, base3);
   console.log('seam diffs  (N-3..2):', ds.map(x => x.toFixed(3)).join(' '));
   console.log('baseline    (900..)  :', db.map(x => x.toFixed(3)).join(' '));
   console.log('baseline    (1800..) :', db2.map(x => x.toFixed(3)).join(' '));
-  const typ = Math.max(...db, ...db2) || .001, seamAcross = ds[2];   // pair (N-1 -> 0)
-  console.log(`seam pair N-1->0 = ${seamAcross.toFixed(3)}  vs worst ordinary neighbour = ${typ.toFixed(3)}  => ${seamAcross <= typ * 1.5 ? 'OK' : 'CHECK'}`);
+  console.log('baseline    (2590.. fractal):', db3.map(x => x.toFixed(3)).join(' '));
+  // continuity: the pair that crosses the seam (N-1 -> 0) must look like its two flanking pairs (N-2 -> N-1, 0 -> 1)
+  const across = ds[2], flank = (ds[1] + ds[3]) / 2, ratio = across / flank;
+  console.log(`seam pair N-1->0 = ${across.toFixed(3)}  flanking mean = ${flank.toFixed(3)}  ratio = ${ratio.toFixed(2)}  => ${ratio > .75 && ratio < 1.33 ? 'OK (continuous)' : 'CHECK'}`);
   const C = await session([700], 'cold');
   const same = fs.readFileSync(C[700]).equals(fs.readFileSync(A[700]));
   console.log('cold-start vs sequential frame 700 byte-identical:', same);
