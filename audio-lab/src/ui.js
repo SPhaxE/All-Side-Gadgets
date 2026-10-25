@@ -182,7 +182,7 @@
         const row = document.createElement('div'); row.className = 'row'; row.id = 'row-' + s.id;
         const dur = s.len || s.ref[1] - s.ref[0];
         row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
-          <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span></div></div>
+          <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span></div></div>
           <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
           <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
         list.appendChild(row);
@@ -199,6 +199,7 @@
     for (const s of order) {
       await new Promise((r) => setTimeout(r, 0));
       const f32 = s.render(); bufs[s.id] = f32;
+      const sc = envScore(f32, s.id, s.ref, s.kind); $('#cor-' + s.id).textContent = '包络相似度 ' + Math.round(sc * 100) + '%';
       const dur = f32.length / SR;
       $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
       drawCard(s); done++;

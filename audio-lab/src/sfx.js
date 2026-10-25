@@ -38,7 +38,7 @@ function subSine(sec, f, amp, env, harm = [1, 0.35, 0.12]) {
 
 function eightBitTalking() {
   const dur = 2.4, b = mk(dur), r = rng(11);
-  const period = 0.06674, on = 0.024, pulses = 36;
+  const period = 0.06674, on = 0.016, pulses = 36;
   const seq = [445, 405, 478, 445, 515, 465, 425, 445, 492, 435];
   let f = 445, left = 0, syl = 0;
   for (let k = 0; k < pulses; k++) {
@@ -158,8 +158,8 @@ function nextel() {
 function digitalText() {
   const b = mk(0.62);
   // blip times / levels measured from the original (11 blips)
-  const hits = [[0.0, 0.073, 5500], [0.038, 0.061, 5500], [0.072, 0.076, 5500], [0.11, 0.081, 5500], [0.168, 0.063, 5500],
-    [0.222, 0.114, 5500], [0.28, 0.079, 5500], [0.302, 0.053, 2900], [0.37, 0.134, 5500], [0.45, 0.074, 5500], [0.486, 0.05, 2900]];
+  const hits = [[0.028, 0.073, 5500], [0.066, 0.061, 5500], [0.1, 0.076, 5500], [0.138, 0.081, 5500], [0.196, 0.063, 5500],
+    [0.25, 0.114, 5500], [0.308, 0.079, 5500], [0.33, 0.053, 2900], [0.398, 0.134, 5500], [0.478, 0.074, 5500], [0.514, 0.05, 2900]];
   hits.forEach(([t, a, f], i) => {
     const g = a / 0.134;
     mixAt(b, tick(f * 0.55, 0.35, 0.008, 1.5 * g, 61 + i, 0.05), t);
@@ -169,7 +169,7 @@ function digitalText() {
   const h = noise(0.1, 69);
   filt(h, new Biquad('bp', 4000, 0.5));
   shape(h, (t) => 0.03 * Math.min(1, t / 0.01));
-  mixAt(b, h, 0.52);
+  mixAt(b, h, 0.55);
   return master(b, 0.8);
 }
 
@@ -230,20 +230,24 @@ function bicycleChain() {
 
 function cameraClick() {
   const b = mk(0.6);
-  // pre-focus tick
-  mixAt(b, tick(1100, 1.2, 0.006, 0.2, 101, 0.04), 0.062);
-  // autofocus-style 4 kHz beep that rings under the first clack
-  const beep = additive(0.22, [{ f: 4000, a: 0.34, tau: 0.5 }, { f: 8000, a: 0.04, tau: 0.5 }], 0.003);
-  shape(beep, (t) => (t < 0.18 ? 1 : clamp(1 - (t - 0.18) / 0.03, 0, 1)));
-  mixAt(b, beep, 0.12);
-  // first clack: two noise bursts (16.57 s, 16.62 s in the original)
-  mixAt(b, tick(2200, 0.5, 0.008, 0.74, 103, 0.06), 0.158);
-  mixAt(b, tick(2600, 0.5, 0.008, 0.68, 104, 0.06), 0.212);
+  // pre-focus ticks (faint)
+  mixAt(b, tick(1100, 1.2, 0.006, 0.12, 101, 0.04), 0.035);
+  mixAt(b, tick(1500, 1.2, 0.008, 0.1, 102, 0.05), 0.085);
+  // two autofocus-beep clacks: a 4 kHz tone with a noise knock on top, 45 ms each (16.56 and 16.63 s in the original)
+  [[0.155, 0.05, 1.0, 103], [0.228, 0.044, 0.9, 104]].forEach(([t, d, g, seed]) => {
+    const n = Math.round(d * SR), burst = mk(d);
+    for (let i = 0; i < n; i++) {
+      const tt = i / SR, e = Math.min(1, tt / 0.003) * Math.min(1, (d - tt) / 0.004);
+      burst[i] = (0.5 * Math.sin(TAU * 4000 * tt) + 0.04 * Math.sin(TAU * 8000 * tt)) * e;
+    }
+    mixAt(b, burst, t, g);
+    mixAt(b, tick(2400, 0.5, 0.012, 0.55 * g, seed, 0.06), t);
+  });
   // shutter closing: broadband bursts (16.79, 16.83, 16.85, 16.91 s)
-  mixAt(b, tick(3200, 0.45, 0.018, 1.0, 105, 0.08), 0.38);
-  mixAt(b, tick(2400, 0.45, 0.014, 0.74, 106, 0.08), 0.418);
-  mixAt(b, tick(2000, 0.45, 0.012, 0.3, 107, 0.08), 0.446);
-  mixAt(b, tick(1500, 0.6, 0.01, 0.19, 108, 0.06), 0.502);
+  mixAt(b, tick(3200, 0.45, 0.014, 1.0, 105, 0.08), 0.384);
+  mixAt(b, tick(2400, 0.45, 0.011, 0.6, 106, 0.08), 0.422);
+  mixAt(b, tick(2000, 0.45, 0.01, 0.26, 107, 0.08), 0.448);
+  mixAt(b, tick(1500, 0.6, 0.008, 0.16, 108, 0.06), 0.506);
   filt(b, new Biquad('hp', 250, 0.7));
   return master(b, 0.85);
 }

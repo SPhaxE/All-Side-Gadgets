@@ -179,3 +179,33 @@ function master(buf, peak = 0.85, { fade = 0.002, fadeOut = 0.004, drive = 1.0 }
   }
   return buf;
 }
+
+// ---- envelope similarity against the reference clip (same function feeds the page and the Node score tool)
+// RMS in 5 ms hops over the reference clip's duration (ours trimmed / zero-padded), averaged into 160 bins, normalised to peak
+function envSig(x, secs) {
+  if (secs) { const n = Math.round(secs * SR), y = new Float32Array(n); y.set(x.subarray(0, Math.min(n, x.length))); x = y; }
+  const h = Math.round(SR * 0.005), n = Math.floor(x.length / h), e = new Float32Array(n);
+  for (let i = 0; i < n; i++) { let s = 0; for (let j = 0; j < h; j++) s += x[i * h + j] ** 2; e[i] = Math.sqrt(s / h); }
+  const out = new Float32Array(160);
+  for (let i = 0; i < 160; i++) { const a = Math.floor((i * n) / 160), b = Math.max(a + 1, Math.floor(((i + 1) * n) / 160)); let s = 0; for (let k = a; k < b; k++) s += e[k]; out[i] = s / (b - a); }
+  const m = Math.max(...out) || 1;
+  return out.map((v) => v / m);
+}
+function envSmooth(a, w) {
+  const o = new Float32Array(a.length), r = Math.floor(w / 2);
+  for (let i = 0; i < a.length; i++) { let s = 0, n = 0; for (let j = i - r; j <= i + r; j++) if (j >= 0 && j < a.length) { s += a[j]; n++; } o[i] = s / n; }
+  return o;
+}
+function envCorr(a0, b0, w) {
+  const a = envSmooth(a0, w), b = envSmooth(b0, w);
+  let best = -1;
+  for (let lag = -3; lag <= 3; lag++) {
+    let sa = 0, sb = 0, n = 0;
+    for (let i = 0; i < 160; i++) { const j = i + lag; if (j < 0 || j >= 160) continue; sa += a[i]; sb += b[j]; n++; }
+    const ma = sa / n, mb = sb / n; let c = 0, va = 0, vb = 0;
+    for (let i = 0; i < 160; i++) { const j = i + lag; if (j < 0 || j >= 160) continue; c += (a[i] - ma) * (b[j] - mb); va += (a[i] - ma) ** 2; vb += (b[j] - mb) ** 2; }
+    best = Math.max(best, c / Math.sqrt(va * vb || 1));
+  }
+  return best;
+}
+const envScore = (x, id, ref, kind) => envCorr(envSig(x, ref[1] - ref[0]), REF_ENV[id], kind === 'loops' ? 7 : 3);
