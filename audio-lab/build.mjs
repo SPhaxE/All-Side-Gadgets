@@ -13,5 +13,6 @@ if (fs.existsSync(path.join(root, 'src/page.html'))) {
   const ui = fs.existsSync(path.join(root, 'src/ui.js')) ? read('src/ui.js') : '';
   const html = read('src/page.html').replace('/*ENGINE*/', () => engine).replace('/*REFENV*/', () => refEnv).replace('/*UI*/', () => ui);
   fs.writeFileSync(path.join(root, 'dist/index.html'), html);
+  fs.writeFileSync(path.join(root, 'dist/preview.html'), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + '</body></html>');
 }
 console.log('built', parts.join(', '));

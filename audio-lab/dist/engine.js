@@ -342,8 +342,8 @@ function digitalText() {
     [0.222, 0.114, 5500], [0.28, 0.079, 5500], [0.302, 0.053, 2900], [0.37, 0.134, 5500], [0.45, 0.074, 5500], [0.486, 0.05, 2900]];
   hits.forEach(([t, a, f], i) => {
     const g = a / 0.134;
-    mixAt(b, tick(f * 0.55, 0.35, 0.004, 1.5 * g, 61 + i, 0.03), t);
-    mixAt(b, additive(0.03, [{ f, a: 0.5 * g, tau: 0.005 }, { f: f * 0.5, a: 0.08 * g, tau: 0.004 }], 0.0005), t);
+    mixAt(b, tick(f * 0.55, 0.35, 0.008, 1.5 * g, 61 + i, 0.05), t);
+    mixAt(b, additive(0.05, [{ f, a: 0.5 * g, tau: 0.009 }, { f: f * 0.5, a: 0.08 * g, tau: 0.007 }], 0.0005), t);
   });
   // quiet data hiss trailing off (this is where the riser takes over)
   const h = noise(0.1, 69);
@@ -557,7 +557,7 @@ const BAR = STEP * 16;
 function loop01() { // Question: B-D-F#-B arpeggio plucks, 16 sixteenths
   const seq = ['B3', 'D4', 'F#4', 'B4', 'B3', 'D4', 'F#4', 'B3', 'B3', 'D4', 'F#4', 'B4', 'B3', 'D4', 'F#4', 'B4'];
   const vel = [0.7, 0.7, 1.0, 0.95, 0.65, 0.8, 0.95, 0.4, 0.8, 0.9, 0.85, 1.0, 0.6, 0.65, 0.75, 0.5];
-  return loopRender(BAR, (put) => seq.forEach((n, i) => put(0.01 + i * STEP, pluck(nf(n), { tau: 0.14, vel: vel[i], pos: 0.2 }))), { wet: 0.1, level: 0.85, seed: 1 });
+  return loopRender(BAR, (put) => seq.forEach((n, i) => put(0.14 + i * STEP, pluck(nf(n), { tau: 0.14, vel: vel[i], pos: 0.2 }))), { wet: 0.1, level: 0.85, seed: 1 });
 }
 
 function loop02() { // Into The Fog: drone B4/B5 + four soft bell pulses a second apart, first one biggest
@@ -629,11 +629,13 @@ function loop11() { // Reckoning: dense dark drone, driving stabs, accents on ev
     const nz = noise(BAR, 56);
     filt(nz, new Biquad('bp', 1100, 0.5));
     for (let i = 0; i < d.length; i++) ev[i] += d[i] + nz[i] * 0.05;
-    stabs.forEach((t, i) => {
+    const O = 0.17; // phase of the groove inside the clip (matched against the reference envelope)
+    stabs.forEach((t0, i) => {
+      const t = t0 + O;
       put(t, pluck(nf(chords[i]), { tau: 0.16, vel: 1.1, tilt: 0.4, bright: 1.4, damp: 0.5, n: 14 }));
       put(t, tick(1800, 0.5, 0.02, 0.45, 70 + i, 0.08));
     });
-    [-0.08, 0.587, 1.253, 1.92].forEach((t, i) => { put(t, thump(nf('F#2'), { vel: 0.8, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
+    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: 0.8, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
   }, { wet: 0.12, size: 1.0, level: 0.9, drive: 1.5, seed: 11 });
 }
 

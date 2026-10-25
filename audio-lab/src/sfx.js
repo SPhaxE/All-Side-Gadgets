@@ -160,8 +160,8 @@ function digitalText() {
     [0.222, 0.114, 5500], [0.28, 0.079, 5500], [0.302, 0.053, 2900], [0.37, 0.134, 5500], [0.45, 0.074, 5500], [0.486, 0.05, 2900]];
   hits.forEach(([t, a, f], i) => {
     const g = a / 0.134;
-    mixAt(b, tick(f * 0.55, 0.35, 0.004, 1.5 * g, 61 + i, 0.03), t);
-    mixAt(b, additive(0.03, [{ f, a: 0.5 * g, tau: 0.005 }, { f: f * 0.5, a: 0.08 * g, tau: 0.004 }], 0.0005), t);
+    mixAt(b, tick(f * 0.55, 0.35, 0.008, 1.5 * g, 61 + i, 0.05), t);
+    mixAt(b, additive(0.05, [{ f, a: 0.5 * g, tau: 0.009 }, { f: f * 0.5, a: 0.08 * g, tau: 0.007 }], 0.0005), t);
   });
   // quiet data hiss trailing off (this is where the riser takes over)
   const h = noise(0.1, 69);
