@@ -2,7 +2,7 @@
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' }))];
+  const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' })), ...LOOPS_EXTRA.map((s) => ({ ...s, kind: 'loops' }))];
   const bufs = {};
   let tab = 'sfx';
   let ac = null, playing = null, raf = 0;
@@ -174,23 +174,24 @@
 
   // --- build the DOM
   const playIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13l11-6.5z"/></svg>';
+  function makeRow(s, kind, list, i) {
+    const row = document.createElement('div'); row.className = 'row'; row.id = 'row-' + s.id;
+    const fact = s.ref ? `<span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span>` : '<span class="fill">补充 · 视频里没有这个编号</span>';
+    row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
+      <div class="facts"><span id="dur-${s.id}"></span>${fact}</div></div>
+      <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
+      <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
+    list.appendChild(row);
+    phEls[s.id] = row.querySelector('.ph');
+    row.querySelector('.play').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
+    row.querySelector('.cv').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
+  }
   function build() {
     for (const kind of ['sfx', 'loops']) {
       const strip = $('#strip-' + kind); const ph = document.createElement('div'); ph.className = 'ph'; ph.id = 'ph-strip-' + kind; strip.appendChild(ph);
-      const list = $('#list-' + kind);
-      (kind === 'sfx' ? SFX : LOOPS).forEach((s, i) => {
-        const row = document.createElement('div'); row.className = 'row'; row.id = 'row-' + s.id;
-        const dur = s.len || s.ref[1] - s.ref[0];
-        row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
-          <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span></div></div>
-          <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
-          <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
-        list.appendChild(row);
-        phEls[s.id] = row.querySelector('.ph');
-        row.querySelector('.play').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
-        row.querySelector('.cv').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
-      });
+      (kind === 'sfx' ? SFX : LOOPS).forEach((s, i) => makeRow(s, kind, $('#list-' + kind), i));
     }
+    LOOPS_EXTRA.forEach((s, i) => makeRow(s, 'loops', $('#list-extra'), i));
   }
 
   async function renderAll() {
@@ -199,7 +200,7 @@
     for (const s of order) {
       await new Promise((r) => setTimeout(r, 0));
       const f32 = s.render(); bufs[s.id] = f32;
-      const sc = envScore(f32, s.id, s.ref, s.kind); $('#cor-' + s.id).textContent = '包络相似度 ' + Math.round(sc * 100) + '%';
+      if (s.ref) { const sc = envScore(f32, s.id, s.ref, s.kind); $('#cor-' + s.id).textContent = '包络相似度 ' + Math.round(sc * 100) + '%'; }
       const dur = f32.length / SR;
       $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
       drawCard(s); done++;
