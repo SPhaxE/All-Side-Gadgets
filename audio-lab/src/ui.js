@@ -4,7 +4,7 @@
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' })), ...LOOPS_EXTRA.map((s) => ({ ...s, kind: 'loops' }))];
   const bufs = {};
-  let tab = 'sfx', timelineVer = 'faithful'; // which version the 'play along the video timeline' button uses
+  let tab = 'sfx', timelineVer = 'opt'; // which version the 'play along the video timeline' button uses
   const keyOf = (s, v) => (v === 'opt' ? s.id + ':opt' : s.id);
   let ac = null, playing = null, raf = 0;
 
@@ -55,12 +55,12 @@
     c.setLineDash([]);
   }
 
-  let ghostOn = true;
+  let ghostOn = false; // the optimised versions no longer try to follow the video's outline
   function drawLane(s, v) {
     const key = keyOf(s, v), cv = $('#cv-' + key.replace(':', '_')); if (!cv || !bufs[key]) return;
     const { c, w, h, d } = fit(cv);
     c.clearRect(0, 0, w, h);
-    const color = v === 'opt' ? cssVar('--accent2') : s.kind === 'sfx' ? cssVar('--warm') : cssVar('--teal');
+    const color = s.kind === 'sfx' ? cssVar('--warm') : cssVar('--teal');
     c.strokeStyle = cssVar('--line'); c.lineWidth = d; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(w, h / 2); c.stroke();
     const buf = bufs[key], clip = v === 'faithful' && s.ref ? Math.round((s.ref[1] - s.ref[0]) * SR) : buf.length;
     // both outlines are normalised to their own peak so the shapes can be compared directly
@@ -183,8 +183,8 @@
   const playIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13l11-6.5z"/></svg>';
   function laneHtml(s, v) {
     const k = keyOf(s, v).replace(':', '_');
-    const label = v === 'opt' ? (s.extra ? '补充 · 优化版' : '优化版') : '复刻版';
-    return `<div class="lane ${v}" id="lane-${k}"><span class="lbl">${label}</span>
+    const label = s.extra ? '补充' : '';
+    return `<div class="lane ${v}" id="lane-${k}">${label ? `<span class="lbl">${label}</span>` : ''}
       <div class="cv"><canvas id="cv-${k}"></canvas><div class="ph" id="ph-${k}"></div></div>
       <button class="play" disabled aria-label="播放 ${s.name} ${label}">${playIcon}</button></div>`;
   }
@@ -193,10 +193,10 @@
     const fact = s.ref ? `<span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span>` : '<span class="fill">补充 · 视频里没有这个编号</span>';
     row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
       <div class="facts"><span id="dur-${s.id}"></span>${fact}</div>
-      <div class="facts"><span id="cor-${s.id}"></span><span id="cor-${s.id}_opt"></span></div></div>
-      <div class="lanes">${s.extra ? '' : laneHtml(s, 'faithful')}${laneHtml(s, 'opt')}</div>`;
+      </div>
+      <div class="lanes">${laneHtml(s, 'opt')}</div>`;
     list.appendChild(row);
-    [s.extra ? null : 'faithful', 'opt'].filter(Boolean).forEach((v) => {
+    ['opt'].forEach((v) => {
       const key = keyOf(s, v);
       phEls[key] = row.querySelector('#ph-' + key.replace(':', '_'));
       const go = () => { if (bufs[key]) playOne({ ...s, kind }, v); };
@@ -215,18 +215,17 @@
   async function renderAll() {
     const st = $('#status'); let done = 0;
     const jobs = [];
-    all.forEach((s) => { if (!s.extra) jobs.push([s, 'faithful']); jobs.push([s, 'opt']); });
+    all.forEach((s) => jobs.push([s, 'opt']));
     jobs.sort((x, y) => (x[0].kind === tab ? 0 : 1) - (y[0].kind === tab ? 0 : 1));
     for (const [s, v] of jobs) {
       await new Promise((r) => setTimeout(r, 0));
-      const key = keyOf(s, v), f32 = v === 'opt' ? s.renderOpt() : s.render(); bufs[key] = f32;
-      if (s.ref) { const sc = edgeScore(f32, s.id, s.ref); $('#cor-' + s.id + (v === 'opt' ? '_opt' : '')).textContent = (v === 'opt' ? '优化版 ' : '复刻版 ') + '边缘贴合度 ' + Math.round(sc * 100) + '%'; }
-      if (v === 'faithful' || s.extra) $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + (f32.length / SR).toFixed(2) + 's';
+      const key = keyOf(s, v), f32 = s.renderOpt(); bufs[key] = f32;
+      $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + (f32.length / SR).toFixed(2) + 's';
       drawCard(s); done++;
       document.querySelectorAll('#lane-' + key.replace(':', '_') + ' .play').forEach((b) => (b.disabled = false));
       st.textContent = `正在合成 ${done}/${jobs.length}…`;
     }
-    st.textContent = `已合成 ${jobs.length} 条音频(复刻版 ${jobs.filter((j) => j[1] === 'faithful').length} + 优化版 ${jobs.filter((j) => j[1] === 'opt').length},${SR} Hz 单声道)。点击播放。iPhone 的静音键打开时可能没有声音。`;
+    st.textContent = `已合成 ${jobs.length} 条音频(${SR} Hz 单声道)。点击播放。iPhone 的静音键打开时可能没有声音。`;
     drawStrip('sfx'); drawStrip('loops');
   }
 
@@ -240,10 +239,8 @@
     requestAnimationFrame(redrawAll);
   }
   document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
-  $('#ghost').addEventListener('click', (e) => { ghostOn = !ghostOn; e.currentTarget.setAttribute('aria-pressed', ghostOn); redrawAll(); });
-  $('#playall').addEventListener('click', () => { if (Object.keys(bufs).length >= all.length) playTimeline(tab); });
+    $('#playall').addEventListener('click', () => { if (Object.keys(bufs).length >= all.length) playTimeline(tab); });
   $('#stop').addEventListener('click', stopAll);
-  $('#ver').addEventListener('click', (e) => { stopAll(); timelineVer = timelineVer === 'opt' ? 'faithful' : 'opt'; e.currentTarget.textContent = '时间轴用:' + (timelineVer === 'opt' ? '优化版' : '复刻版'); drawStrip('sfx'); drawStrip('loops'); });
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redrawAll, 120); });
   if (location.hash === '#loops') setTab('loops');
   document.addEventListener('pointerdown', () => { try { const a = ctx(), b = a.createBuffer(1, 1, SR), s = a.createBufferSource(); s.buffer = b; s.connect(a.destination); s.start(); } catch (e) {} }, { once: true });
