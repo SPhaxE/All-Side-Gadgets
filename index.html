@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sound Lab</title>
+<style>
+  :root { --bg:#111; --fg:#eee; --card:#222; --accent:#f5b94a; }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:16px system-ui,sans-serif; }
+  h2 { margin:24px 0 8px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  button { padding:12px; background:var(--card); color:var(--fg); border:1px solid #444; border-radius:8px; font:inherit; cursor:pointer; }
+  button:hover, button.on { border-color:var(--accent); color:var(--accent); }
+</style>
+</head>
+<body>
+<h1>Sound Lab</h1>
+<h2>Sounds You Need</h2><div class="grid" id="sfx"></div>
+<h2>Musical Story Loops <button id="stop">停止</button></h2><div class="grid" id="loops"></div>
+<script type="module">
+import { createSfx, SFX_NAMES, TRACKS } from './sfx/index.js';
+let sfx;
+const get = () => (sfx ||= createSfx());
+const mk = (parent, label, fn) => {
+  const b = document.createElement('button');
+  b.textContent = label;
+  b.onclick = async () => { const s = get(); await s.ctx.resume(); fn(s, b); };
+  document.getElementById(parent).append(b);
+  return b;
+};
+SFX_NAMES.forEach((n) => mk('sfx', n, (s) => s.play(n)));
+const loopBtns = TRACKS.map((t) => mk('loops', `${String(t.id).padStart(2, '0')} ${t.title}`, async (s) => {
+  await s.loops.start(t.id);
+  loopBtns.forEach((b) => b.classList.toggle('on', b.dataset.id === String(t.id)));
+}));
+loopBtns.forEach((b, i) => (b.dataset.id = TRACKS[i].id));
+document.getElementById('stop').onclick = () => { sfx?.loops.stop(); loopBtns.forEach((b) => b.classList.remove('on')); };
+</script>
+</body>
+</html>
