@@ -3,7 +3,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' }))];
-  const bufs = {}, stats = {};
+  const bufs = {};
   let tab = 'sfx';
   let ac = null, playing = null, raf = 0;
 
@@ -21,36 +21,6 @@
     const b = ctx().createBuffer(1, f32.length, SR);
     b.getChannelData(0).set(f32);
     return b;
-  }
-
-  // RMS envelope in the same pipeline as the reference one (5 ms hops, resampled to 160 points)
-  function env160(x, secs) {
-    // compare over the original clip's duration (trim / zero-pad ours) so pulse trains stay in phase
-    if (secs) { const n = Math.round(secs * SR), y = new Float32Array(n); y.set(x.subarray(0, Math.min(n, x.length))); x = y; }
-    const h = Math.round(SR * 0.005), n = Math.floor(x.length / h), e = new Float32Array(n);
-    for (let i = 0; i < n; i++) { let s = 0; for (let j = 0; j < h; j++) s += x[i * h + j] ** 2; e[i] = Math.sqrt(s / h); }
-    const out = new Float32Array(160);
-    for (let i = 0; i < 160; i++) { const p = (i / 159) * (n - 1), k = Math.floor(p), f = p - k; out[i] = e[k] * (1 - f) + e[Math.min(n - 1, k + 1)] * f; }
-    const m = Math.max(...out) || 1;
-    return out.map((v) => v / m);
-  }
-  // light smoothing (about the width of a thumbnail pixel in the video) so phase jitter of a few ms in a note train doesn't dominate
-  function smooth(a, w) {
-    const o = new Float32Array(a.length), r = Math.floor(w / 2);
-    for (let i = 0; i < a.length; i++) { let s = 0, n = 0; for (let j = i - r; j <= i + r; j++) if (j >= 0 && j < a.length) { s += a[j]; n++; } o[i] = s / n; }
-    return o;
-  }
-  function corr(a0, b0, w) {
-    const a = smooth(a0, w), b = smooth(b0, w);
-    let best = -1;
-    for (let lag = -3; lag <= 3; lag++) {
-      let sa = 0, sb = 0, n = 0;
-      for (let i = 0; i < 160; i++) { const j = i + lag; if (j < 0 || j >= 160) continue; sa += a[i]; sb += b[j]; n++; }
-      const ma = sa / n, mb = sb / n; let c = 0, va = 0, vb = 0;
-      for (let i = 0; i < 160; i++) { const j = i + lag; if (j < 0 || j >= 160) continue; c += (a[i] - ma) * (b[j] - mb); va += (a[i] - ma) ** 2; vb += (b[j] - mb) ** 2; }
-      best = Math.max(best, c / Math.sqrt(va * vb || 1));
-    }
-    return best;
   }
 
   function fit(canvas) {
@@ -92,7 +62,7 @@
     const color = s.kind === 'sfx' ? cssVar('--warm') : cssVar('--teal');
     c.strokeStyle = cssVar('--line'); c.lineWidth = d; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(w, h / 2); c.stroke();
     bars(c, bufs[s.id], 0, w, h / 2, h * 0.92, color, s.kind === 'sfx' ? 8 : 0, d);
-    if (ghostOn && REF_ENV[s.id]) ghostLine(c, REF_ENV[s.id], 0, w, h / 2, h * 0.92, cssVar('--ghost'), d);
+    if (ghostOn && s.ref && REF_ENV[s.id]) ghostLine(c, REF_ENV[s.id], 0, w, h / 2, h * 0.92, cssVar('--ghost'), d);
   }
 
   // --- the strips that mimic each video's layout
@@ -112,12 +82,13 @@
         c.fillText(s.name, Math.max(2 * d, lx), up ? mid - h * 0.3 : mid + h * 0.38);
       });
     } else {
-      const total = LOOPS.reduce((a, s) => a + (s.ref[1] - s.ref[0]), 0), top = h * 0.2, lane = h * 0.62;
+      const clipLen = (s) => (s.ref ? s.ref[1] - s.ref[0] : s.len);
+      const total = LOOPS.reduce((a, s) => a + clipLen(s), 0), top = h * 0.2, lane = h * 0.62;
       let x = 0;
       LOOPS.forEach((s) => {
-        const wd = ((s.ref[1] - s.ref[0]) / total) * w;
-        c.fillStyle = cssVar('--bg'); c.strokeStyle = cssVar('--teal'); c.lineWidth = d;
-        c.fillRect(x + 1, top, wd - 2, lane); c.strokeRect(x + 1, top, wd - 2, lane);
+        const wd = (clipLen(s) / total) * w;
+        c.fillStyle = cssVar('--bg'); c.strokeStyle = cssVar('--teal'); c.lineWidth = d; c.setLineDash(s.filled ? [4 * d, 3 * d] : []);
+        c.fillRect(x + 1, top, wd - 2, lane); c.strokeRect(x + 1, top, wd - 2, lane); c.setLineDash([]);
         if (bufs[s.id]) bars(c, bufs[s.id], x + 3, x + wd - 3, top + lane * 0.62, lane * 0.7, cssVar('--teal'), 0, d);
         c.fillStyle = cssVar('--fg'); c.font = `${10.5 * d}px ${cssVar('--body')}`; c.textBaseline = 'top';
         c.save(); c.beginPath(); c.rect(x + 3, top, wd - 6, 16 * d); c.clip();
@@ -188,7 +159,7 @@
         end = Math.max(end, at + dur);
       } else {
         // each loop fills exactly its clip in the video (looped, with 8 ms fade in / 12 ms fade out): no gaps, no overlaps
-        const len = s.ref[1] - s.ref[0];
+        const len = s.ref ? s.ref[1] - s.ref[0] : s.len;
         nodes.push(voice(bufs[s.id], t0 + at, { loop: true, dur: len }));
         marks.push({ el: phEls[s.id], dur: len, loop: false, start: at });
         end = Math.max(end, at + len); acc += len;
@@ -211,7 +182,7 @@
         const row = document.createElement('div'); row.className = 'row'; row.id = 'row-' + s.id;
         const dur = s.len || s.ref[1] - s.ref[0];
         row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
-          <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span></div></div>
+          <div class="facts"><span id="dur-${s.id}"></span>${s.ref ? `<span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span>` : '<span class="fill">视频中未出现 · 按编号补全</span>'}</div></div>
           <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
           <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
         list.appendChild(row);
@@ -228,10 +199,8 @@
     for (const s of order) {
       await new Promise((r) => setTimeout(r, 0));
       const f32 = s.render(); bufs[s.id] = f32;
-      const e = env160(f32, s.ref[1] - s.ref[0]), c = corr(e, REF_ENV[s.id], s.kind === 'loops' ? 7 : 3); stats[s.id] = c;
       const dur = f32.length / SR;
       $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
-      $('#cor-' + s.id).textContent = '包络相似度 ' + c.toFixed(2);
       drawCard(s); done++;
       document.querySelectorAll('#row-' + s.id + ' .play').forEach((b) => (b.disabled = false));
       st.textContent = `正在合成 ${done}/${all.length}…`;

@@ -64,6 +64,8 @@ function eightBitTalking() {
 
 function oldFlash() {
   const b = mk(0.82);
+  // flash charging whine, rising just before the pop
+  { const w = mk(0.1); let ph = 0; for (let i = 0; i < w.length; i++) { const t = i / SR; ph += (TAU * (5200 + 3600 * (t / 0.1))) / SR; w[i] = Math.sin(ph) * 0.06 * Math.min(1, t / 0.01); } mixAt(b, w, 0.0); }
   mixAt(b, tick(3200, 0.9, 0.006, 0.45, 21), 0.0);
   mixAt(b, tick(2400, 0.9, 0.008, 0.38, 22), 0.09);
   // main burst: noise swell then fast decay, with a little capacitor-discharge sizzle
@@ -257,6 +259,9 @@ function shine() {
   mixAt(b, low, 0, 1.0);
   mixAt(b, hiss, 0, 1.0);
   mixAt(b, swell, 0.1, 0.5);
+  // a shine glints: a few quick high pings that twinkle at the peak of the swell
+  [[0.1, 5200, 0.16], [0.135, 6900, 0.2], [0.165, 4300, 0.14], [0.19, 8100, 0.12], [0.215, 5900, 0.08]].forEach(([t, f, a]) =>
+    mixAt(b, additive(0.12, [{ f, a, tau: 0.03 }, { f: f * 2.01, a: a * 0.25, tau: 0.015 }], 0.0008), t));
   return master(b, 0.8);
 }
 
