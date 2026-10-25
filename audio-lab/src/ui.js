@@ -182,7 +182,7 @@
         const row = document.createElement('div'); row.className = 'row'; row.id = 'row-' + s.id;
         const dur = s.len || s.ref[1] - s.ref[0];
         row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
-          <div class="facts"><span id="dur-${s.id}"></span>${s.ref ? `<span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span>` : '<span class="fill">视频中未出现 · 按编号补全</span>'}</div></div>
+          <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span></div></div>
           <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
           <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
         list.appendChild(row);
