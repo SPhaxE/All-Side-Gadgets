@@ -54,10 +54,14 @@ if __name__ == '__main__':
             if loop:
                 seam = abs(float(x[0] - x[-1])); step = float(np.abs(np.diff(x)).mean()) * 8 + 0.02
                 if seam > step: flags.append(f'SEAM {seam:.3f}')
+                # largest sample jump within +-2 ms of the wrap point vs the loop's own 99.9th percentile jump
+                xx = np.concatenate([x, x]); w = int(0.002 * sr); d = np.abs(np.diff(xx))
+                if d[len(x) - w:len(x) + w].max() > 3 * np.percentile(d, 99.9) + 0.01: flags.append('SEAM-JUMP')
+                if abs(float(x[0])) > 0.05: flags.append('FIRST!=0 (needs fade-in on playback)')
             else:
                 if e0 > 0.01 or eN > 0.01: flags.append('EDGE')
             if share > 0.3 and flat > 0.25: flags.append('NOISY-LOW')   # lots of low energy that is noise rather than a tone
             if gl > 12: flags.append('LOW-GLIDE-DOWN')
-            bad += bool(flags)
+            bad += bool([f for f in flags if not f.startswith('FIRST')])
             print(f"{os.path.basename(p):14s} {peak:5.2f} {dc:6.3f} {e0:6.3f} {eN:6.3f} {share:7.2f} {flat:8.2f} {gl:7.1f}  {' '.join(flags)}")
     print('flagged:', bad)

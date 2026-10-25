@@ -69,11 +69,11 @@ function oldFlash() {
   // main burst: noise swell then fast decay, with a little capacitor-discharge sizzle
   const env = curve([[0, 0], [0.09, 1]]);
   const fl = flutter(0.5, 90, 0.4, 24);
-  const burst = (x) => { shape(x, (t) => (t < 0.09 ? env(t) : Math.exp(-(t - 0.09) / 0.085))); for (let i = 0; i < x.length; i++) x[i] *= fl[i]; return x; };
+  const burst = (x, flut) => { shape(x, (t) => (t < 0.09 ? env(t) : Math.exp(-(t - 0.09) / 0.085))); if (flut) for (let i = 0; i < x.length; i++) x[i] *= fl[i]; return x; };
   const hi = noise(0.5, 23);
   filt(hi, new Biquad('lp', 9500, 0.7), new Biquad('hp', 200, 0.7));
-  mixAt(b, burst(hi), 0.1, 0.55);
-  mixAt(b, burst(tiltedNoise(0.5, 27, 260)), 0.1, 0.5);
+  mixAt(b, burst(hi, true), 0.1, 0.55);
+  mixAt(b, burst(tiltedNoise(0.5, 27, 260), false), 0.1, 0.5);
   // low thump under the flash (smooth sine, no pitch fall)
   mixAt(b, subSine(0.5, 48, 0.45, (t) => curve([[0, 0], [0.05, 1]])(t) * Math.exp(-t / 0.16), [1, 0.4, 0.15]), 0.14);
   // two tiny after-pops

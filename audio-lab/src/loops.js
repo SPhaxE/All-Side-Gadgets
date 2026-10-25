@@ -144,24 +144,26 @@ function loop11() { // Reckoning: dense dark drone, driving stabs, accents on ev
   const stabs = [0.07, 0.23, 0.39, 0.71, 0.91, 1.07, 1.39, 1.56, 1.72, 2.07, 2.23];
   const chords = ['F#2', 'F#2', 'D#3', 'F#2', 'F#2', 'B2', 'F#2', 'F#2', 'E3', 'F#2', 'B2'];
   return loopRender(BAR, (put, ev) => {
-    // drone: stacked detuned saws, low-passed so it growls without any buzz
+    // drone: stacked detuned low voices with a soft (1/k^1.5, rounder than a saw) spectrum, so it growls without any buzz
     const d = mk(BAR), r = rng(55);
     [['B2', -9], ['B2', 8], ['F#3', -6], ['F#3', 7], ['B3', -5], ['D4', 5]].forEach(([n, c]) => {
       const f = Math.round(nf(n) * Math.pow(2, c / 1200) * BAR) / BAR;
-      for (let k = 1; k <= 14; k++) { const w = (TAU * f * k) / SR; for (let i = 0; i < d.length; i++) d[i] += (0.05 / k) * Math.sin(w * i + k); }
+      for (let k = 1; k <= 10; k++) { const w = (TAU * f * k) / SR; for (let i = 0; i < d.length; i++) d[i] += (0.05 / Math.pow(k, 1.5)) * Math.sin(w * i + k); }
     });
-    filt(d, new Biquad('lp', 1500, 0.8), new Biquad('hp', 140, 0.7));
+    { // filter three tiled copies and keep the middle one, so the filter state is steady at the loop seam
+      const T = new Float32Array(d.length * 3); for (let k = 0; k < 3; k++) T.set(d, k * d.length);
+      filt(T, new Biquad('lp', 1500, 0.8), new Biquad('hp', 140, 0.7)); d.set(T.subarray(d.length, 2 * d.length)); }
     const nz = noise(BAR, 56);
     filt(nz, new Biquad('bp', 1100, 0.5));
-    for (let i = 0; i < d.length; i++) ev[i] += d[i] + nz[i] * 0.05;
+    for (let i = 0; i < d.length; i++) ev[i] += d[i] + nz[i] * 0.11;
     const O = 0.17; // phase of the groove inside the clip (matched against the reference envelope)
     stabs.forEach((t0, i) => {
       const t = t0 + O;
-      put(t, pluck(nf(chords[i]), { tau: 0.16, vel: 1.1, tilt: 0.4, bright: 1.4, damp: 0.5, n: 14 }));
+      put(t, pluck(nf(chords[i]), { tau: 0.16, vel: 1.1, tilt: 1.0, damp: 0.7, n: 8 }));
       put(t, tick(1800, 0.5, 0.02, 0.45, 70 + i, 0.08));
     });
-    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: 0.8, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
-  }, { wet: 0.12, size: 1.0, level: 0.9, drive: 1.5, seed: 11 });
+    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: 0.5, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
+  }, { wet: 0.12, size: 1.0, level: 0.9, drive: 1.2, seed: 11 });
 }
 
 function loop12() { // Second Guess: nervous 16th-note pluck line wandering between B2 and B4

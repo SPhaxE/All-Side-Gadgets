@@ -4,13 +4,17 @@
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' }))];
   const bufs = {}, stats = {};
+  let tab = 'sfx';
   let ac = null, playing = null, raf = 0;
 
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
 
   function ctx() {
-    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SR });
-    if (ac.state === 'suspended') ac.resume();
+    if (!ac) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      try { ac = new AC({ sampleRate: SR }); } catch (e) { ac = new AC(); } // buffers are 44.1 kHz; the browser resamples if needed
+    }
+    if (ac.state !== 'running') ac.resume(); // also recovers 'interrupted' (iOS) after a call or app switch
     return ac;
   }
   function toBuffer(f32) {
@@ -125,8 +129,25 @@
 
   // --- playback
   const phEls = {};
+  // every source goes through a gain so starts, stops and loop cuts never click
+  function voice(buf, when, { loop = false, dur = null, fadeIn = 0.008 } = {}) {
+    const a = ctx(), src = a.createBufferSource(), g = a.createGain();
+    src.buffer = toBuffer(buf); src.loop = loop;
+    g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(1, when + fadeIn);
+    src.connect(g); g.connect(a.destination); src.start(when);
+    if (dur != null) {
+      const e = when + dur;
+      g.gain.setValueAtTime(1, Math.max(when + fadeIn + 0.001, e - 0.012)); g.gain.linearRampToValueAtTime(0, e);
+      src.stop(e + 0.005);
+    }
+    return { src, g };
+  }
   function stopAll() {
-    if (playing) { playing.nodes.forEach((n) => { try { n.stop(); } catch (e) {} }); playing = null; }
+    if (playing) {
+      const now = ac.currentTime;
+      playing.nodes.forEach(({ src, g }) => { try { g.gain.setTargetAtTime(0, now, 0.004); src.stop(now + 0.03); } catch (e) {} });
+      playing = null;
+    }
     cancelAnimationFrame(raf);
     document.querySelectorAll('.row.playing').forEach((r) => r.classList.remove('playing'));
     document.querySelectorAll('.ph').forEach((p) => (p.style.display = 'none'));
@@ -146,13 +167,12 @@
   }
   function playOne(s) {
     const was = playing && playing.id === s.id; stopAll(); if (was) return;
-    const a = ctx(), src = a.createBufferSource(); src.buffer = toBuffer(bufs[s.id]);
-    const loop = s.kind === 'loops'; src.loop = loop; src.connect(a.destination);
-    const t0 = a.currentTime + 0.05; src.start(t0);
-    const dur = bufs[s.id].length / SR;
-    playing = { id: s.id, nodes: [src], t0, end: loop ? 0 : dur + 0.05, marks: [{ el: phEls[s.id], dur, loop, start: 0 }] };
+    const a = ctx(), loop = s.kind === 'loops';
+    const t0 = a.currentTime + 0.05, dur = bufs[s.id].length / SR;
+    const v = voice(bufs[s.id], t0, { loop, fadeIn: loop ? 0.008 : 0.001 });
+    playing = { id: s.id, nodes: [v], t0, end: loop ? 0 : dur + 0.05, marks: [{ el: phEls[s.id], dur, loop, start: 0 }] };
     $('#row-' + s.id).classList.add('playing');
-    if (!loop) src.onended = () => { if (playing && playing.id === s.id) stopAll(); };
+    if (!loop) v.src.onended = () => { if (playing && playing.id === s.id) stopAll(); };
     raf = requestAnimationFrame(tickPlayhead);
   }
   function playTimeline(kind) {
@@ -161,11 +181,18 @@
     const list = kind === 'sfx' ? SFX : LOOPS;
     let acc = 0, end = 0;
     list.forEach((s) => {
-      const at = kind === 'sfx' ? s.ref[0] : acc, dur = bufs[s.id].length / SR, len = kind === 'sfx' ? dur : s.ref[1] - s.ref[0];
-      const src = a.createBufferSource(); src.buffer = toBuffer(bufs[s.id]); src.connect(a.destination);
-      src.start(t0 + at, 0, Math.min(dur, len + 0.35)); nodes.push(src);
-      marks.push({ el: phEls[s.id], dur: len, loop: false, start: at });
-      end = Math.max(end, at + Math.min(dur, len + 0.35)); acc += len;
+      const dur = bufs[s.id].length / SR, at = kind === 'sfx' ? s.ref[0] : acc;
+      if (kind === 'sfx') {
+        nodes.push(voice(bufs[s.id], t0 + at, { fadeIn: 0.001 }));
+        marks.push({ el: phEls[s.id], dur, loop: false, start: at });
+        end = Math.max(end, at + dur);
+      } else {
+        // each loop fills exactly its clip in the video (looped, with 8 ms fade in / 12 ms fade out): no gaps, no overlaps
+        const len = s.ref[1] - s.ref[0];
+        nodes.push(voice(bufs[s.id], t0 + at, { loop: true, dur: len }));
+        marks.push({ el: phEls[s.id], dur: len, loop: false, start: at });
+        end = Math.max(end, at + len); acc += len;
+      }
     });
     const sp = $('#ph-strip-' + kind); const total = kind === 'sfx' ? 19.7 : acc;
     marks.push({ el: sp, dur: total, loop: false, start: 0 });
@@ -186,7 +213,7 @@
         row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
           <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span></div></div>
           <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
-          <button class="play" aria-label="播放 ${s.name}">${playIcon}</button>`;
+          <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
         list.appendChild(row);
         phEls[s.id] = row.querySelector('.ph');
         row.querySelector('.play').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
@@ -197,7 +224,8 @@
 
   async function renderAll() {
     const st = $('#status'); let done = 0;
-    for (const s of all) {
+    const order = all.slice().sort((x, y) => (x.kind === tab ? 0 : 1) - (y.kind === tab ? 0 : 1));
+    for (const s of order) {
       await new Promise((r) => setTimeout(r, 0));
       const f32 = s.render(); bufs[s.id] = f32;
       const e = env160(f32, s.ref[1] - s.ref[0]), c = corr(e, REF_ENV[s.id], s.kind === 'loops' ? 7 : 3); stats[s.id] = c;
@@ -205,15 +233,15 @@
       $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
       $('#cor-' + s.id).textContent = '包络相似度 ' + c.toFixed(2);
       drawCard(s); done++;
+      document.querySelectorAll('#row-' + s.id + ' .play').forEach((b) => (b.disabled = false));
       st.textContent = `正在合成 ${done}/${all.length}…`;
     }
-    st.textContent = `已合成 ${all.length} 个声音(采样率 ${SR} Hz,单声道)。点击播放;手机需先点一下页面解锁声音。`;
+    st.textContent = `已合成 ${all.length} 个声音(采样率 ${SR} Hz,单声道)。点击播放。iPhone 的静音键打开时可能没有声音。`;
     drawStrip('sfx'); drawStrip('loops');
   }
 
   function redrawAll() { all.forEach(drawCard); drawStrip('sfx'); drawStrip('loops'); }
 
-  let tab = 'sfx';
   function setTab(t) {
     stopAll(); tab = t;
     $('#pane-sfx').hidden = t !== 'sfx'; $('#pane-loops').hidden = t !== 'loops';
@@ -227,6 +255,7 @@
   $('#stop').addEventListener('click', stopAll);
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redrawAll, 120); });
   if (location.hash === '#loops') setTab('loops');
+  document.addEventListener('pointerdown', () => { try { const a = ctx(), b = a.createBuffer(1, 1, SR), s = a.createBufferSource(); s.buffer = b; s.connect(a.destination); s.start(); } catch (e) {} }, { once: true });
   build();
   renderAll();
 })();

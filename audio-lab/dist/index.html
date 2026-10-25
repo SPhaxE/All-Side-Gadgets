@@ -96,7 +96,7 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
   <div class="notes">
     <h2>怎么做的</h2>
     <p>音效按视频里的音轨逐条还原:先量出每个声音在原音频里的起止、节奏、频谱和包络,再用正弦、方波、带通噪声和短衰减的共振组合出来。循环按 B 小调逐音转写,90 BPM,首尾无缝。</p>
-    <p>避免“放屁声”的做法:低频只用平滑的正弦,不用低音锯齿或方波;不做向下的音高滑落;所有噪声瞬态都经带通且起音在毫秒级;瞬态后的低频尾巴单调衰减、不抖动;每次渲染后自动检查削波、直流、首尾爆音、低频噪声占比和低音下滑。</p>
+    <p>避免“放屁声”的做法:低频只用平滑的正弦和柔和的低次谐波,不用低音锯齿或方波;不做向下的音高滑落;所有噪声瞬态都经带通且起音在毫秒级;瞬态后的低频尾巴单调衰减、不抖动;每次渲染后自动检查削波、直流、首尾爆音、低频噪声占比和低音下滑。</p>
     <p>波形上的虚线是原视频音频的包络,和合成波形叠在一起看形状是否对得上。每张卡片上的“包络相似度”是两者归一化后的相关系数,打节奏的声音(如 8 Bit Talking、Counter)对相位很敏感,数值会偏低,听感以实际播放为准。</p>
   </div>
 </div>
@@ -355,11 +355,11 @@ function oldFlash() {
   // main burst: noise swell then fast decay, with a little capacitor-discharge sizzle
   const env = curve([[0, 0], [0.09, 1]]);
   const fl = flutter(0.5, 90, 0.4, 24);
-  const burst = (x) => { shape(x, (t) => (t < 0.09 ? env(t) : Math.exp(-(t - 0.09) / 0.085))); for (let i = 0; i < x.length; i++) x[i] *= fl[i]; return x; };
+  const burst = (x, flut) => { shape(x, (t) => (t < 0.09 ? env(t) : Math.exp(-(t - 0.09) / 0.085))); if (flut) for (let i = 0; i < x.length; i++) x[i] *= fl[i]; return x; };
   const hi = noise(0.5, 23);
   filt(hi, new Biquad('lp', 9500, 0.7), new Biquad('hp', 200, 0.7));
-  mixAt(b, burst(hi), 0.1, 0.55);
-  mixAt(b, burst(tiltedNoise(0.5, 27, 260)), 0.1, 0.5);
+  mixAt(b, burst(hi, true), 0.1, 0.55);
+  mixAt(b, burst(tiltedNoise(0.5, 27, 260), false), 0.1, 0.5);
   // low thump under the flash (smooth sine, no pitch fall)
   mixAt(b, subSine(0.5, 48, 0.45, (t) => curve([[0, 0], [0.05, 1]])(t) * Math.exp(-t / 0.16), [1, 0.4, 0.15]), 0.14);
   // two tiny after-pops
@@ -723,24 +723,26 @@ function loop11() { // Reckoning: dense dark drone, driving stabs, accents on ev
   const stabs = [0.07, 0.23, 0.39, 0.71, 0.91, 1.07, 1.39, 1.56, 1.72, 2.07, 2.23];
   const chords = ['F#2', 'F#2', 'D#3', 'F#2', 'F#2', 'B2', 'F#2', 'F#2', 'E3', 'F#2', 'B2'];
   return loopRender(BAR, (put, ev) => {
-    // drone: stacked detuned saws, low-passed so it growls without any buzz
+    // drone: stacked detuned low voices with a soft (1/k^1.5, rounder than a saw) spectrum, so it growls without any buzz
     const d = mk(BAR), r = rng(55);
     [['B2', -9], ['B2', 8], ['F#3', -6], ['F#3', 7], ['B3', -5], ['D4', 5]].forEach(([n, c]) => {
       const f = Math.round(nf(n) * Math.pow(2, c / 1200) * BAR) / BAR;
-      for (let k = 1; k <= 14; k++) { const w = (TAU * f * k) / SR; for (let i = 0; i < d.length; i++) d[i] += (0.05 / k) * Math.sin(w * i + k); }
+      for (let k = 1; k <= 10; k++) { const w = (TAU * f * k) / SR; for (let i = 0; i < d.length; i++) d[i] += (0.05 / Math.pow(k, 1.5)) * Math.sin(w * i + k); }
     });
-    filt(d, new Biquad('lp', 1500, 0.8), new Biquad('hp', 140, 0.7));
+    { // filter three tiled copies and keep the middle one, so the filter state is steady at the loop seam
+      const T = new Float32Array(d.length * 3); for (let k = 0; k < 3; k++) T.set(d, k * d.length);
+      filt(T, new Biquad('lp', 1500, 0.8), new Biquad('hp', 140, 0.7)); d.set(T.subarray(d.length, 2 * d.length)); }
     const nz = noise(BAR, 56);
     filt(nz, new Biquad('bp', 1100, 0.5));
-    for (let i = 0; i < d.length; i++) ev[i] += d[i] + nz[i] * 0.05;
+    for (let i = 0; i < d.length; i++) ev[i] += d[i] + nz[i] * 0.11;
     const O = 0.17; // phase of the groove inside the clip (matched against the reference envelope)
     stabs.forEach((t0, i) => {
       const t = t0 + O;
-      put(t, pluck(nf(chords[i]), { tau: 0.16, vel: 1.1, tilt: 0.4, bright: 1.4, damp: 0.5, n: 14 }));
+      put(t, pluck(nf(chords[i]), { tau: 0.16, vel: 1.1, tilt: 1.0, damp: 0.7, n: 8 }));
       put(t, tick(1800, 0.5, 0.02, 0.45, 70 + i, 0.08));
     });
-    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: 0.8, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
-  }, { wet: 0.12, size: 1.0, level: 0.9, drive: 1.5, seed: 11 });
+    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: 0.5, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
+  }, { wet: 0.12, size: 1.0, level: 0.9, drive: 1.2, seed: 11 });
 }
 
 function loop12() { // Second Guess: nervous 16th-note pluck line wandering between B2 and B4
@@ -796,13 +798,17 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' }))];
   const bufs = {}, stats = {};
+  let tab = 'sfx';
   let ac = null, playing = null, raf = 0;
 
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
 
   function ctx() {
-    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SR });
-    if (ac.state === 'suspended') ac.resume();
+    if (!ac) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      try { ac = new AC({ sampleRate: SR }); } catch (e) { ac = new AC(); } // buffers are 44.1 kHz; the browser resamples if needed
+    }
+    if (ac.state !== 'running') ac.resume(); // also recovers 'interrupted' (iOS) after a call or app switch
     return ac;
   }
   function toBuffer(f32) {
@@ -917,8 +923,25 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
 
   // --- playback
   const phEls = {};
+  // every source goes through a gain so starts, stops and loop cuts never click
+  function voice(buf, when, { loop = false, dur = null, fadeIn = 0.008 } = {}) {
+    const a = ctx(), src = a.createBufferSource(), g = a.createGain();
+    src.buffer = toBuffer(buf); src.loop = loop;
+    g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(1, when + fadeIn);
+    src.connect(g); g.connect(a.destination); src.start(when);
+    if (dur != null) {
+      const e = when + dur;
+      g.gain.setValueAtTime(1, Math.max(when + fadeIn + 0.001, e - 0.012)); g.gain.linearRampToValueAtTime(0, e);
+      src.stop(e + 0.005);
+    }
+    return { src, g };
+  }
   function stopAll() {
-    if (playing) { playing.nodes.forEach((n) => { try { n.stop(); } catch (e) {} }); playing = null; }
+    if (playing) {
+      const now = ac.currentTime;
+      playing.nodes.forEach(({ src, g }) => { try { g.gain.setTargetAtTime(0, now, 0.004); src.stop(now + 0.03); } catch (e) {} });
+      playing = null;
+    }
     cancelAnimationFrame(raf);
     document.querySelectorAll('.row.playing').forEach((r) => r.classList.remove('playing'));
     document.querySelectorAll('.ph').forEach((p) => (p.style.display = 'none'));
@@ -938,13 +961,12 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
   }
   function playOne(s) {
     const was = playing && playing.id === s.id; stopAll(); if (was) return;
-    const a = ctx(), src = a.createBufferSource(); src.buffer = toBuffer(bufs[s.id]);
-    const loop = s.kind === 'loops'; src.loop = loop; src.connect(a.destination);
-    const t0 = a.currentTime + 0.05; src.start(t0);
-    const dur = bufs[s.id].length / SR;
-    playing = { id: s.id, nodes: [src], t0, end: loop ? 0 : dur + 0.05, marks: [{ el: phEls[s.id], dur, loop, start: 0 }] };
+    const a = ctx(), loop = s.kind === 'loops';
+    const t0 = a.currentTime + 0.05, dur = bufs[s.id].length / SR;
+    const v = voice(bufs[s.id], t0, { loop, fadeIn: loop ? 0.008 : 0.001 });
+    playing = { id: s.id, nodes: [v], t0, end: loop ? 0 : dur + 0.05, marks: [{ el: phEls[s.id], dur, loop, start: 0 }] };
     $('#row-' + s.id).classList.add('playing');
-    if (!loop) src.onended = () => { if (playing && playing.id === s.id) stopAll(); };
+    if (!loop) v.src.onended = () => { if (playing && playing.id === s.id) stopAll(); };
     raf = requestAnimationFrame(tickPlayhead);
   }
   function playTimeline(kind) {
@@ -953,11 +975,18 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
     const list = kind === 'sfx' ? SFX : LOOPS;
     let acc = 0, end = 0;
     list.forEach((s) => {
-      const at = kind === 'sfx' ? s.ref[0] : acc, dur = bufs[s.id].length / SR, len = kind === 'sfx' ? dur : s.ref[1] - s.ref[0];
-      const src = a.createBufferSource(); src.buffer = toBuffer(bufs[s.id]); src.connect(a.destination);
-      src.start(t0 + at, 0, Math.min(dur, len + 0.35)); nodes.push(src);
-      marks.push({ el: phEls[s.id], dur: len, loop: false, start: at });
-      end = Math.max(end, at + Math.min(dur, len + 0.35)); acc += len;
+      const dur = bufs[s.id].length / SR, at = kind === 'sfx' ? s.ref[0] : acc;
+      if (kind === 'sfx') {
+        nodes.push(voice(bufs[s.id], t0 + at, { fadeIn: 0.001 }));
+        marks.push({ el: phEls[s.id], dur, loop: false, start: at });
+        end = Math.max(end, at + dur);
+      } else {
+        // each loop fills exactly its clip in the video (looped, with 8 ms fade in / 12 ms fade out): no gaps, no overlaps
+        const len = s.ref[1] - s.ref[0];
+        nodes.push(voice(bufs[s.id], t0 + at, { loop: true, dur: len }));
+        marks.push({ el: phEls[s.id], dur: len, loop: false, start: at });
+        end = Math.max(end, at + len); acc += len;
+      }
     });
     const sp = $('#ph-strip-' + kind); const total = kind === 'sfx' ? 19.7 : acc;
     marks.push({ el: sp, dur: total, loop: false, start: 0 });
@@ -978,7 +1007,7 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
         row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
           <div class="facts"><span id="dur-${s.id}"></span><span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span></div></div>
           <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
-          <button class="play" aria-label="播放 ${s.name}">${playIcon}</button>`;
+          <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
         list.appendChild(row);
         phEls[s.id] = row.querySelector('.ph');
         row.querySelector('.play').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
@@ -989,7 +1018,8 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
 
   async function renderAll() {
     const st = $('#status'); let done = 0;
-    for (const s of all) {
+    const order = all.slice().sort((x, y) => (x.kind === tab ? 0 : 1) - (y.kind === tab ? 0 : 1));
+    for (const s of order) {
       await new Promise((r) => setTimeout(r, 0));
       const f32 = s.render(); bufs[s.id] = f32;
       const e = env160(f32, s.ref[1] - s.ref[0]), c = corr(e, REF_ENV[s.id], s.kind === 'loops' ? 7 : 3); stats[s.id] = c;
@@ -997,15 +1027,15 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
       $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
       $('#cor-' + s.id).textContent = '包络相似度 ' + c.toFixed(2);
       drawCard(s); done++;
+      document.querySelectorAll('#row-' + s.id + ' .play').forEach((b) => (b.disabled = false));
       st.textContent = `正在合成 ${done}/${all.length}…`;
     }
-    st.textContent = `已合成 ${all.length} 个声音(采样率 ${SR} Hz,单声道)。点击播放;手机需先点一下页面解锁声音。`;
+    st.textContent = `已合成 ${all.length} 个声音(采样率 ${SR} Hz,单声道)。点击播放。iPhone 的静音键打开时可能没有声音。`;
     drawStrip('sfx'); drawStrip('loops');
   }
 
   function redrawAll() { all.forEach(drawCard); drawStrip('sfx'); drawStrip('loops'); }
 
-  let tab = 'sfx';
   function setTab(t) {
     stopAll(); tab = t;
     $('#pane-sfx').hidden = t !== 'sfx'; $('#pane-loops').hidden = t !== 'loops';
@@ -1019,6 +1049,7 @@ const REF_ENV = {"eightbit":[0.005,0.402,0.006,0.002,0.003,0.556,0.015,0.002,0.0
   $('#stop').addEventListener('click', stopAll);
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redrawAll, 120); });
   if (location.hash === '#loops') setTab('loops');
+  document.addEventListener('pointerdown', () => { try { const a = ctx(), b = a.createBuffer(1, 1, SR), s = a.createBufferSource(); s.buffer = b; s.connect(a.destination); s.start(); } catch (e) {} }, { once: true });
   build();
   renderAll();
 })();
