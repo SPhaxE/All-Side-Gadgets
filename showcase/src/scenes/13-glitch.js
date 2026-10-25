@@ -18,7 +18,7 @@ E.register(13, E.postScene({
     c.fillStyle = '#ffffff'; c.fillText('GLITCH', 960, 520);
     // caption + bars
     c.font = '700 34px "JetBrains Mono",monospace'; c.textAlign = 'left'; c.fillStyle = '#7dffb0';
-    c.fillText('ERR_0x7F  SIGNAL LOST', 150, 160); c.fillText('FRAME ' + String(Math.floor(s * 30) % 1000).padStart(3, '0'), 150, 205);
+    c.fillText('ERR_0x7F  SIGNAL LOST', 150, 160); c.fillText('FRAME ' + String(((Math.floor(s * 30) % 1000) + 1000) % 1000).padStart(3, '0'), 150, 205);
     const bars = ['#ffffff', '#ffe600', '#00e5ff', '#00ff66', '#ff2dff', '#ff2a2a', '#2a3cff'];
     bars.forEach((col, i) => { c.fillStyle = col; c.fillRect(0 + i * (1920 / 7), 880, 1920 / 7 + 1, 70); });
     c.fillStyle = '#fff'; c.fillRect(((s * 480) % 2100) - 90, 975, 180, 16);

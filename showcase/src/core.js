@@ -6,7 +6,7 @@
   const HT = 0.6;              // half transition length (s) -> 1.2s soft transitions
   const T = NS * D;            // loop length
   const N = Math.round(T * FPS);
-  const PHASE = 0.5;           // video starts 0.5s into scene 1 (transition 20->1 already finished)
+  const PHASE = 0.5;           // video t=0 is 0.5s after the 20|1 boundary; the 20->1 transition (HT=0.6) still has its last 0.1s (3 frames) at the very start
   const W = 1920, H = 1080;
 
   const Q = new URLSearchParams(location.search);

@@ -1,7 +1,8 @@
 // Single source of truth for the storyboard + sound-design notes (stage 2: audio will be built from this).
 // Times in `beats` are scene-local seconds `s` (0 = scene start; the scene is visible from s=-0.6 to s=5.1 because transitions overlap).
 // `transition` describes the bespoke transition INTO the next scene (the last one wraps to scene 1).
-// Music grid: 106.67 BPM, 4/4 -> one scene = 8 beats = 4.5 s, whole loop = 160 beats = 40 bars = 90 s (loop point on a bar line).
+// Music grid: 106.67 BPM, 4/4 -> one scene = 8 beats = 4.5 s, whole loop = 160 beats = 40 bars = 90 s.
+// Bar lines sit on the scene boundaries, i.e. at video t = 4.0, 8.5, ... and at t = -0.5 (= 89.5): the video starts 0.5 s AFTER a bar line.
 (function (root) {
   const TIMELINE = [
     { name: 'Liquid morph', zh: '液态变形', look: '铬面液态金属，圆/圆角方/五角星/环/三角循环变形',
@@ -17,7 +18,7 @@
       sfx: ['每次扫光：闪亮 shimmer + 玻璃 chime', '闪粉：高频 sparkle tick（随机）', '卡片摆动：轻微 air whoosh'], music: '空灵 synth pad + 高八度 pluck',
       transition: { zh: '全息箔按色相被量化成包豪斯三原色，随后瓦片按对角线波翻转', sfx: '翻转 clack 加速排列（木琴/塑料块），音高逐步上行' } },
     { name: 'Bauhaus shapes', zh: '包豪斯几何', look: '7×4 瓦片（红黄蓝黑米），对角/径向/散点三种翻转波，每 1.15s 一轮',
-      beats: [[-0.5, '瓦片从上一轮图案开始翻转'], [0.65, '对角翻转波'], [1.8, '径向翻转波（由中心向外）'], [2.95, '散点翻转波'], [4.1, '对角波再起']],
+      beats: [[-0.5, '对角翻转波（左上到右下）'], [0.65, '径向翻转波（由中心向外）'], [1.8, '散点翻转波'], [2.95, '对角翻转波'], [4.1, '径向翻转波']],
       sfx: ['每块瓦片翻转：木块 clack，音高按延迟递增（马林巴音阶）', '一轮结束：机械 click 收尾'], music: '节奏性强：打击乐 + 马林巴，几何感',
       transition: { zh: '图形只保留轮廓并亮成霓虹灯管，填充色沉下去，霓虹字点亮', sfx: '电流 zap + 灯管点亮的 buzz 渐强；填充褪去时低频下沉' } },
     { name: 'Neon glow', zh: '霓虹辉光', look: 'NEON 霓虹字，白热灯芯 + 两级彩色光晕，砖墙受光，湿地倒影',

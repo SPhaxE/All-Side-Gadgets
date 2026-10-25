@@ -68,7 +68,7 @@ float softShadow(vec3 ro, vec3 rd){
 float calcAO(vec3 p, vec3 n){ float o = 0., sc = 1.; for (int i=0;i<5;i++){ float h = .02+.13*float(i); o += (h - map(p+n*h).x)*sc; sc *= .8; } return clamp(1.-1.8*o,0.,1.); }
 vec3 scene(vec2 fc){
   float s = uS;
-  T_ = floor(s*15.+.5)/15.; FJ = floor(s*15.+.5);
+  T_ = floor(s*15.+.501)/15.; FJ = floor(s*15.+.501);
   vec2 uv = (fc - .5*uRes)/uRes.y;
   float push = smoothstep(1.8,3.0,s)*(1.-smoothstep(3.6,4.8,s));
   vec3 ro = vec3(0.+.15*sin(T_*.5), 1.9-.25*push, -7.6+1.2*push);

@@ -39,7 +39,7 @@ E.register(16, E.canvasScene({
     tex = t;
   },
   draw(c, s, w, h) {
-    const q15 = Math.floor(s * 15); const q = q15 / 15;
+    const q15 = Math.floor(s * 15 + 1e-6); const q = q15 / 15;
     const J = (L, a = 4) => [(hash(q15 * 3.1 + L * 7.3) - .5) * a, (hash(q15 * 5.7 + L * 2.9) - .5) * a];
     c.fillStyle = '#f6c7a6'; c.fillRect(0, 0, w, h);
     // sky band (second paper sheet)

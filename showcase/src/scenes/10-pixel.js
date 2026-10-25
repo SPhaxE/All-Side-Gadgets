@@ -13,7 +13,7 @@ E.register(10, E.canvasScene({
   w: 320, h: 180, nearest: true, hudDark: false,
   draw(c, s, w, h) {
     c.imageSmoothingEnabled = false;
-    const q = Math.floor(s * 10), HOR = 118;
+    const q = Math.floor(s * 10 + 1e-6), HOR = 118;
     // sky bands (with 2-row ordered dithering at the seams)
     for (let i = 0; i < SKY.length; i++) px(c, 0, i * (HOR / SKY.length), w, Math.ceil(HOR / SKY.length) + 1, SKY[i]);
     for (let i = 1; i < SKY.length; i++) { const y = Math.floor(i * HOR / SKY.length); for (let x = 0; x < w; x++) if ((x + y) % 2 === 0) px(c, x, y - 1, 1, 1, SKY[i]); else px(c, x, y, 1, 1, SKY[i - 1]); }

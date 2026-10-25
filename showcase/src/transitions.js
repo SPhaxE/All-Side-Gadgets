@@ -96,7 +96,7 @@ vec3 t3(vec2 uv, float p){
   vec3 dark = a * (1.-sink) * (1.-sink*.4);
   float lit = ease(p/.45) * (1. - ease((p-.62)/.38));
   vec3 glow = neon*(e*2.4 + halo*1.5) * lit + vec3(1.)*e*lit*.6;
-  vec3 mid = dark + glow + vec3(.01,.0,.03);
+  vec3 mid = dark + glow + vec3(.01,.0,.03)*sink;
   float s = smoothstep(.45,1.0,p);
   return mix(mid, B(uv), s);
 }
@@ -126,12 +126,13 @@ vec3 t5(vec2 uv, float p){
   float wob = fbm(uv*3.+vec2(p*1.2,0.))*.07;
   float R = ease(clamp((p-.22)/.78,0.,1.))*1.5;
   float sd = length(d) - R + wob;
-  float inside = smoothstep(.012,-.012,sd);
+  float ex = smoothstep(.0,.07,R);
+  float inside = smoothstep(.012,-.012,sd)*ex;
   float lit = dot(normalize(d+1e-4), normalize(vec2(-.6,.8)))*.5 + .5;
-  float rim = smoothstep(.07,.0,abs(sd+.03))*(1.-smoothstep(.92,1.,p));
+  float rim = smoothstep(.07,.0,abs(sd+.03))*(1.-smoothstep(.92,1.,p))*ex;
   vec3 c = mix(a, B(uv), inside);
   c = mix(c, c*(.7+.55*lit), rim*.7) + rim*lit*.10;
-  c *= 1. - .2*smoothstep(.09,.0,sd)*(1.-inside)*(1.-smoothstep(.9,1.,p));
+  c *= 1. - .2*smoothstep(.09,.0,sd)*(1.-inside)*(1.-smoothstep(.9,1.,p))*ex;
   return c;
 }
 
@@ -218,7 +219,7 @@ vec3 t10(vec2 uv, float p){
 
 // ---- 12 Risograph print -> 13 Glitch effect : mis-registration widens into RGB split and torn slices, then blocks of the glitch scene replace the print
 vec3 t11(vec2 uv, float p){
-  float e = sin(PI*clamp(p,0.,1.))*.9 + .1*p;
+  float e = sin(PI*clamp(p,0.,1.))*.9;
   float tq = floor(p*26.);
   float band = floor(uv.y*mix(8.,48.,e));
   float hb = hash21(vec2(band, tq));
@@ -227,11 +228,11 @@ vec3 t11(vec2 uv, float p){
   vec2 bl = floor(uv*vec2(22.,13.)); float hk = hash21(bl + tq*1.31);
   float sw = ease(clamp((p-.25)/.5,0.,1.));
   bool useB = hk < sw;
-  float sp = (3. + 30.*e)/1920.;
+  float sp = 30.*e/1920.;
   vec3 col;
   if (useB){ col = vec3(B(u+vec2(sp,0.)).r, B(u).g, B(u-vec2(sp,0.)).b); }
   else      { col = vec3(A(u+vec2(sp,0.)).r, A(u).g, A(u-vec2(sp,0.)).b); }
-  col *= .9 + .1*sin(uv.y*DS.y*3.14159);
+  col *= mix(1., .9 + .1*sin(uv.y*DS.y*3.14159), clamp(e*1.6,0.,1.));
   col += (hash21(uv*DS + tq)-.5)*.1*e;
   return col;
 }
@@ -264,17 +265,18 @@ vec3 frost(sampler2D t, vec2 uv, float r){ vec3 s = vec3(0.); for (int i=0;i<12;
 vec3 t13(vec2 uv, float p){
   float q = ease(p);
   vec2 qq = (uv-.5)*vec2(16./9.,1.);
-  vec2 hs = vec2(.14,.085) + q*vec2(1.35,.9);
-  float rad = .05 + .08*q;
+  float gr = smoothstep(.0,.22,p);
+  vec2 hs = vec2(.14,.085)*gr + q*vec2(1.35,.9);
+  float rad = min(.05 + .08*q, min(hs.x,hs.y)*.98);
   float d = sdRBoxT(qq, hs, rad);
   vec3 outside = frost(uA, uv, 26.*ease(clamp(p/.5,0.,1.)))*(1.-.1*ease(clamp(p/.5,0.,1.))) + vec3(.05,.07,.1)*ease(clamp(p/.5,0.,1.));
-  outside *= 1. - .35*smoothstep(.09,.0,sdRBoxT(qq-vec2(.012,-.03), hs, rad))*(1.-q*.5);
+  outside *= 1. - .35*smoothstep(.09,.0,sdRBoxT(qq-vec2(.012,-.03), hs, rad))*(1.-q*.5)*gr;
   float clear = ease(clamp((p-.25)/.6,0.,1.));
   vec3 inside = mix(frost(uB, uv, 30.*(1.-clear)) + vec3(.06,.07,.1)*(1.-clear), B(uv), clear);
   float bevel = smoothstep(.012,.0,abs(d+.004));
   float lit = dot(normalize(qq+1e-4), vec2(-.65,.75))*.5+.5;
-  vec3 col = mix(outside, inside, smoothstep(.003,-.003,d));
-  col += bevel*(.15+.6*lit)*(1.-smoothstep(.85,1.,p));
+  vec3 col = mix(outside, inside, smoothstep(.003,-.003,d)*gr);
+  col += bevel*(.15+.6*lit)*(1.-smoothstep(.85,1.,p))*gr;
   return col;
 }
 
@@ -343,7 +345,7 @@ vec3 t17(vec2 uv, float p){
   for (int i=0;i<9;i++){
     float fi = float(i);
     vec2 c = (vec2(hash11(fi*3.7+1.), hash11(fi*5.9+2.))-.5)*vec2(1.5,.8);
-    float r = (.02 + ease(p)*.40)*(.6+.8*hash11(fi*7.1));
+    float r = ease(p)*.42*(.6+.8*hash11(fi*7.1));
     vec2 d = c - q; float dd = dot(d,d)+1e-4;
     F += r*r/dd; G += d*(r*r/dd)/dd;
   }
