@@ -209,3 +209,21 @@ function envCorr(a0, b0, w) {
   return best;
 }
 const envScore = (x, id, ref, kind) => envCorr(envSig(x, ref[1] - ref[0]), REF_ENV[id], kind === 'loops' ? 7 : 3);
+
+// Dynamics matching: nudge a clip's loudness contour (160 bins, the same bins the similarity score uses) toward the reference
+// clip's contour, so the waveform shape in the video is reproduced. Timbre and note content stay ours; the gain is limited.
+function followEnv(x, ref, secs, { iters = 2, lo = 0.06, hi = 8 } = {}) {
+  const n = Math.round(secs * SR);
+  for (let it = 0; it < iters; it++) {
+    const e = envSig(x.length === n ? x : x.subarray(0, n), secs);
+    const g = new Float32Array(160);
+    for (let i = 0; i < 160; i++) g[i] = clamp(Math.pow((ref[i] + 0.03) / (e[i] + 0.03), 0.65), lo, hi);
+    const gs = envSmooth(g, 3);
+    for (let i = 0; i < x.length; i++) {
+      const p = (i / SR / secs) * 160 - 0.5, k = Math.floor(p), f = p - k;
+      const a = gs[clamp(k, 0, 159)], b = gs[clamp(k + 1, 0, 159)];
+      x[i] *= a + (b - a) * f;
+    }
+  }
+  return x;
+}

@@ -3,7 +3,7 @@
 
 // per-loop fit knobs (time shift of every event, decay scale, pad level, reverb level), chosen by tools/tune_loops.js
 // against the reference clip's envelope; LT holds the active set while one loop is being built
-const LOOP_TUNE = {};
+const LOOP_TUNE = {"l01":{"shift":-0.13,"tau":1,"pad":1,"wet":1},"l02":{"shift":0.003,"tau":1,"pad":1,"wet":1},"l03":{"shift":-0.037,"tau":1,"pad":1,"wet":1},"l04":{"shift":-0.23,"tau":1,"pad":1,"wet":1},"l07":{"shift":0.057,"tau":1,"pad":1,"wet":1},"l09":{"shift":-0.04,"tau":1,"pad":1,"wet":1},"l11":{"shift":0.137,"tau":1,"pad":1,"wet":1},"l12":{"shift":-0.13,"tau":1,"pad":1,"wet":1},"l17":{"shift":0,"tau":1,"pad":1,"wet":1},"l22":{"shift":0.11,"tau":1,"pad":1,"wet":1}};
 let LT = { shift: 0, tau: 1, pad: 1, wet: 1 };
 
 // plucked string / mallet voice: inharmonic-stretched partials, pick-position comb, brighter partials die first
@@ -69,6 +69,8 @@ function loopRender(L, build, { wet = 0.12, size = 1, level = 0.85, drive = 1.0,
   const out = wet > 0 ? reverb(ev, wet * LT.wet, size) : ev;
   LT = { shift: 0, tau: 1, pad: 1, wet: 1 };
   filt(out, new Biquad('lp', lp, 0.7));
+  const id = 'l' + String(seed).padStart(2, '0');
+  if (REF_ENV[id]) followEnv(out, REF_ENV[id], L); // match the loudness contour of the clip in the video
   return master(out, level, { fade: 0.003, fadeOut: 0.004, drive });
 }
 
@@ -83,7 +85,7 @@ const EIGHTH = STEP * 2;
 const BAR = STEP * 16;
 
 function loop01() { // Question: B-D-F#-B arpeggio plucks, 16 sixteenths
-  const L = 2.8;
+  const L = BAR;
   const seq = ['B3', 'D4', 'F#4', 'B4', 'B3', 'D4', 'F#4', 'B3', 'B3', 'D4', 'F#4', 'B4', 'B3', 'D4', 'F#4', 'B4'];
   const vel = [0.7, 0.7, 1.0, 0.95, 0.65, 0.8, 0.95, 0.4, 0.8, 0.9, 0.85, 1.0, 0.6, 0.65, 0.75, 0.5];
   return loopRender(L, (put) => seq.forEach((n, i) => put(0.14 + i * STEP, pluck(nf(n), { tau: 0.14, vel: vel[i], pos: 0.2 }))), { wet: 0.1, level: 0.85, seed: 1 });
@@ -102,7 +104,7 @@ function loop02() { // Into The Fog: drone B4/B5 + four soft bell pulses a secon
 }
 
 function loop03() { // Quiet Suspicion: soft strummed dyads/triads on eighths, drone underneath
-  const L = 5.4;
+  const L = BAR * 2;
   const ev = [[0, ['B3', 'F#4'], 1.0], [1, ['A4', 'B4'], 0.5], [2, ['F#4', 'A4', 'B4'], 0.5], [3, ['F#4', 'A4'], 0.8], [4, ['E4', 'F#4', 'A4'], 0.4],
     [5, ['F#4', 'A4'], 0.65], [6, ['D4', 'E4', 'F#4'], 0.35], [7, ['B3', 'D4', 'F#4'], 0.55], [8, ['B3', 'D4', 'A4'], 0.5], [9, ['B4'], 0.75],
     [11, ['F#4', 'A4'], 1.0], [12, ['E4', 'F#4', 'A4'], 0.65], [13, ['F#4', 'A4'], 0.55], [14, ['D4', 'E4', 'F#4'], 0.6], [15, ['B3', 'B4'], 0.85]];
@@ -114,7 +116,7 @@ function loop03() { // Quiet Suspicion: soft strummed dyads/triads on eighths, d
 }
 
 function loop04() { // Lost In Thought: bass notes with bell-like answers
-  const L = 5.3;
+  const L = BAR * 2;
   const ev = [[0.28, ['F#2', 'F#3'], 0.55], [0.6, ['D4', 'D5'], 1.0], [0.94, ['C#4', 'C#5'], 0.8], [1.28, ['B2', 'B3'], 0.6], [1.61, ['F#2', 'F#3', 'C#4'], 0.5],
     [1.94, ['B3', 'B4'], 0.7], [2.61, ['B2', 'B3'], 0.5], [2.94, ['F#2', 'F#3', 'C#4'], 0.5], [3.27, ['B3', 'B4'], 1.0], [3.94, ['B2', 'B3', 'F#3'], 0.5],
     [4.27, ['F#2', 'F#3', 'C#4'], 0.55], [4.61, ['B3', 'B4'], 1.0], [4.93, ['A3', 'A4', 'B3'], 0.8]];
@@ -124,7 +126,7 @@ function loop04() { // Lost In Thought: bass notes with bell-like answers
 }
 
 function loop07() { // In Between: bright kalimba-like arpeggio over a B minor pad
-  const L = 5.4;
+  const L = BAR * 2;
   const ev = [[0.29, ['B5', 'B3'], 0.7], [0.63, ['B4', 'B5', 'B3'], 0.7], [0.96, ['F#4', 'B4', 'B5'], 0.6], [1.30, ['A5', 'D5', 'B4'], 0.85], [1.63, ['B4', 'D5', 'A5'], 0.7],
     [1.96, ['F#4', 'B4', 'D5', 'A5'], 0.65], [2.30, ['F#5', 'F#4'], 0.9], [2.62, ['B4', 'F#5'], 0.65], [2.79, ['F#5', 'B4'], 0.8], [2.96, ['D5', 'F#5', 'B4'], 0.85],
     [3.30, ['B4', 'D5', 'F#5'], 0.7], [3.63, ['B3', 'B4', 'D5', 'F#5'], 0.7], [3.96, ['E5', 'B3'], 1.0], [4.30, ['B4', 'E5', 'B3'], 0.65], [4.63, ['F#5', 'B4', 'E5'], 0.7], [4.96, ['B4', 'F#5'], 0.6]];
@@ -136,17 +138,16 @@ function loop07() { // In Between: bright kalimba-like arpeggio over a B minor p
 }
 
 function loop09() { // Keep Moving: detuned synth plucks, slightly uneasy cluster around B4/C5
-  const L = 2.7;
-  const ev = [[0.41, ['C5', 'E4', 'B4'], 1.0], [0.91, ['B4', 'D4'], 0.55], [1.24, ['B4', 'A#4'], 0.85], [1.40, ['B4', 'E4', 'C5'], 0.9], [1.92, ['B4', 'E4'], 0.5], [2.24, ['B4', 'E4'], 0.65], [2.40, ['B4', 'G4'], 0.65]];
+  const L = BAR;
+  const ev = [[0.05, ['C5', 'E4', 'B4'], 1.0], [0.23, ['B4', 'E4'], 0.35], [0.6, ['B4', 'D4'], 0.5], [0.87, ['B4'], 0.3], [1.15, ['B4', 'A#4'], 0.55],
+    [1.37, ['B4', 'E4', 'C5'], 0.8], [1.52, ['B4', 'E4', 'C5'], 0.9], [2.05, ['B4', 'E4'], 0.5], [2.4, ['B4', 'E4'], 0.55], [2.52, ['B4', 'G4'], 0.6]];
   return loopRender(L, (put) => {
     ev.forEach(([t, ns, v]) => chord(put, t, ns, v, (f, vv) => synthPluck(f, { tau: 0.18, vel: vv * 0.8, det: [-34, -4, 22] }), 0.004));
-    // quiet tick on the off-beats keeps the pulse going
-    for (let i = 0; i < 8; i++) put(i * EIGHTH + 0.0, tick(3200, 0.7, 0.004, 0.012, 90 + i, 0.02));
   }, { wet: 0.1, level: 0.55, seed: 9, lp: 1700 });
 }
 
 function loop11() { // Reckoning: dense dark drone, driving stabs, accents on every beat
-  const L = 2.6;
+  const L = BAR;
   const stabs = [0.07, 0.23, 0.39, 0.71, 0.91, 1.07, 1.39, 1.56, 1.72, 2.07, 2.23];
   const chords = ['F#2', 'F#2', 'D#3', 'F#2', 'F#2', 'B2', 'F#2', 'F#2', 'E3', 'F#2', 'B2'];
   return loopRender(L, (put, ev) => {
@@ -173,28 +174,28 @@ function loop11() { // Reckoning: dense dark drone, driving stabs, accents on ev
 }
 
 function loop12() { // Second Guess: nervous 16th-note pluck line wandering between B2 and B4
-  const L = 2.8;
+  const L = BAR;
   const seq = ['F#4', 'F#4', 'D4', 'B2', 'B3', 'F#3', 'C#4', 'B3', 'B4', 'F#4', 'D4', 'B2', 'B3', 'F#3', 'F#3', 'D3'];
   const vel = [0.7, 1.0, 0.65, 0.95, 0.45, 0.65, 0.45, 0.65, 0.4, 0.95, 0.65, 1.0, 0.7, 1.0, 0.95, 0.7];
   return loopRender(L, (put) => seq.forEach((n, i) => put(0.13 + i * STEP, pluck(nf(n), { tau: 0.11, vel: vel[i], tilt: nf(n) < 160 ? 0.7 : 1.5, pos: 0.16 }))), { wet: 0.12, level: 0.8, seed: 12 });
 }
 
 function loop17() { // Forward Motion: sparse ticks, three low thumps, F# pings every 1.33 s
-  const L = 5.5;
+  const L = BAR * 2;
   return loopRender(L, (put) => {
-    const ticks = [[0.33, 'C4', 0.2], [0.48, 'A#3', 0.15], [0.65, 'D#3', 0.18], [0.82, 'B2', 0.3], [1.66, 'F#3', 0.15], [1.81, 'B2', 0.12], [1.99, 'E3', 0.15], [2.16, 'G#3', 0.15],
-      [2.98, 'F#3', 0.2], [3.15, 'A#3', 0.15], [3.32, 'F#3', 0.15], [3.49, 'G#4', 0.15], [4.32, 'B3', 0.2], [4.48, 'A#3', 0.12], [4.66, 'A3', 0.15]];
+    const ticks = [[0.53, 'C4', 0.2], [0.68, 'A#3', 0.15], [0.85, 'D#3', 0.18], [1.02, 'B2', 0.3], [1.86, 'F#3', 0.15], [2.01, 'B2', 0.12], [2.19, 'E3', 0.15], [2.36, 'G#3', 0.15],
+      [3.18, 'F#3', 0.2], [3.35, 'A#3', 0.15], [3.52, 'F#3', 0.15], [3.69, 'G#4', 0.15], [4.52, 'B3', 0.2], [4.68, 'A#3', 0.12], [4.86, 'A3', 0.15]];
     ticks.forEach(([t, n, v]) => put(t, pluck(nf(n), { tau: 0.1, vel: v * 1.4, tilt: 1.3, pos: 0.2 })));
-    [[1.15, 'E2', 1.0], [1.5, 'G2', 0.85], [1.85, 'A#2', 1.0]].forEach(([t, n, v]) => { put(t, thump(nf(n) * 1.0, { vel: v, tau: 0.15 })); put(t, pluck(nf('A#3'), { tau: 0.2, vel: v * 0.5, tilt: 0.8 })); });
+    [[1.35, 'E2', 1.0], [1.7, 'E2', 0.85], [2.05, 'E2', 1.0]].forEach(([t, n, v]) => { put(t, thump(nf(n) * 1.0, { vel: v, tau: 0.15 })); put(t, pluck(nf('A#3'), { tau: 0.2, vel: v * 0.5, tilt: 0.8 })); });
     // pings: inharmonic bell, 1.33 s apart
-    [[1.15, 1434], [2.48, 1434], [3.82, 1479]].forEach(([t, f]) => put(t, additive(0.9, [{ f, a: 0.25, tau: 0.1 }, { f: f * 2.4, a: 0.05, tau: 0.05 }], 0.001)));
-    put(2.48, pluck(nf('A#3'), { tau: 0.2, vel: 0.5 })); put(3.82, pluck(nf('A#3'), { tau: 0.2, vel: 0.5 }));
-    put(5.15, thump(nf('B2'), { vel: 0.9, tau: 0.2 })); put(5.15, pluck(nf('B3'), { tau: 0.3, vel: 0.9 }));
+    [[1.35, 1434], [2.68, 1434], [4.02, 1479]].forEach(([t, f]) => put(t, additive(0.9, [{ f, a: 0.25, tau: 0.1 }, { f: f * 2.4, a: 0.05, tau: 0.05 }], 0.001)));
+    put(2.68, pluck(nf('A#3'), { tau: 0.2, vel: 0.5 })); put(4.02, pluck(nf('A#3'), { tau: 0.2, vel: 0.5 }));
+    put(0.03, thump(nf('B2'), { vel: 0.9, tau: 0.2 })); put(0.03, pluck(nf('B3'), { tau: 0.3, vel: 0.9 }));
   }, { wet: 0.25, size: 1.4, level: 0.55, seed: 17 });
 }
 
 function loop22() { // Pizzicato Clock: dry pizzicato plucks, two phrases separated by silence
-  const L = 5.1;
+  const L = BAR * 2;
   const ev = [[0.0, ['F#4'], 0.7], [0.4, ['F#4', 'F#5'], 1.0], [2.0, ['E4', 'E5'], 0.55], [2.35, ['B2', 'B3', 'F#4'], 1.0], [2.7, ['D4', 'B3'], 0.55], [3.0, ['E4', 'E5'], 0.6],
     [4.35, ['F#3', 'F#4'], 0.65], [4.7, ['F#4'], 1.0]];
   return loopRender(L, (put) => ev.forEach(([t, ns, v]) => chord(put, t, ns, v, (f, vv) => pluck(f, { tau: 0.2, vel: vv, tilt: 1.35, damp: 0.9, n: 10, pos: 0.12 }), 0.007)), { wet: 0.16, size: 1.2, level: 0.7, seed: 22 });
@@ -202,14 +203,14 @@ function loop22() { // Pizzicato Clock: dry pizzicato plucks, two phrases separa
 
 // ref = clip position in the video-2 audio track; len = loop length in seconds
 const LOOPS = [
-  { id: 'l01', num: '01', name: 'Question', ref: [0.0, 2.8], len: 2.8, render: loop01 },
-  { id: 'l02', num: '02', name: 'Into The Fog', ref: [2.8, 6.8], len: 4.0, render: loop02 },
-  { id: 'l03', num: '03', name: 'Quiet Suspicion', ref: [6.8, 12.2], len: 5.4, render: loop03 },
-  { id: 'l04', num: '04', name: 'Lost In Thought', ref: [12.2, 17.5], len: 5.3, render: loop04 },
-  { id: 'l07', num: '07', name: 'In Between', ref: [17.5, 22.9], len: 5.4, render: loop07 },
-  { id: 'l09', num: '09', name: 'Keep Moving', ref: [22.9, 25.6], len: 2.7, render: loop09 },
-  { id: 'l11', num: '11', name: 'Reckoning', ref: [25.6, 28.2], len: 2.6, render: loop11 },
-  { id: 'l12', num: '12', name: 'Second Guess', ref: [28.2, 31.0], len: 2.8, render: loop12 },
-  { id: 'l17', num: '17', name: 'Forward Motion', ref: [31.0, 36.5], len: 5.5, render: loop17 },
-  { id: 'l22', num: '22', name: 'Pizzicato Clock', ref: [36.5, 41.6], len: 5.1, render: loop22 },
+  { id: 'l01', num: '01', name: 'Question', ref: [0.13, 2.797], len: BAR, render: loop01 },
+  { id: 'l02', num: '02', name: 'Into The Fog', ref: [2.797, 6.797], len: 4.0, render: loop02 },
+  { id: 'l03', num: '03', name: 'Quiet Suspicion', ref: [6.797, 12.13], len: BAR * 2, render: loop03 },
+  { id: 'l04', num: '04', name: 'Lost In Thought', ref: [12.13, 17.463], len: BAR * 2, render: loop04 },
+  { id: 'l07', num: '07', name: 'In Between', ref: [17.463, 22.797], len: BAR * 2, render: loop07 },
+  { id: 'l09', num: '09', name: 'Keep Moving', ref: [22.797, 25.463], len: BAR, render: loop09 },
+  { id: 'l11', num: '11', name: 'Reckoning', ref: [25.463, 28.13], len: BAR, render: loop11 },
+  { id: 'l12', num: '12', name: 'Second Guess', ref: [28.13, 30.797], len: BAR, render: loop12 },
+  { id: 'l17', num: '17', name: 'Forward Motion', ref: [30.797, 36.13], len: BAR * 2, render: loop17 },
+  { id: 'l22', num: '22', name: 'Pizzicato Clock', ref: [36.13, 41.463], len: BAR * 2, render: loop22 },
 ];

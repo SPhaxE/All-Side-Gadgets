@@ -198,8 +198,10 @@ function counter() {
   // fast mechanical ticks (strong / weak pairs, 70.6 ms apart) over a faint 500 Hz hum
   for (let k = 0; k < 12; k++) {
     const t = 0.0 + k * 0.0706;
-    mixAt(b, tick(2400, 0.45, 0.004, 0.9, 81 + k, 0.03), t);
-    mixAt(b, tick(1800, 0.5, 0.004, 0.5, 111 + k, 0.03), t + 0.035);
+    mixAt(b, tick(2400, 0.45, 0.005, 1.0, 81 + k, 0.03), t);
+    mixAt(b, tick(1800, 0.5, 0.004, 0.4, 111 + k, 0.03), t + 0.008);
+    mixAt(b, tick(2000, 0.5, 0.004, 0.55, 141 + k, 0.03), t + 0.018);
+    mixAt(b, tick(2200, 0.5, 0.004, 0.5, 171 + k, 0.03), t + 0.057);
     mixAt(b, additive(0.05, [{ f: 480, a: 0.3, tau: 0.012 }, { f: 960, a: 0.1, tau: 0.01 }], 0.001), t);
   }
   const hum = mk(dur);
@@ -234,7 +236,7 @@ function cameraClick() {
   mixAt(b, tick(1100, 1.2, 0.006, 0.12, 101, 0.04), 0.035);
   mixAt(b, tick(1500, 1.2, 0.008, 0.1, 102, 0.05), 0.085);
   // two autofocus-beep clacks: a 4 kHz tone with a noise knock on top, 45 ms each (16.56 and 16.63 s in the original)
-  [[0.155, 0.05, 1.0, 103], [0.228, 0.044, 0.9, 104]].forEach(([t, d, g, seed]) => {
+  [[0.132, 0.05, 1.0, 103], [0.213, 0.048, 0.9, 104]].forEach(([t, d, g, seed]) => {
     const n = Math.round(d * SR), burst = mk(d);
     for (let i = 0; i < n; i++) {
       const tt = i / SR, e = Math.min(1, tt / 0.003) * Math.min(1, (d - tt) / 0.004);
