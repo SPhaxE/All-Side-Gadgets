@@ -43,7 +43,7 @@ function eightBitTalking() {
   let f = 445, left = 0, syl = 0;
   for (let k = 0; k < pulses; k++) {
     const t = 0.002 + k * period;
-    if (left <= 0) { f = seq[syl++ % seq.length] * (1 + (r() - 0.5) * 0.05); left = 3 + Math.floor(r() * 4); }
+    if (left <= 0) { f = T(seq[syl++ % seq.length] * (OPT ? 1 : 1 + (r() - 0.5) * 0.05)); left = 3 + Math.floor(r() * 4); }
     left--;
     const amp = t > 1.4 && t < 1.8 ? 0.9 : 1;
     const n = Math.round(on * SR), o = Math.round(t * SR);
@@ -77,7 +77,7 @@ function oldFlash() {
   mixAt(b, burst(hi, true), 0.1, 0.55);
   mixAt(b, burst(tiltedNoise(0.5, 27, 260), false), 0.1, 0.5);
   // low thump under the flash (smooth sine, no pitch fall)
-  mixAt(b, subSine(0.5, 48, 0.45, (t) => curve([[0, 0], [0.05, 1]])(t) * Math.exp(-t / 0.16), [1, 0.4, 0.15]), 0.14);
+  mixAt(b, subSine(0.5, T(48), 0.45, (t) => curve([[0, 0], [0.05, 1]])(t) * Math.exp(-t / 0.16), [1, 0.4, 0.15]), 0.14);
   // two tiny after-pops
   mixAt(b, tick(3300, 3, 0.012, 0.16, 25, 0.1), 0.48);
   mixAt(b, tick(4300, 3, 0.012, 0.14, 26, 0.1), 0.71);
@@ -98,7 +98,7 @@ function cinematicWoosh() {
   filt(body, new Biquad('lp', 3800, 0.7));
   mixAt(b, body, 0.0, 0.8);
   mixAt(b, low, 0.0, 1.0);
-  mixAt(b, subSine(0.8, 79, 0.75, (t) => ampC(t) * cut(t)), 0.0);
+  mixAt(b, subSine(0.8, T(79), 0.75, (t) => ampC(t) * cut(t)), 0.0);
   mixAt(b, tiltedNoise(0.8, 35, 200).map((v, i) => v * ampC(i / SR) * cut(i / SR) * 0.7), 0.0);
   // long quiet room tail
   const tail = noise(1.6, 34);
@@ -111,7 +111,7 @@ function cinematicWoosh() {
 function nightVision() {
   const dur = 1.55, b = mk(dur);
   // rising tone, 1.6 kHz -> 2.4 kHz, with its 2nd/3rd/4th partials
-  const f0 = (t) => 1600 + 800 * clamp((t - 0.07) / 1.45, 0, 1);
+  const f0lo = T(1600), f0hi = T(2400), f0 = (t) => f0lo + (f0hi - f0lo) * clamp((t - 0.07) / 1.45, 0, 1);
   const ampC = curve([[0.05, 0], [0.09, 0.45], [0.17, 0.55], [0.28, 0.2], [0.42, 0.5], [0.59, 1.0], [0.72, 0.5], [0.86, 0.22],
     [0.9, 0.3], [1.0, 0.12], [1.3, 0.06], [1.55, 0]]);
   const w = [0.55, 1.0, 0.5, 0.3];
@@ -143,7 +143,7 @@ function nextel() {
     let ph = 0;
     for (let i = 0; i < n; i++) {
       const t = i / SR, d = s1 - s0;
-      ph += 1840 / SR;
+      ph += T(1840) / SR;
       const wob = s0 > 0.09 ? 1 - 0.1 * Math.sin((TAU * 38 * t)) : 1;
       b[o + i] += (ph % 1 < 0.5 ? 1 : -1) * a * wob * Math.min(1, t / 0.0008) * Math.min(1, (d - t) / 0.0015) * 0.6;
     }
@@ -151,7 +151,7 @@ function nextel() {
   }
   filt(b, new Biquad('lp', 7500, 0.7));
   // faint 1.84 kHz ring-out
-  mixAt(b, additive(0.3, [{ f: 1840, a: 0.025, tau: 0.07 }], 0.002), 0.15);
+  mixAt(b, additive(0.3, [{ f: T(1840), a: 0.025, tau: 0.07 }], 0.002), 0.15);
   return master(b, 0.88);
 }
 
@@ -160,8 +160,8 @@ function digitalText() {
   // blip times / levels measured from the original (11 blips)
   const hits = [[0.028, 0.073, 5500], [0.066, 0.061, 5500], [0.1, 0.076, 5500], [0.138, 0.081, 5500], [0.196, 0.063, 5500],
     [0.25, 0.114, 5500], [0.308, 0.079, 5500], [0.33, 0.053, 2900], [0.398, 0.134, 5500], [0.478, 0.074, 5500], [0.514, 0.05, 2900]];
-  hits.forEach(([t, a, f], i) => {
-    const g = a / 0.134;
+  hits.forEach(([t, a, f0], i) => {
+    const f = T(f0), g = a / 0.134;
     mixAt(b, tick(f * 0.55, 0.35, 0.008, 1.5 * g, 61 + i, 0.05), t);
     mixAt(b, additive(0.05, [{ f, a: 0.5 * g, tau: 0.009 }, { f: f * 0.5, a: 0.08 * g, tau: 0.007 }], 0.0005), t);
   });
@@ -187,9 +187,9 @@ function riser() {
   mixAt(b, n1, 0);
   // sub swell: smooth 80 Hz sine that grows with the riser and rings out after the cut
   const subEnv = (t) => (t < 2.2 ? 0.02 * Math.pow(9, t / 2.2) : 0.18 * Math.exp(-(t - 2.2) / 0.6));
-  mixAt(b, subSine(dur, 80, 1.15, subEnv, [1, 0.3, 0.1]), 0);
+  mixAt(b, subSine(dur, T(80), 1.15, subEnv, [1, 0.3, 0.1]), 0);
   // thin tone left hanging at 4 kHz after the cut
-  mixAt(b, additive(1.4, [{ f: 4020, a: 0.004, tau: 0.4 }], 0.01), up);
+  mixAt(b, additive(1.4, [{ f: T(4020), a: 0.004, tau: 0.4 }], 0.01), up);
   return master(b, 0.88);
 }
 
@@ -202,11 +202,11 @@ function counter() {
     mixAt(b, tick(1800, 0.5, 0.004, 0.4, 111 + k, 0.03), t + 0.008);
     mixAt(b, tick(2000, 0.5, 0.004, 0.55, 141 + k, 0.03), t + 0.018);
     mixAt(b, tick(2200, 0.5, 0.004, 0.5, 171 + k, 0.03), t + 0.057);
-    mixAt(b, additive(0.05, [{ f: 480, a: 0.3, tau: 0.012 }, { f: 960, a: 0.1, tau: 0.01 }], 0.001), t);
+    mixAt(b, additive(0.05, [{ f: T(480), a: 0.3, tau: 0.012 }, { f: T(960), a: 0.1, tau: 0.01 }], 0.001), t);
   }
   const hum = mk(dur);
   let ph = 0;
-  for (let i = 0; i < hum.length; i++) { ph += 500 / SR; hum[i] = (ph % 1 < 0.5 ? 1 : -1) * 0.03; }
+  for (let i = 0; i < hum.length; i++) { ph += T(500) / SR; hum[i] = (ph % 1 < 0.5 ? 1 : -1) * 0.03; }
   filt(hum, new Biquad('lp', 1800, 0.7));
   shape(hum, (t) => (t < 0.86 ? 1 : 0));
   mixAt(b, hum, 0);
@@ -240,7 +240,7 @@ function cameraClick() {
     const n = Math.round(d * SR), burst = mk(d);
     for (let i = 0; i < n; i++) {
       const tt = i / SR, e = Math.min(1, tt / 0.003) * Math.min(1, (d - tt) / 0.004);
-      burst[i] = (0.5 * Math.sin(TAU * 4000 * tt) + 0.04 * Math.sin(TAU * 8000 * tt)) * e;
+      burst[i] = (0.5 * Math.sin(TAU * T(4000) * tt) + 0.04 * Math.sin(TAU * T(8000) * tt)) * e;
     }
     mixAt(b, burst, t, g);
     mixAt(b, tick(2400, 0.5, 0.012, 0.55 * g, seed, 0.06), t);
@@ -261,13 +261,13 @@ function shine() {
   const hiss = noise(dur, 122);
   filt(hiss, new Biquad('hp', 5000, 0.7));
   shape(hiss, (t) => 0.05 * env(t));
-  const swell = additive(dur, [{ f: 470, a: 0.2, tau: 0.09, ph: 0 }, { f: 940, a: 0.05, tau: 0.07 }], 0.04);
+  const swell = additive(dur, [{ f: T(470), a: 0.2, tau: 0.09, ph: 0 }, { f: T(940), a: 0.05, tau: 0.07 }], 0.04);
   mixAt(b, low, 0, 1.0);
   mixAt(b, hiss, 0, 1.0);
   mixAt(b, swell, 0.1, 0.5);
   // a shine glints: a few quick high pings that twinkle at the peak of the swell
   [[0.1, 5200, 0.16], [0.135, 6900, 0.2], [0.165, 4300, 0.14], [0.19, 8100, 0.12], [0.215, 5900, 0.08]].forEach(([t, f, a]) =>
-    mixAt(b, additive(0.12, [{ f, a, tau: 0.03 }, { f: f * 2.01, a: a * 0.25, tau: 0.015 }], 0.0008), t));
+    mixAt(b, additive(0.12, [{ f: T(f), a, tau: 0.03 }, { f: T(f) * 2.01, a: a * 0.25, tau: 0.015 }], 0.0008), t));
   return master(b, 0.8);
 }
 
@@ -282,7 +282,7 @@ function woosh() {
   shape(air, (t) => 0.012 * env(t));
   mixAt(b, mid, 0);
   mixAt(b, air, 0);
-  mixAt(b, subSine(dur, 70, 0.04, env, [1, 0.3]), 0);
+  mixAt(b, subSine(dur, T(70), 0.04, env, [1, 0.3]), 0);
   return master(b, 0.82);
 }
 
@@ -309,7 +309,17 @@ function shiftBuf(x, sec) {
   for (let i = 0; i < x.length; i++) { const j = i - n; if (j >= 0 && j < x.length) y[i] = x[j]; }
   return y;
 }
-// every sound is matched to the outline of its clip in the video
+// Optimised version: no outline matching and no clamping to the clip length; tonal parts snapped to B minor; a short natural room
+// where the sound would have one; sub-28 Hz rumble removed; level normalised and faded so it starts and ends clean.
+const SFX_ROOM = { oldflash: 0.1, cinwoosh: 0.16, riser: 0.12, shine: 0.14, camera: 0.06, woosh: 0.12, bicycle: 0.05, nightvision: 0.06 };
+function polishSfx(x, id) {
+  const tail = SFX_ROOM[id] ? Math.round(0.5 * SR) : 0, y = new Float32Array(x.length + tail);
+  y.set(x);
+  const out = SFX_ROOM[id] ? reverb(y, SFX_ROOM[id], 0.9, 260, 0.45) : y;
+  filt(out, new Biquad('hp', 28, 0.7), new Biquad('lp', 15000, 0.7));
+  return master(out, 0.85, { fade: 0.002, fadeOut: tail ? 0.06 : 0.004 });
+}
+// every sound is matched to the outline of its clip in the video; renderOpt is the quality-first version
 SFX.forEach((s) => {
   const raw = s.render;
   s.render = () => {
@@ -317,4 +327,5 @@ SFX.forEach((s) => {
     if (SFX_LAG[s.id]) x = shiftBuf(x, SFX_LAG[s.id]);
     return REF_EDGE[s.id] ? finish(followEdge(x, REF_EDGE[s.id], s.ref[1] - s.ref[0]), pk) : x;
   };
+  s.renderOpt = () => withOpt(() => polishSfx(raw(), s.id));
 });

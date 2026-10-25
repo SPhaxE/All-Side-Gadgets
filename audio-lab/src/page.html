@@ -5,14 +5,14 @@
 /* Layout: sticky control bar over one scrolling column; video-1 timeline is a glowing strip, video-2 a teal clip lane */
 :root {
   --bg: #0b0d0f; --surface: #14181b; --line: #252b30; --fg: #e9e6df; --muted: #8b949a;
-  --warm: #ffd9a0; --teal: #4fc3d0; --red: #ff4b4b; --ghost: #7a8791;
+  --accent2: #9ad87a; --warm: #ffd9a0; --teal: #4fc3d0; --red: #ff4b4b; --ghost: #7a8791;
   --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --body: 'Barlow', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
-  --bg: #eef1f2; --surface: #ffffff; --line: #d3dade; --fg: #14181b; --muted: #5d6870; --warm: #a85d00; --teal: #0a7f8c; --red: #d62d2d; --ghost: #7d8a93; color-scheme: light; } }
+  --bg: #eef1f2; --surface: #ffffff; --line: #d3dade; --fg: #14181b; --muted: #5d6870; --accent2: #3f7d1f; --warm: #a85d00; --teal: #0a7f8c; --red: #d62d2d; --ghost: #7d8a93; color-scheme: light; } }
 :root[data-theme="light"] {
-  --bg: #eef1f2; --surface: #ffffff; --line: #d3dade; --fg: #14181b; --muted: #5d6870; --warm: #a85d00; --teal: #0a7f8c; --red: #d62d2d; --ghost: #7d8a93; color-scheme: light; }
+  --bg: #eef1f2; --surface: #ffffff; --line: #d3dade; --fg: #14181b; --muted: #5d6870; --accent2: #3f7d1f; --warm: #a85d00; --teal: #0a7f8c; --red: #d62d2d; --ghost: #7d8a93; color-scheme: light; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45;
   padding-block: 0 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
@@ -54,16 +54,26 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .play svg { width: 16px; height: 16px; fill: var(--fg); }
 .legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); margin: 6px 2px 0; flex-wrap: wrap; }
 .legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid var(--teal); vertical-align: middle; margin-right: 6px; }
+.legend i.o { border-top-color: var(--accent2); }
 .legend i.g { border-top: 2px dashed var(--ghost); }
 #pane-sfx .legend i:not(.g) { border-top-color: var(--warm); }
 .notes { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; max-width: 76ch; }
 .notes h2 { font-family: var(--display); font-size: 20px; color: var(--fg); margin: 0 0 6px; letter-spacing: .02em; }
 .notes p { margin: 0 0 8px; }
+
+.row { grid-template-columns: 170px minmax(0, 1fr); }
+.lanes { display: grid; gap: 8px; min-width: 0; }
+.lane { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 10px; align-items: center; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px 4px 4px; }
+.lane.playing { border-color: var(--teal); }
+.lane.opt { background: color-mix(in srgb, var(--accent2) 7%, transparent); }
+.lbl { font-family: var(--mono); font-size: 11.5px; color: var(--muted); line-height: 1.2; }
+.lane.opt .lbl { color: var(--accent2); }
+.lane .play { width: 38px; height: 38px; }
+.lane .cv { height: 52px; }
 @media (max-width: 640px) {
   h1 { font-size: 28px; }
-  .row { grid-template-columns: minmax(0, 1fr) auto; }
-  .cv { grid-column: 1 / -1; grid-row: 2; }
-  .play { grid-column: 2; grid-row: 1; }
+  .row { grid-template-columns: minmax(0, 1fr); }
+  .lane { grid-template-columns: 40px minmax(0, 1fr) auto; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 </style>
@@ -80,6 +90,7 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
     </div>
     <span class="spacer"></span>
     <button class="btn" id="ghost" aria-pressed="true" title="在波形上叠加原视频音频的外轮廓线">对照原视频轮廓</button>
+    <button class="btn" id="ver" title="时间轴播放时使用哪一版">时间轴用:复刻版</button>
     <button class="btn primary" id="playall">▶ 按视频时间轴播放</button>
     <button class="btn" id="stop">■ 停止</button>
   </div>
@@ -87,12 +98,12 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 
   <section id="pane-sfx">
     <div class="strip" id="strip-sfx"><canvas id="cv-strip-sfx"></canvas></div>
-    <div class="legend"><span><i></i>合成波形</span><span><i class="g"></i>原视频波形外轮廓</span></div>
+    <div class="legend"><span><i></i>复刻版波形</span><span><i class="o"></i>优化版波形</span><span><i class="g"></i>原视频波形外轮廓</span></div>
     <div class="list" id="list-sfx"></div>
   </section>
   <section id="pane-loops" hidden>
     <div class="strip loops" id="strip-loops"><canvas id="cv-strip-loops"></canvas></div>
-    <div class="legend"><span><i></i>合成波形</span><span><i class="g"></i>原视频波形外轮廓</span><span>点击卡片循环播放,再点一次停止</span></div>
+    <div class="legend"><span><i></i>复刻版波形</span><span><i class="o"></i>优化版波形</span><span><i class="g"></i>原视频波形外轮廓</span><span>点击卡片循环播放,再点一次停止</span></div>
     <div class="list" id="list-loops"></div>
     <h2 class="sect">补充:视频里缺的 12 个编号</h2>
     <p class="sectnote">视频只出现了 10 个编号。下面 12 个是我按相邻片段的故事走向补的,名称和内容都是我定的,可以随意改或删。</p>
@@ -100,6 +111,8 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
   </section>
 
   <div class="notes">
+    <h2>两个版本</h2>
+    <p><b>复刻版</b>:尽量贴原视频音频,时长、节奏、音量走向都对齐,所以会带着视频压缩和解析留下的瑕疵。<b>优化版</b>:优先音质和乐理,不再强行贴合。音高全部落在 B 小调里(C→C#、D#→D、A#→A、G#→G),音效里的音调(Nextel、Night Vision、拍照提示音、数据声)也吸附到最近的 B 小调音;循环的节奏对齐 90 BPM 的十六分音符、和弦音更集中,首尾无缝;音效按场景加了很短的房间感,去掉 28Hz 以下听不到的低频,首尾无爆音。</p>
     <h2>怎么做的</h2>
     <p>音效按视频里的音轨逐条还原:先量出每个声音在原音频里的起止、节奏、频谱和包络,再用正弦、方波、带通噪声和短衰减的共振组合出来。循环按 B 小调逐音转写,90 BPM,长度和视频里的片段一致。</p>
     <p>避免“放屁声”的做法:低频只用平滑的正弦和柔和的低次谐波,不用低音锯齿或方波;不做向下的音高滑落;所有噪声瞬态都经带通且起音在毫秒级;瞬态后的低频尾巴单调衰减、不抖动;</p>

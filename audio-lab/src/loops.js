@@ -63,20 +63,33 @@ function pad(L, freqs, amp, { tri = true, lfo = 0.12 } = {}) {
 // render a loop as the clip appears in the video: starts from silence, ends where the clip ends (tails are cut by a 4 ms fade)
 function loopRender(L, build, { wet = 0.12, size = 1, level = 0.85, drive = 1.0, seed = 5, lp = 3200 } = {}) {
   LT = { shift: 0, tau: 1, pad: 1, wet: 1, ...(LOOP_TUNE['l' + String(seed).padStart(2, '0')] || {}) };
-  const ev = mk(L), r = rng(seed);
+  const id = 'l' + String(seed).padStart(2, '0'), r = rng(seed), ev = mk(L);
+  if (OPT) {
+    // quality-first: a seamless loop (tails wrap into the start), events locked to the 16th-note grid, reverb on three tiled copies
+    const put = (t, buf, g = 1) => mixWrap(ev, buf, Math.max(0, Math.round((t + LT.shift) / STEP) * STEP), g * (0.94 + 0.12 * r()));
+    build(put, ev, r);
+    const tile = new Float32Array(ev.length * 3);
+    for (let k = 0; k < 3; k++) tile.set(ev, k * ev.length);
+    const wetT = wet > 0 ? reverb(tile, wet, size) : tile;
+    filt(wetT, new Biquad('lp', lp, 0.7));
+    master(wetT, level, { fade: 0, fadeOut: 0, drive });
+    LT = { shift: 0, tau: 1, pad: 1, wet: 1 };
+    return wetT.slice(ev.length, ev.length * 2);
+  }
   const put = (t, buf, g = 1) => mixAt(ev, buf, Math.max(0, t + LT.shift + (r() - 0.5) * 0.004), g * (0.94 + 0.12 * r()));
   build(put, ev, r);
   const out = wet > 0 ? reverb(ev, wet * LT.wet, size) : ev;
   LT = { shift: 0, tau: 1, pad: 1, wet: 1 };
   filt(out, new Biquad('lp', lp, 0.7));
-  const id = 'l' + String(seed).padStart(2, '0');
   master(out, level, { fade: 0.003, fadeOut: 0.004, drive });
   const loop = LOOPS_REF[id]; // match the outline of the clip in the video
   return loop && REF_EDGE[id] ? finish(followEdge(out, REF_EDGE[id], loop[1] - loop[0]), level, 0.003, 0.004) : out;
 }
 
 const LOOPS_REF = {}; // filled from the LOOPS table below
-const nf = n2f;
+// in the optimised version every note is snapped into B natural minor (C -> C#, D# -> D, A# -> A, G# -> G ...)
+const SNAP_NAME = { 'C': 'C#', 'D#': 'D', 'F': 'F#', 'G#': 'G', 'A#': 'A' };
+const nf = (name) => n2f(OPT ? name.replace(/^([A-G]#?)/, (m) => SNAP_NAME[m] || m) : name);
 // strummed chord: notes slightly staggered
 function chord(put, t, names, vel, mk1, strum = 0.011) {
   names.forEach((n, i) => put(t + i * strum, mk1(nf(n), vel * (i === 0 ? 1 : 0.85))));
@@ -144,7 +157,7 @@ function loop09() { // Keep Moving: detuned synth plucks, slightly uneasy cluste
   const ev = [[0.05, ['C5', 'E4', 'B4'], 1.0], [0.23, ['B4', 'E4'], 0.35], [0.6, ['B4', 'D4'], 0.5], [0.87, ['B4'], 0.3], [1.15, ['B4', 'A#4'], 0.55],
     [1.37, ['B4', 'E4', 'C5'], 0.8], [1.52, ['B4', 'E4', 'C5'], 0.9], [2.05, ['B4', 'E4'], 0.5], [2.4, ['B4', 'E4'], 0.55], [2.52, ['B4', 'G4'], 0.6]];
   return loopRender(L, (put) => {
-    ev.forEach(([t, ns, v]) => chord(put, t, ns, v, (f, vv) => synthPluck(f, { tau: 0.18, vel: vv * 0.8, det: [-34, -4, 22] }), 0.004));
+    ev.forEach(([t, ns, v]) => chord(put, t, ns, v, (f, vv) => synthPluck(f, { tau: 0.18, vel: vv * 0.8, det: OPT ? [-8, 0, 7] : [-34, -4, 22] }), 0.004));
   }, { wet: 0.1, level: 0.55, seed: 9, lp: 1700 });
 }
 
@@ -155,7 +168,7 @@ function loop11() { // Reckoning: dense dark drone, driving stabs, accents on ev
   return loopRender(L, (put, ev) => {
     // drone: stacked detuned low voices with a soft (1/k^1.5, rounder than a saw) spectrum, so it growls without any buzz
     const d = mk(L), r = rng(55);
-    [['B2', -9], ['B2', 8], ['F#3', -6], ['F#3', 7], ['B3', -5], ['D4', 5]].forEach(([n, c]) => {
+    [['B2', OPT ? -4 : -9], ['B2', OPT ? 4 : 8], ['F#3', OPT ? -3 : -6], ['F#3', OPT ? 3 : 7], ['B3', OPT ? -2 : -5], ['D4', OPT ? 2 : 5]].forEach(([n, c]) => {
       const f = Math.round(nf(n) * Math.pow(2, c / 1200) * L) / L;
       for (let k = 1; k <= 10; k++) { const w = (TAU * f * k) / SR; for (let i = 0; i < d.length; i++) d[i] += (0.05 / Math.pow(k, 1.5)) * Math.sin(w * i + k); }
     });
@@ -171,7 +184,7 @@ function loop11() { // Reckoning: dense dark drone, driving stabs, accents on ev
       put(t, pluck(nf(chords[i]), { tau: 0.16, vel: 1.1, tilt: 1.0, damp: 0.7, n: 8 }));
       put(t, tick(1800, 0.5, 0.02, 0.45, 70 + i, 0.08));
     });
-    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: 0.5, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
+    [-0.08, 0.587, 1.253, 1.92].forEach((t0, i) => { const t = t0 + O; put(t, thump(nf('F#2'), { vel: OPT ? 0.28 : 0.5, tau: 0.16 })); put(t, tick(900, 0.5, 0.05, 0.5, 80 + i, 0.2)); });
   }, { wet: 0.12, size: 1.0, level: 0.9, drive: 1.2, seed: 11 });
 }
 
@@ -188,9 +201,9 @@ function loop17() { // Forward Motion: sparse ticks, three low thumps, F# pings 
     const ticks = [[0.53, 'C4', 0.2], [0.68, 'A#3', 0.15], [0.85, 'D#3', 0.18], [1.02, 'B2', 0.3], [1.86, 'F#3', 0.15], [2.01, 'B2', 0.12], [2.19, 'E3', 0.15], [2.36, 'G#3', 0.15],
       [3.18, 'F#3', 0.2], [3.35, 'A#3', 0.15], [3.52, 'F#3', 0.15], [3.69, 'G#4', 0.15], [4.52, 'B3', 0.2], [4.68, 'A#3', 0.12], [4.86, 'A3', 0.15]];
     ticks.forEach(([t, n, v]) => put(t, pluck(nf(n), { tau: 0.1, vel: v * 1.4, tilt: 1.3, pos: 0.2 })));
-    [[1.35, 'E2', 1.0], [1.7, 'E2', 0.85], [2.05, 'E2', 1.0]].forEach(([t, n, v]) => { put(t, thump(nf(n) * 1.0, { vel: v, tau: 0.15 })); put(t, pluck(nf('A#3'), { tau: 0.2, vel: v * 0.5, tilt: 0.8 })); });
+    [[1.35, 'E2', 1.0], [1.7, 'E2', 0.85], [2.05, 'E2', 1.0]].forEach(([t, n, v]) => { put(t, thump(nf(n) * 1.0, { vel: OPT ? v * 0.55 : v, tau: 0.15 })); put(t, pluck(nf('A#3'), { tau: 0.2, vel: v * 0.5, tilt: 0.8 })); });
     // pings: inharmonic bell, 1.33 s apart
-    [[1.35, 1434], [2.68, 1434], [4.02, 1479]].forEach(([t, f]) => put(t, additive(0.9, [{ f, a: 0.25, tau: 0.1 }, { f: f * 2.4, a: 0.05, tau: 0.05 }], 0.001)));
+    [[1.35, T(1434)], [2.68, T(1434)], [4.02, T(1479)]].forEach(([t, f]) => put(t, additive(0.9, [{ f, a: 0.25, tau: 0.1 }, { f: f * 2.4, a: 0.05, tau: 0.05 }], 0.001)));
     put(2.68, pluck(nf('A#3'), { tau: 0.2, vel: 0.5 })); put(4.02, pluck(nf('A#3'), { tau: 0.2, vel: 0.5 }));
     put(0.03, thump(nf('B2'), { vel: 0.9, tau: 0.2 })); put(0.03, pluck(nf('B3'), { tau: 0.3, vel: 0.9 }));
   }, { wet: 0.25, size: 1.4, level: 0.55, seed: 17 });

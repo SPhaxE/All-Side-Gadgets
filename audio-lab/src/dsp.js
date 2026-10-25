@@ -3,6 +3,18 @@
 const SR = 44100;
 const TAU = Math.PI * 2;
 
+// "optimised" renders: quality and harmony first (pitches snapped to B natural minor, no outline matching, clean tails)
+let OPT = false;
+const withOpt = (fn) => { OPT = true; try { return fn(); } finally { OPT = false; } };
+const B_MINOR = [11, 1, 2, 4, 6, 7, 9]; // pitch classes B C# D E F# G A
+function snapMidi(m) {
+  const r = Math.round(m);
+  for (const k of [0, 1, -1, 2, -2]) if (B_MINOR.includes((((r + k) % 12) + 12) % 12)) return r + k;
+  return r;
+}
+// tonal frequency: unchanged in the faithful version, snapped to the nearest B-minor note in the optimised one
+const T = (f) => (OPT ? 440 * Math.pow(2, (snapMidi(69 + 12 * Math.log2(f / 440)) - 69) / 12) : f);
+
 function rng(seed) {
   let a = seed >>> 0;
   return function () {

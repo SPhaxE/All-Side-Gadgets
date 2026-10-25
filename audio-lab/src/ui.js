@@ -4,7 +4,8 @@
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const all = [...SFX.map((s) => ({ ...s, kind: 'sfx' })), ...LOOPS.map((s) => ({ ...s, kind: 'loops' })), ...LOOPS_EXTRA.map((s) => ({ ...s, kind: 'loops' }))];
   const bufs = {};
-  let tab = 'sfx';
+  let tab = 'sfx', timelineVer = 'faithful'; // which version the 'play along the video timeline' button uses
+  const keyOf = (s, v) => (v === 'opt' ? s.id + ':opt' : s.id);
   let ac = null, playing = null, raf = 0;
 
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
@@ -55,18 +56,19 @@
   }
 
   let ghostOn = true;
-  function drawCard(s) {
-    const cv = $('#cv-' + s.id); if (!cv || !bufs[s.id]) return;
+  function drawLane(s, v) {
+    const key = keyOf(s, v), cv = $('#cv-' + key.replace(':', '_')); if (!cv || !bufs[key]) return;
     const { c, w, h, d } = fit(cv);
     c.clearRect(0, 0, w, h);
-    const color = s.kind === 'sfx' ? cssVar('--warm') : cssVar('--teal');
+    const color = v === 'opt' ? cssVar('--accent2') : s.kind === 'sfx' ? cssVar('--warm') : cssVar('--teal');
     c.strokeStyle = cssVar('--line'); c.lineWidth = d; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(w, h / 2); c.stroke();
-    const clip = s.ref ? Math.round((s.ref[1] - s.ref[0]) * SR) : bufs[s.id].length;
+    const buf = bufs[key], clip = v === 'faithful' && s.ref ? Math.round((s.ref[1] - s.ref[0]) * SR) : buf.length;
     // both outlines are normalised to their own peak so the shapes can be compared directly
-    const norm = 0.92 / (peakOf(bufs[s.id]) || 1);
-    bars(c, bufs[s.id].subarray(0, clip), 0, w, h / 2, h * norm, color, s.kind === 'sfx' ? 8 : 0, d);
+    const norm = 0.92 / (peakOf(buf) || 1);
+    bars(c, buf.subarray(0, clip), 0, w, h / 2, h * norm, color, s.kind === 'sfx' ? 8 : 0, d);
     if (ghostOn && s.ref && REF_EDGE[s.id]) ghostLine(c, REF_EDGE[s.id], 0, w, h / 2, h * 0.92, cssVar('--ghost'), d);
   }
+  function drawCard(s) { if (!s.extra) drawLane(s, 'faithful'); drawLane(s, 'opt'); }
 
   // --- the strips that mimic each video's layout
   function drawStrip(kind) {
@@ -76,10 +78,10 @@
       const total = 19.7, mid = h * 0.52, warm = cssVar('--warm');
       c.strokeStyle = cssVar('--line'); c.lineWidth = d; c.beginPath(); c.moveTo(0, mid); c.lineTo(w, mid); c.stroke();
       SFX.forEach((s, i) => {
-        if (!bufs[s.id]) return;
+        const sb = bufs[s.id + (timelineVer === 'opt' ? ':opt' : '')]; if (!sb) return;
         const x0 = (s.ref[0] / total) * w, x1 = (s.ref[1] / total) * w;
         // the original strip draws each sound at its own loudness; keep the page's per-sound peak but cap the height
-        bars(c, bufs[s.id], x0, x1, mid, h * 0.5, warm, 10, d);
+        bars(c, sb, x0, x1, mid, h * 0.5, warm, 10, d);
         c.fillStyle = cssVar('--muted'); c.font = `${11 * d}px ${cssVar('--body')}`; c.textBaseline = 'alphabetic';
         const up = i % 2 === 0, lx = Math.min(x0, w - c.measureText(s.name).width - 4 * d);
         c.fillText(s.name, Math.max(2 * d, lx), up ? mid - h * 0.3 : mid + h * 0.38);
@@ -92,7 +94,8 @@
         const wd = (clipLen(s) / total) * w;
         c.fillStyle = cssVar('--bg'); c.strokeStyle = cssVar('--teal'); c.lineWidth = d; c.setLineDash(s.filled ? [4 * d, 3 * d] : []);
         c.fillRect(x + 1, top, wd - 2, lane); c.strokeRect(x + 1, top, wd - 2, lane); c.setLineDash([]);
-        if (bufs[s.id]) bars(c, bufs[s.id], x + 3, x + wd - 3, top + lane * 0.62, lane * 0.7, cssVar('--teal'), 0, d);
+        const sb = bufs[s.id + (timelineVer === 'opt' ? ':opt' : '')];
+        if (sb) bars(c, sb.subarray(0, Math.round(clipLen(s) * SR)), x + 3, x + wd - 3, top + lane * 0.62, lane * 0.7 / (peakOf(sb) / 0.85 || 1), cssVar('--teal'), 0, d);
         c.fillStyle = cssVar('--fg'); c.font = `${10.5 * d}px ${cssVar('--body')}`; c.textBaseline = 'top';
         c.save(); c.beginPath(); c.rect(x + 3, top, wd - 6, 16 * d); c.clip();
         c.fillText(`${s.num} ${s.name}`, x + 6 * d, top + 3 * d); c.restore();
@@ -123,7 +126,7 @@
       playing = null;
     }
     cancelAnimationFrame(raf);
-    document.querySelectorAll('.row.playing').forEach((r) => r.classList.remove('playing'));
+    document.querySelectorAll('.lane.playing').forEach((r) => r.classList.remove('playing'));
     document.querySelectorAll('.ph').forEach((p) => (p.style.display = 'none'));
     $('#playall').textContent = '▶ 按视频时间轴播放';
   }
@@ -139,14 +142,14 @@
     if (playing.end && t > playing.end) { stopAll(); return; }
     raf = requestAnimationFrame(tickPlayhead);
   }
-  function playOne(s) {
-    const was = playing && playing.id === s.id; stopAll(); if (was) return;
+  function playOne(s, v) {
+    const key = keyOf(s, v), was = playing && playing.id === key; stopAll(); if (was) return;
     const a = ctx(), loop = s.kind === 'loops';
-    const t0 = a.currentTime + 0.05, dur = bufs[s.id].length / SR;
-    const v = voice(bufs[s.id], t0, { loop, fadeIn: loop ? 0.008 : 0.001 });
-    playing = { id: s.id, nodes: [v], t0, end: loop ? 0 : dur + 0.05, marks: [{ el: phEls[s.id], dur, loop, start: 0 }] };
-    $('#row-' + s.id).classList.add('playing');
-    if (!loop) v.src.onended = () => { if (playing && playing.id === s.id) stopAll(); };
+    const t0 = a.currentTime + 0.05, dur = bufs[key].length / SR;
+    const vo = voice(bufs[key], t0, { loop, fadeIn: loop ? 0.008 : 0.001 });
+    playing = { id: key, nodes: [vo], t0, end: loop ? 0 : dur + 0.05, marks: [{ el: phEls[key], dur, loop, start: 0 }] };
+    $('#lane-' + key.replace(':', '_')).classList.add('playing');
+    if (!loop) vo.src.onended = () => { if (playing && playing.id === key) stopAll(); };
     raf = requestAnimationFrame(tickPlayhead);
   }
   function playTimeline(kind) {
@@ -154,17 +157,18 @@
     const a = ctx(), t0 = a.currentTime + 0.08, nodes = [], marks = [];
     const list = kind === 'sfx' ? SFX : LOOPS;
     let acc = 0, end = 0;
+    const vk = timelineVer === 'opt' ? ':opt' : '';
     list.forEach((s) => {
-      const dur = bufs[s.id].length / SR, at = kind === 'sfx' ? s.ref[0] : acc;
+      const bk = s.id + vk, dur = bufs[bk].length / SR, at = kind === 'sfx' ? s.ref[0] : acc;
       if (kind === 'sfx') {
-        nodes.push(voice(bufs[s.id], t0 + at, { fadeIn: 0.001 }));
-        marks.push({ el: phEls[s.id], dur, loop: false, start: at });
+        nodes.push(voice(bufs[bk], t0 + at, { fadeIn: 0.001 }));
+        marks.push({ el: phEls[bk], dur, loop: false, start: at });
         end = Math.max(end, at + dur);
       } else {
         // each loop fills exactly its clip in the video (looped, with 8 ms fade in / 12 ms fade out): no gaps, no overlaps
         const len = s.ref ? s.ref[1] - s.ref[0] : s.len;
-        nodes.push(voice(bufs[s.id], t0 + at, { loop: true, dur: len }));
-        marks.push({ el: phEls[s.id], dur: len, loop: false, start: at });
+        nodes.push(voice(bufs[bk], t0 + at, { loop: true, dur: len }));
+        marks.push({ el: phEls[bk], dur: len, loop: false, start: at });
         end = Math.max(end, at + len); acc += len;
       }
     });
@@ -177,17 +181,28 @@
 
   // --- build the DOM
   const playIcon = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13l11-6.5z"/></svg>';
+  function laneHtml(s, v) {
+    const k = keyOf(s, v).replace(':', '_');
+    const label = v === 'opt' ? (s.extra ? '补充 · 优化版' : '优化版') : '复刻版';
+    return `<div class="lane ${v}" id="lane-${k}"><span class="lbl">${label}</span>
+      <div class="cv"><canvas id="cv-${k}"></canvas><div class="ph" id="ph-${k}"></div></div>
+      <button class="play" disabled aria-label="播放 ${s.name} ${label}">${playIcon}</button></div>`;
+  }
   function makeRow(s, kind, list, i) {
     const row = document.createElement('div'); row.className = 'row'; row.id = 'row-' + s.id;
-    const fact = s.ref ? `<span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span><span id="cor-${s.id}"></span>` : '<span class="fill">补充 · 视频里没有这个编号</span>';
+    const fact = s.ref ? `<span>原视频 ${s.ref[0].toFixed(2)}–${s.ref[1].toFixed(2)}s</span>` : '<span class="fill">补充 · 视频里没有这个编号</span>';
     row.innerHTML = `<div class="meta"><div class="name"><span class="no">${s.num || String(i + 1).padStart(2, '0')}</span>${s.name}</div>
-      <div class="facts"><span id="dur-${s.id}"></span>${fact}</div></div>
-      <div class="cv"><canvas id="cv-${s.id}"></canvas><div class="ph" id="ph-${s.id}"></div></div>
-      <button class="play" disabled aria-label="播放 ${s.name}">${playIcon}</button>`;
+      <div class="facts"><span id="dur-${s.id}"></span>${fact}</div>
+      <div class="facts"><span id="cor-${s.id}"></span><span id="cor-${s.id}_opt"></span></div></div>
+      <div class="lanes">${s.extra ? '' : laneHtml(s, 'faithful')}${laneHtml(s, 'opt')}</div>`;
     list.appendChild(row);
-    phEls[s.id] = row.querySelector('.ph');
-    row.querySelector('.play').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
-    row.querySelector('.cv').addEventListener('click', () => { if (bufs[s.id]) playOne({ ...s, kind }); });
+    [s.extra ? null : 'faithful', 'opt'].filter(Boolean).forEach((v) => {
+      const key = keyOf(s, v);
+      phEls[key] = row.querySelector('#ph-' + key.replace(':', '_'));
+      const go = () => { if (bufs[key]) playOne({ ...s, kind }, v); };
+      row.querySelector('#lane-' + key.replace(':', '_') + ' .play').addEventListener('click', go);
+      row.querySelector('#lane-' + key.replace(':', '_') + ' .cv').addEventListener('click', go);
+    });
   }
   function build() {
     for (const kind of ['sfx', 'loops']) {
@@ -199,18 +214,19 @@
 
   async function renderAll() {
     const st = $('#status'); let done = 0;
-    const order = all.slice().sort((x, y) => (x.kind === tab ? 0 : 1) - (y.kind === tab ? 0 : 1));
-    for (const s of order) {
+    const jobs = [];
+    all.forEach((s) => { if (!s.extra) jobs.push([s, 'faithful']); jobs.push([s, 'opt']); });
+    jobs.sort((x, y) => (x[0].kind === tab ? 0 : 1) - (y[0].kind === tab ? 0 : 1));
+    for (const [s, v] of jobs) {
       await new Promise((r) => setTimeout(r, 0));
-      const f32 = s.render(); bufs[s.id] = f32;
-      if (s.ref) { const sc = edgeScore(f32, s.id, s.ref); $('#cor-' + s.id).textContent = '边缘贴合度 ' + Math.round(sc * 100) + '%'; }
-      const dur = f32.length / SR;
-      $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
+      const key = keyOf(s, v), f32 = v === 'opt' ? s.renderOpt() : s.render(); bufs[key] = f32;
+      if (s.ref) { const sc = edgeScore(f32, s.id, s.ref); $('#cor-' + s.id + (v === 'opt' ? '_opt' : '')).textContent = (v === 'opt' ? '优化版 ' : '复刻版 ') + '边缘贴合度 ' + Math.round(sc * 100) + '%'; }
+      if (v === 'faithful' || s.extra) $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + (f32.length / SR).toFixed(2) + 's';
       drawCard(s); done++;
-      document.querySelectorAll('#row-' + s.id + ' .play').forEach((b) => (b.disabled = false));
-      st.textContent = `正在合成 ${done}/${all.length}…`;
+      document.querySelectorAll('#lane-' + key.replace(':', '_') + ' .play').forEach((b) => (b.disabled = false));
+      st.textContent = `正在合成 ${done}/${jobs.length}…`;
     }
-    st.textContent = `已合成 ${all.length} 个声音(采样率 ${SR} Hz,单声道)。点击播放。iPhone 的静音键打开时可能没有声音。`;
+    st.textContent = `已合成 ${jobs.length} 条音频(复刻版 ${jobs.filter((j) => j[1] === 'faithful').length} + 优化版 ${jobs.filter((j) => j[1] === 'opt').length},${SR} Hz 单声道)。点击播放。iPhone 的静音键打开时可能没有声音。`;
     drawStrip('sfx'); drawStrip('loops');
   }
 
@@ -225,8 +241,9 @@
   }
   document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
   $('#ghost').addEventListener('click', (e) => { ghostOn = !ghostOn; e.currentTarget.setAttribute('aria-pressed', ghostOn); redrawAll(); });
-  $('#playall').addEventListener('click', () => { if (Object.keys(bufs).length === all.length) playTimeline(tab); });
+  $('#playall').addEventListener('click', () => { if (Object.keys(bufs).length >= all.length) playTimeline(tab); });
   $('#stop').addEventListener('click', stopAll);
+  $('#ver').addEventListener('click', (e) => { stopAll(); timelineVer = timelineVer === 'opt' ? 'faithful' : 'opt'; e.currentTarget.textContent = '时间轴用:' + (timelineVer === 'opt' ? '优化版' : '复刻版'); drawStrip('sfx'); drawStrip('loops'); });
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redrawAll, 120); });
   if (location.hash === '#loops') setTab('loops');
   document.addEventListener('pointerdown', () => { try { const a = ctx(), b = a.createBuffer(1, 1, SR), s = a.createBufferSource(); s.buffer = b; s.connect(a.destination); s.start(); } catch (e) {} }, { once: true });

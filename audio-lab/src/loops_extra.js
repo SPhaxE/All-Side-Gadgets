@@ -104,3 +104,6 @@ const LOOPS_EXTRA = [
   { id: 'l20', num: '20', name: 'Hanging Tension', len: BAR * 2, render: loop20 },
   { id: 'l21', num: '21', name: 'Last Clue', len: BAR, render: loop21 },
 ].map((s) => ({ ...s, extra: true }));
+
+// quality-first version of every loop (seamless, grid-locked, scale-snapped); the extras only exist in this form
+LOOPS.concat(LOOPS_EXTRA).forEach((s) => { const raw = s.render; s.renderOpt = () => withOpt(raw); });
