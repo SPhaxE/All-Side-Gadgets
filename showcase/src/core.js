@@ -3,7 +3,7 @@
   const FPS = 30;
   const NS = 20;               // scenes
   const D = 4.5;               // seconds per scene
-  const HT = 0.45;             // half transition length (s) -> 0.9s transitions
+  const HT = 0.6;              // half transition length (s) -> 1.2s soft transitions
   const T = NS * D;            // loop length
   const N = Math.round(T * FPS);
   const PHASE = 0.5;           // video starts 0.5s into scene 1 (transition 20->1 already finished)
@@ -15,7 +15,7 @@
 
   const canvas = document.getElementById('main');
   canvas.width = OW; canvas.height = OH;
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  canvas.style.width = OW + 'px'; canvas.style.height = OH + 'px';
   const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, preserveDrawingBuffer: true, premultipliedAlpha: false });
   if (!gl) throw new Error('no webgl2');
   gl.getExtension('EXT_color_buffer_float');
@@ -193,7 +193,7 @@
   function initCore() {
     transProg = program(PRELUDE + `
       uniform sampler2D uA; uniform sampler2D uB; uniform float uP; uniform int uType;
-      uniform sampler2D uHud; uniform float uHudOn; uniform float uFrame;
+      uniform sampler2D uHud; uniform float uHudOn; uniform float uFrame; uniform sampler2D uAtlas;
       vec3 A(vec2 uv){ return texture(uA, uv).rgb; }
       vec3 B(vec2 uv){ return texture(uB, uv).rgb; }
       ` + window.TRANSITION_GLSL + `
@@ -224,6 +224,7 @@
   ];
   const clamp01 = x => Math.min(1, Math.max(0, x));
   const smooth = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
+  const ease = x => { x = clamp01(x); return x * x * x * (x * (x * 6 - 15) + 10); };   // smootherstep
 
   // theme: 0 = light text (dark scene), 1 = dark text (light scene)
   function drawHud(tg, idxFloat, themeMix) {
@@ -326,7 +327,7 @@
 
     bindTarget(null);
     setBase(transProg, OW, OH, 0, tg);
-    bindTex(0, texA, transProg.u.uA); bindTex(1, texB, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud);
+    bindTex(0, texA, transProg.u.uA); bindTex(1, texB, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud); bindTex(3, E_.atlas || texA, transProg.u.uAtlas);
     gl.uniform1f(transProg.u.uP, c.B ? p : 0);
     gl.uniform1i(transProg.u.uType, c.type);
     gl.uniform1f(transProg.u.uHudOn, hudOn ? 1 : 0);
@@ -342,12 +343,12 @@
     const tex = SCENES[k - 1].render(s, tg);
     drawHud(tg, k - 1, SCENES[k - 1].hudDark ? 1 : 0);
     bindTarget(null); setBase(transProg, OW, OH, 0, tg);
-    bindTex(0, tex, transProg.u.uA); bindTex(1, tex, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud);
+    bindTex(0, tex, transProg.u.uA); bindTex(1, tex, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud); bindTex(3, E_.atlas || tex, transProg.u.uAtlas);
     gl.uniform1f(transProg.u.uP, 0); gl.uniform1i(transProg.u.uType, 0); gl.uniform1f(transProg.u.uHudOn, hudOn ? 1 : 0); gl.uniform1f(transProg.u.uFrame, 0);
     drawQuad(); gl.finish();
   }
 
-  window.Engine = {
+  const E_ = window.Engine = {
     FPS, NS, D, HT, T, N, PHASE, W, H, gl, canvas, PRELUDE, NAMES,
     program, makeTex, makeTarget, bindTarget, uploadCanvas, setBase, bindTex, drawQuad,
     shaderScene, canvasScene, postScene, customScene, register, SCENES, wrap,

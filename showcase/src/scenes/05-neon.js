@@ -44,8 +44,7 @@ void neonSign(vec2 p, float blur, float s){
   vec2 rc = vec2(0.,.30);
   float dr = abs(length((p-rc)*vec2(.78,1.))-.50);
   float ang = atan(p.y-rc.y, p.x-rc.x);
-  float dash = step(.12, fract(ang/TAU*14. + s*.15)) ;
-  tube(mix(1.,dr,dash), vec3(.1,.85,1.), flick(s-.35, 7.), blur);
+  tube(dr, vec3(.1,.85,1.), flick(s-.35, 7.), blur);
   // underline + bolt + triangle + small ring
   tube(sdSeg(p, vec2(-.46,.0), vec2(.46,.0)), vec3(.3,.45,1.), flick(s-.7, 8.), blur);
   vec2 b = (p - vec2(-.62,-.12))*3.2;

@@ -24,7 +24,7 @@ vec3 calcN(vec3 p, float e){
 vec3 scene(vec2 fc){
   vec2 uv = (fc - .5*uRes)/uRes.y;
   float s = uS;
-  float k = (s+.45)/(4.5+.9);                 // 0..1 over the scene's visible life
+  float k = (s+.6)/(4.5+1.2);                 // 0..1 over the scene's visible life
   POW = mix(3.2, 8., ease(k*1.5)) + .35*sin(s*1.3);
   float R = mix(3.9, 2.05, easeO(k));         // dive
   float a = .6 + s*.42, el = .45 + .25*sin(s*.5);

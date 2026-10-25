@@ -81,7 +81,7 @@ E.register(2, E.customScene({
     const c = cv.getContext('2d'); c.fillStyle = '#000'; c.fillRect(0,0,cv.width,cv.height);
     c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '800 80px "JetBrains Mono",monospace';
     [RAMP, EDGE, DIGITS].forEach((str, r) => { [...str].forEach((ch, i) => { c.fillText(ch, i*GW + GW/2, r*GH + GH/2 + 4); }); });
-    atlas = E.makeTex(cv.width, cv.height); E.uploadCanvas(atlas, cv);
+    atlas = E.makeTex(cv.width, cv.height); E.uploadCanvas(atlas, cv); E.atlas = atlas;
   },
   render(s, tg) {
     E.bindTarget(srcT); E.setBase(srcProg, COLS, ROWS, s, tg); E.drawQuad();
