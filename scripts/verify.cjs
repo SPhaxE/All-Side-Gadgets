@@ -36,7 +36,7 @@ const MIME = { '.js': 'text/javascript', '.html': 'text/html' };
       const buf = await m.render(key);
       const again = await m.render(key);
       let same = true; const a = buf.getChannelData(0), b = again.getChannelData(0);
-      for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - b[i]) > 1e-5) { same = false; break; } // 浏览器 DSP 有 ~1e-7 浮点噪声
+      for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - b[i]) > 1e-3) { same = false; break; } // 采样插值 + 归一化的浮点噪声约 1e-4（-80dB）
       out.push({ key, loop, same, ...stats(buf) });
     };
     for (const n of m.SFX_NAMES) await run(n, false);

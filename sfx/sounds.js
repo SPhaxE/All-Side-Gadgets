@@ -74,7 +74,7 @@ export const SOUNDS = {
     note(ctx, out, 'crash', t0 + 3.05, 49, 1.0, 0.5);
   } },
   // 计数器：木鱼渐快滴答，结束一记钟琴“叮”
-  Counter: { duration: 2.2, build(ctx, out, t0) {
+  Counter: { duration: 3.2, build(ctx, out, t0) {
     let t = 0, gap = 0.07;
     for (; t < 1.0; t += gap, gap = Math.max(0.035, gap - 0.003)) note(ctx, out, 'wood', t0 + t, 76, 0.05, 0.55);
     note(ctx, out, 'glock', t0 + t, 96, 1.2, 0.5);

@@ -14,7 +14,13 @@ export const INSTR = {
 const DRUM_NOTE = { kick: 36, side: 37, snare: 38, hat: 42, crash: 49, cabasa: 69, claves: 75, wood: 76, tri: 81 };
 
 let player;
-export const getPlayer = () => (player ||= new G.WebAudioFontPlayer());
+export const getPlayer = () => {
+  if (!player) {
+    player = new G.WebAudioFontPlayer();
+    player.resumeContext = () => {}; // 离线 context 不能 resume，渲染不需要
+  }
+  return player;
+};
 export const resetPlayer = () => { if (player) player.envelopes.length = 0; };
 
 let loading;

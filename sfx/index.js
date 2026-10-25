@@ -29,12 +29,24 @@ export async function render(key, { sampleRate = 44100 } = {}) {
   const total = track ? len + TAIL * sampleRate : Math.ceil(SOUNDS[key].duration * sampleRate);
   const ctx = new OfflineAudioContext(2, total, sampleRate);
   const master = ctx.createGain();
-  master.connect(ctx.destination);
+  // 25Hz 高通去掉部分 pad 采样自带的直流偏移
+  const dc = ctx.createBiquadFilter();
+  dc.type = 'highpass'; dc.frequency.value = 25;
+  dc.connect(ctx.destination);
+  master.connect(dc);
   if (track) buildLoop(ctx, master, 0, mulberry32(track.seed), track);
   else SOUNDS[key].build(ctx, master, 0, mulberry32(seedOf(key)));
   const buf = await ctx.startRendering();
   resetPlayer();
-  if (!track) return normalize(buf);
+  if (!track) {
+    // 末尾 50ms 淡出，避免采样余音被截断出现爆音
+    const n = Math.floor(0.05 * sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < n; i++) d[d.length - 1 - i] *= i / n;
+    }
+    return normalize(buf);
+  }
   const out = new AudioBuffer({ length: len, numberOfChannels: 2, sampleRate });
   for (let c = 0; c < 2; c++) {
     const src = buf.getChannelData(c), dst = out.getChannelData(c);

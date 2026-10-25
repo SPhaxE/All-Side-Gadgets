@@ -1,0 +1,87 @@
+<title>Sound Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one column; a header with volume, then two button grids (one-shot effects, looping tracks) */
+  :root {
+    --bg: #f3f2ee; --fg: #1d1c1a; --muted: #6b675f; --card: #ffffff; --line: #d9d6cc; --accent: #c2410c; --accent-fg: #ffffff;
+    --display: 'Bricolage Grotesque', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #16150f; --fg: #efede4; --muted: #9a958a; --card: #221f17; --line: #3a362b; --accent: #f59e4b; --accent-fg: #16150f; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #16150f; --fg: #efede4; --muted: #9a958a; --card: #221f17; --line: #3a362b; --accent: #f59e4b; --accent-fg: #16150f; color-scheme: dark; }
+  body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--mono); padding-block: 24px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  main { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+  header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
+  h1 { font: 700 clamp(32px, 7vw, 52px)/1 var(--display); margin: 0; text-wrap: balance; }
+  h2 { font: 700 22px/1.2 var(--display); margin: 0; }
+  .sub { color: var(--muted); margin: 6px 0 0; }
+  .vol { display: flex; align-items: center; gap: 10px; color: var(--muted); }
+  input[type=range] { accent-color: var(--accent); width: 140px; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+  button { min-width: 0; text-align: left; padding: 12px; background: var(--card); color: var(--fg); border: 1px solid var(--line);
+    border-radius: 6px; font: 500 14px/1.3 var(--mono); cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+  button small { color: var(--muted); font-size: 12px; font-weight: 400; }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+  button.on small { color: inherit; opacity: .85; }
+  button.stop { flex-direction: row; text-align: center; padding: 8px 14px; }
+  button.flash { border-color: var(--accent); }
+  .note { color: var(--muted); font-size: 12px; }
+</style>
+<main>
+  <header>
+    <div>
+      <h1>Sound Lab</h1>
+      <p class="sub">12 个音效 · 22 条配乐循环，全部由真实乐器采样演奏，点击即可试听</p>
+      <p class="note" id="status">正在加载乐器音色…</p>
+    </div>
+    <label class="vol" for="vol">音量 <input id="vol" type="range" min="0" max="1" step="0.01" value="0.8"></label>
+  </header>
+  <section>
+    <div class="head"><h2>Sounds You Need</h2></div>
+    <div class="grid" id="sfx"></div>
+  </section>
+  <section>
+    <div class="head"><h2>Musical Story Loops</h2><button class="stop" id="stop" type="button">停止循环</button></div>
+    <div class="grid" id="loops"></div>
+    <p class="note">曲名为 Track NN 的是占位名；循环为按曲风编排的简易配乐，不是原曲。点另一条会交叉淡入。乐器采样来自 WebAudioFont（FluidR3 GM 音色库）。</p>
+  </section>
+</main>
+<script>
+/*PLAYER*/
+</script>
+/*INSTRUMENTS*/
+<script>
+/*BUNDLE*/
+let sfx;
+const get = () => (sfx ||= createSfx());
+const el = (id) => document.getElementById(id);
+get().ready.then(() => { el('status').textContent = '乐器音色已就绪'; }, (e) => { el('status').textContent = '音色加载失败：' + e.message; });
+function mk(parent, label, sub, fn) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.innerHTML = `<span></span><small></small>`;
+  b.children[0].textContent = label; b.children[1].textContent = sub;
+  b.onclick = async () => { try { const s = get(); await s.ctx.resume(); await fn(s, b); } catch (e) { console.error(e); b.children[1].textContent = '出错：' + e.message; } };
+  el(parent).append(b);
+  return b;
+}
+SFX_NAMES.forEach((n) => mk('sfx', n, SOUNDS[n].duration.toFixed(1) + 's', (s, b) => {
+  s.play(n); b.classList.add('flash'); setTimeout(() => b.classList.remove('flash'), 200);
+}));
+const FAMILY_LABEL = { suspicion: '大提琴·钢琴', pad: '暖 pad·合唱', drive: '拨弦·鼓', dread: '定音鼓·低提', clock: '拨弦·木鱼' };
+const loopBtns = TRACKS.map((t) => {
+  const b = mk('loops', `${String(t.id).padStart(2, '0')} ${t.title}`, `${t.bpm} BPM · ${t.bars} 小节 · ${FAMILY_LABEL[t.family]}`, async (s) => {
+    await s.loops.start(t.id);
+    loopBtns.forEach((x) => x.classList.toggle('on', x === b));
+  });
+  return b;
+});
+el('stop').onclick = () => { sfx?.loops.stop(); loopBtns.forEach((b) => b.classList.remove('on')); };
+el('vol').oninput = (e) => { if (sfx) sfx.master.gain.value = +e.target.value; };
+</script>
