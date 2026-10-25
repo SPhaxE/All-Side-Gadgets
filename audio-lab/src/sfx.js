@@ -301,3 +301,20 @@ const SFX = [
   { id: 'shine', name: 'Shine', ref: [17.49, 17.89], render: shine },
   { id: 'woosh', name: 'Woosh', ref: [18.62, 19.37], render: woosh },
 ];
+
+// per-sound time offset (s) of the whole render against the video clip, fitted by tools/tune_sfx.js
+const SFX_LAG = {"eightbit":-0.002,"oldflash":0.006,"cinwoosh":0,"nightvision":-0.008,"nextel":0,"digitaltext":-0.008,"riser":0,"counter":-0.004,"bicycle":-0.006,"camera":-0.006,"shine":0,"woosh":-0.012};
+function shiftBuf(x, sec) {
+  const n = Math.round(sec * SR), y = new Float32Array(x.length);
+  for (let i = 0; i < x.length; i++) { const j = i - n; if (j >= 0 && j < x.length) y[i] = x[j]; }
+  return y;
+}
+// every sound is matched to the outline of its clip in the video
+SFX.forEach((s) => {
+  const raw = s.render;
+  s.render = () => {
+    let x = raw(); const pk = peakOf(x);
+    if (SFX_LAG[s.id]) x = shiftBuf(x, SFX_LAG[s.id]);
+    return REF_EDGE[s.id] ? finish(followEdge(x, REF_EDGE[s.id], s.ref[1] - s.ref[0]), pk) : x;
+  };
+});

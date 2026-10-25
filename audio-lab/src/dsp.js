@@ -180,50 +180,49 @@ function master(buf, peak = 0.85, { fade = 0.002, fadeOut = 0.004, drive = 1.0 }
   return buf;
 }
 
-// ---- envelope similarity against the reference clip (same function feeds the page and the Node score tool)
-// RMS in 5 ms hops over the reference clip's duration (ours trimmed / zero-padded), averaged into 160 bins, normalised to peak
-function envSig(x, secs) {
-  if (secs) { const n = Math.round(secs * SR), y = new Float32Array(n); y.set(x.subarray(0, Math.min(n, x.length))); x = y; }
-  const h = Math.round(SR * 0.005), n = Math.floor(x.length / h), e = new Float32Array(n);
-  for (let i = 0; i < n; i++) { let s = 0; for (let j = 0; j < h; j++) s += x[i * h + j] ** 2; e[i] = Math.sqrt(s / h); }
-  const out = new Float32Array(160);
-  for (let i = 0; i < 160; i++) { const a = Math.floor((i * n) / 160), b = Math.max(a + 1, Math.floor(((i + 1) * n) / 160)); let s = 0; for (let k = a; k < b; k++) s += e[k]; out[i] = s / (b - a); }
-  const m = Math.max(...out) || 1;
-  return out.map((v) => v / m);
-}
-function envSmooth(a, w) {
-  const o = new Float32Array(a.length), r = Math.floor(w / 2);
-  for (let i = 0; i < a.length; i++) { let s = 0, n = 0; for (let j = i - r; j <= i + r; j++) if (j >= 0 && j < a.length) { s += a[j]; n++; } o[i] = s / n; }
-  return o;
-}
-function envCorr(a0, b0, w) {
-  const a = envSmooth(a0, w), b = envSmooth(b0, w);
-  let best = -1;
-  for (let lag = -3; lag <= 3; lag++) {
-    let sa = 0, sb = 0, n = 0;
-    for (let i = 0; i < 160; i++) { const j = i + lag; if (j < 0 || j >= 160) continue; sa += a[i]; sb += b[j]; n++; }
-    const ma = sa / n, mb = sb / n; let c = 0, va = 0, vb = 0;
-    for (let i = 0; i < 160; i++) { const j = i + lag; if (j < 0 || j >= 160) continue; c += (a[i] - ma) * (b[j] - mb); va += (a[i] - ma) ** 2; vb += (b[j] - mb) ** 2; }
-    best = Math.max(best, c / Math.sqrt(va * vb || 1));
+// ---- edge fit against the reference clip
+// A clip's outline = peak |x| in each of 120 equal time bins over the reference clip's duration (ours trimmed / zero-padded),
+// normalised to its loudest bin: exactly the shape of the drawn waveform's edge.
+const EDGE_BINS = 120;
+function edgeSig(x, secs) {
+  const n = Math.round(secs * SR), out = new Float32Array(EDGE_BINS);
+  for (let i = 0; i < EDGE_BINS; i++) {
+    const a = Math.floor((i * n) / EDGE_BINS), b = Math.max(a + 1, Math.floor(((i + 1) * n) / EDGE_BINS)); let m = 0;
+    for (let k = a; k < b && k < x.length; k++) { const v = Math.abs(x[k]); if (v > m) m = v; }
+    out[i] = m;
   }
-  return best;
+  const mx = Math.max(...out) || 1;
+  return out.map((v) => v / mx);
 }
-const envScore = (x, id, ref, kind) => envCorr(envSig(x, ref[1] - ref[0]), REF_ENV[id], kind === 'loops' ? 7 : 3);
+// edge fit = overlap of the two filled outlines: area in common / area covered by either (1 = identical edges)
+function edgeFit(a, b) {
+  let lo = 0, hi = 0;
+  for (let i = 0; i < EDGE_BINS; i++) { lo += Math.min(a[i], b[i]); hi += Math.max(a[i], b[i]); }
+  return hi ? lo / hi : 0;
+}
+const edgeScore = (x, id, ref) => edgeFit(edgeSig(x, ref[1] - ref[0]), REF_EDGE[id]);
 
-// Dynamics matching: nudge a clip's loudness contour (160 bins, the same bins the similarity score uses) toward the reference
-// clip's contour, so the waveform shape in the video is reproduced. Timbre and note content stay ours; the gain is limited.
-function followEnv(x, ref, secs, { iters = 2, lo = 0.06, hi = 8 } = {}) {
-  const n = Math.round(secs * SR);
+// Dynamics matching: nudge a clip's loudness contour bin by bin toward the reference outline, so the waveform's edge follows the
+// video's. Notes, timbre and timing stay ours; the gain is limited and smoothed.
+function followEdge(x, ref, secs, { iters = 4, lo = 0.03, hi = 14, pw = 0.95 } = {}) {
+  const n = Math.round(secs * SR), ramp = Math.min(0.0015 * SR, (n / EDGE_BINS) / 4);
   for (let it = 0; it < iters; it++) {
-    const e = envSig(x.length === n ? x : x.subarray(0, n), secs);
-    const g = new Float32Array(160);
-    for (let i = 0; i < 160; i++) g[i] = clamp(Math.pow((ref[i] + 0.03) / (e[i] + 0.03), 0.65), lo, hi);
-    const gs = envSmooth(g, 3);
+    const e = edgeSig(x, secs), g = new Float32Array(EDGE_BINS);
+    for (let i = 0; i < EDGE_BINS; i++) g[i] = clamp(Math.pow((ref[i] + 0.02) / (e[i] + 0.02), pw), lo, hi);
     for (let i = 0; i < x.length; i++) {
-      const p = (i / SR / secs) * 160 - 0.5, k = Math.floor(p), f = p - k;
-      const a = gs[clamp(k, 0, 159)], b = gs[clamp(k + 1, 0, 159)];
-      x[i] *= a + (b - a) * f;
+      // one gain per bin, with a ~1.5 ms crossfade across bin boundaries so it never clicks
+      const p = (i / n) * EDGE_BINS, k = Math.min(EDGE_BINS - 1, Math.floor(p)), pos = (p - k) * (n / EDGE_BINS);
+      let gain = g[k];
+      if (pos < ramp && k > 0) gain = lerp(g[k - 1], g[k], 0.5 + pos / (2 * ramp));
+      else if (n / EDGE_BINS - pos < ramp && k < EDGE_BINS - 1) gain = lerp(g[k], g[k + 1], 0.5 - (n / EDGE_BINS - pos) / (2 * ramp) + 0.5 - 0.5);
+      x[i] *= gain;
     }
   }
+  return x;
+}
+// after matching: restore level and make sure the clip still starts and ends from silence
+function finish(x, peak, fade = 0.002, fadeOut = 0.004) {
+  const k = peak / (peakOf(x) || 1), fi = Math.round(fade * SR), fo = Math.round(fadeOut * SR);
+  for (let i = 0; i < x.length; i++) { let g = k; if (i < fi) g *= i / fi; const r = x.length - 1 - i; if (r < fo) g *= r / fo; x[i] *= g; }
   return x;
 }

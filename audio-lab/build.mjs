@@ -6,7 +6,7 @@ const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const parts = ['src/ref-env.js', 'src/dsp.js', 'src/sfx.js', 'src/loops.js', 'src/loops_extra.js'].filter((p) => fs.existsSync(path.join(root, p)));
 const engine = parts.map(read).join('\n');
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
-const exportsLine = `\nif (typeof module !== 'undefined') module.exports = { SR, envScore, LOOP_TUNE, SFX, ${fs.existsSync(path.join(root, 'src/loops.js')) ? 'LOOPS, LOOPS_EXTRA,' : ''} peakOf };\n`;
+const exportsLine = `\nif (typeof module !== 'undefined') module.exports = { SR, edgeScore, LOOP_TUNE, SFX_LAG, SFX, ${fs.existsSync(path.join(root, 'src/loops.js')) ? 'LOOPS, LOOPS_EXTRA,' : ''} peakOf };\n`;
 fs.writeFileSync(path.join(root, 'dist/engine.js'), engine + exportsLine);
 if (fs.existsSync(path.join(root, 'src/page.html'))) {
   const refEnv = fs.existsSync(path.join(root, 'src/ref-env.js')) ? read('src/ref-env.js') : '';

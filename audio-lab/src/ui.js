@@ -45,10 +45,10 @@
     c.shadowBlur = 0;
   }
   function ghostLine(c, ref, x0, x1, mid, amp, color, d) {
-    c.strokeStyle = color; c.lineWidth = 1.3 * d; c.setLineDash([4 * d, 3 * d]);
+    c.strokeStyle = color; c.lineWidth = 1.4 * d; c.setLineDash([4 * d, 3 * d]);
     for (const sgn of [-1, 1]) {
       c.beginPath();
-      ref.forEach((v, i) => { const x = x0 + (i / (ref.length - 1)) * (x1 - x0), y = mid + sgn * v * amp * 0.5; i ? c.lineTo(x, y) : c.moveTo(x, y); });
+      ref.forEach((v, i) => { const x = x0 + ((i + 0.5) / ref.length) * (x1 - x0), y = mid + sgn * v * amp * 0.5; i ? c.lineTo(x, y) : c.moveTo(x, y); });
       c.stroke();
     }
     c.setLineDash([]);
@@ -61,8 +61,11 @@
     c.clearRect(0, 0, w, h);
     const color = s.kind === 'sfx' ? cssVar('--warm') : cssVar('--teal');
     c.strokeStyle = cssVar('--line'); c.lineWidth = d; c.beginPath(); c.moveTo(0, h / 2); c.lineTo(w, h / 2); c.stroke();
-    bars(c, bufs[s.id], 0, w, h / 2, h * 0.92, color, s.kind === 'sfx' ? 8 : 0, d);
-    if (ghostOn && s.ref && REF_ENV[s.id]) ghostLine(c, REF_ENV[s.id], 0, w, h / 2, h * 0.92, cssVar('--ghost'), d);
+    const clip = s.ref ? Math.round((s.ref[1] - s.ref[0]) * SR) : bufs[s.id].length;
+    // both outlines are normalised to their own peak so the shapes can be compared directly
+    const norm = 0.92 / (peakOf(bufs[s.id]) || 1);
+    bars(c, bufs[s.id].subarray(0, clip), 0, w, h / 2, h * norm, color, s.kind === 'sfx' ? 8 : 0, d);
+    if (ghostOn && s.ref && REF_EDGE[s.id]) ghostLine(c, REF_EDGE[s.id], 0, w, h / 2, h * 0.92, cssVar('--ghost'), d);
   }
 
   // --- the strips that mimic each video's layout
@@ -200,7 +203,7 @@
     for (const s of order) {
       await new Promise((r) => setTimeout(r, 0));
       const f32 = s.render(); bufs[s.id] = f32;
-      if (s.ref) { const sc = envScore(f32, s.id, s.ref, s.kind); $('#cor-' + s.id).textContent = '包络相似度 ' + Math.round(sc * 100) + '%'; }
+      if (s.ref) { const sc = edgeScore(f32, s.id, s.ref); $('#cor-' + s.id).textContent = '边缘贴合度 ' + Math.round(sc * 100) + '%'; }
       const dur = f32.length / SR;
       $('#dur-' + s.id).textContent = (s.kind === 'loops' ? '循环 ' : '') + dur.toFixed(2) + 's';
       drawCard(s); done++;

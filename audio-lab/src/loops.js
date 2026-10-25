@@ -70,10 +70,12 @@ function loopRender(L, build, { wet = 0.12, size = 1, level = 0.85, drive = 1.0,
   LT = { shift: 0, tau: 1, pad: 1, wet: 1 };
   filt(out, new Biquad('lp', lp, 0.7));
   const id = 'l' + String(seed).padStart(2, '0');
-  if (REF_ENV[id]) followEnv(out, REF_ENV[id], L); // match the loudness contour of the clip in the video
-  return master(out, level, { fade: 0.003, fadeOut: 0.004, drive });
+  master(out, level, { fade: 0.003, fadeOut: 0.004, drive });
+  const loop = LOOPS_REF[id]; // match the outline of the clip in the video
+  return loop && REF_EDGE[id] ? finish(followEdge(out, REF_EDGE[id], loop[1] - loop[0]), level, 0.003, 0.004) : out;
 }
 
+const LOOPS_REF = {}; // filled from the LOOPS table below
 const nf = n2f;
 // strummed chord: notes slightly staggered
 function chord(put, t, names, vel, mk1, strum = 0.011) {
@@ -214,3 +216,4 @@ const LOOPS = [
   { id: 'l17', num: '17', name: 'Forward Motion', ref: [30.797, 36.13], len: BAR * 2, render: loop17 },
   { id: 'l22', num: '22', name: 'Pizzicato Clock', ref: [36.13, 41.463], len: BAR * 2, render: loop22 },
 ];
+LOOPS.forEach((s) => { LOOPS_REF[s.id] = s.ref; });

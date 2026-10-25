@@ -71,7 +71,7 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 <div class="wrap">
   <header>
     <h1>音效复刻台</h1>
-    <p class="sub">全部由代码合成(振荡器、噪声、滤波、混响),没有任何采样。每个声音的名称、时长、节奏和包络都对照两段参考视频逐条做出。</p>
+    <p class="sub">全部由代码合成(振荡器、噪声、滤波、混响),没有任何采样。每个声音的名称、时长、节奏和波形外轮廓都对照两段参考视频逐条做出。</p>
   </header>
   <div class="bar" role="toolbar">
     <div class="tabs" role="tablist">
@@ -79,7 +79,7 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
       <button class="tab" role="tab" id="tab-loops" aria-selected="false" data-tab="loops">视频2 · 音乐循环 10 + 补充 12</button>
     </div>
     <span class="spacer"></span>
-    <button class="btn" id="ghost" aria-pressed="true" title="在波形上叠加原视频音频的包络线">对照原视频包络</button>
+    <button class="btn" id="ghost" aria-pressed="true" title="在波形上叠加原视频音频的外轮廓线">对照原视频轮廓</button>
     <button class="btn primary" id="playall">▶ 按视频时间轴播放</button>
     <button class="btn" id="stop">■ 停止</button>
   </div>
@@ -87,12 +87,12 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 
   <section id="pane-sfx">
     <div class="strip" id="strip-sfx"><canvas id="cv-strip-sfx"></canvas></div>
-    <div class="legend"><span><i></i>合成波形</span><span><i class="g"></i>原视频音频包络</span></div>
+    <div class="legend"><span><i></i>合成波形</span><span><i class="g"></i>原视频波形外轮廓</span></div>
     <div class="list" id="list-sfx"></div>
   </section>
   <section id="pane-loops" hidden>
     <div class="strip loops" id="strip-loops"><canvas id="cv-strip-loops"></canvas></div>
-    <div class="legend"><span><i></i>合成波形</span><span><i class="g"></i>原视频音频包络</span><span>点击卡片循环播放,再点一次停止</span></div>
+    <div class="legend"><span><i></i>合成波形</span><span><i class="g"></i>原视频波形外轮廓</span><span>点击卡片循环播放,再点一次停止</span></div>
     <div class="list" id="list-loops"></div>
     <h2 class="sect">补充:视频里缺的 12 个编号</h2>
     <p class="sectnote">视频只出现了 10 个编号。下面 12 个是我按相邻片段的故事走向补的,名称和内容都是我定的,可以随意改或删。</p>
@@ -101,9 +101,9 @@ button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 
   <div class="notes">
     <h2>怎么做的</h2>
-    <p>音效按视频里的音轨逐条还原:先量出每个声音在原音频里的起止、节奏、频谱和包络,再用正弦、方波、带通噪声和短衰减的共振组合出来。循环按 B 小调逐音转写,90 BPM,首尾无缝。</p>
+    <p>音效按视频里的音轨逐条还原:先量出每个声音在原音频里的起止、节奏、频谱和包络,再用正弦、方波、带通噪声和短衰减的共振组合出来。循环按 B 小调逐音转写,90 BPM,长度和视频里的片段一致。</p>
     <p>避免“放屁声”的做法:低频只用平滑的正弦和柔和的低次谐波,不用低音锯齿或方波;不做向下的音高滑落;所有噪声瞬态都经带通且起音在毫秒级;瞬态后的低频尾巴单调衰减、不抖动;</p>
-    <p>波形上的虚线是原视频音频的包络,和合成波形叠在一起看形状是否对得上。视频2 的 10 条循环编号不连续(01 02 03 04 07 09 11 12 17 22),这是视频里实际出现的全部片段。</p>
+    <p>波形上的虚线是原视频里同一段音频的波形外轮廓,和合成波形叠在一起,看边缘是否贴合。卡片上的“边缘贴合度”是两条轮廓围成的面积的重合比例(重合面积 ÷ 两者覆盖的总面积),100% 表示边缘完全一致。为了让轮廓贴上去,每个声音最后都会按原视频的音量走向做一次逐段增益匹配,音符和音色仍是我合成的。视频2 的 10 条循环编号不连续(01 02 03 04 07 09 11 12 17 22),这是视频里实际出现的全部片段。</p>
   </div>
 </div>
 
