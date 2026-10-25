@@ -3,7 +3,7 @@
 
 // per-loop fit knobs (time shift of every event, decay scale, pad level, reverb level), chosen by tools/tune_loops.js
 // against the reference clip's envelope; LT holds the active set while one loop is being built
-const LOOP_TUNE = {"l01":{"shift":-0.13,"tau":1,"pad":1,"wet":1},"l02":{"shift":0.003,"tau":1,"pad":1,"wet":1},"l03":{"shift":-0.037,"tau":1,"pad":1,"wet":1},"l04":{"shift":-0.23,"tau":1,"pad":1,"wet":1},"l07":{"shift":0.057,"tau":1,"pad":1,"wet":1},"l09":{"shift":-0.04,"tau":1,"pad":1,"wet":1},"l11":{"shift":0.137,"tau":1,"pad":1,"wet":1},"l12":{"shift":-0.13,"tau":1,"pad":1,"wet":1},"l17":{"shift":0,"tau":1,"pad":1,"wet":1},"l22":{"shift":0.11,"tau":1,"pad":1,"wet":1}};
+const LOOP_TUNE = {"l01":{"shift":-0.13,"tau":1,"pad":1,"wet":1},"l02":{"shift":0.003,"tau":1,"pad":1,"wet":1},"l03":{"shift":-0.037,"tau":1,"pad":1,"wet":1},"l04":{"shift":-0.25,"tau":1,"pad":1,"wet":1},"l07":{"shift":0.057,"tau":1,"pad":1,"wet":1},"l09":{"shift":-0.06,"tau":1,"pad":1,"wet":1},"l11":{"shift":0.137,"tau":1,"pad":1,"wet":1},"l12":{"shift":-0.13,"tau":1,"pad":1,"wet":1},"l17":{"shift":0,"tau":1,"pad":1,"wet":1},"l22":{"shift":0.03,"tau":1,"pad":1,"wet":1}};
 let LT = { shift: 0, tau: 1, pad: 1, wet: 1 };
 
 // plucked string / mallet voice: inharmonic-stretched partials, pick-position comb, brighter partials die first
