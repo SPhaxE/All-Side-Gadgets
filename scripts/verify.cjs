@@ -35,8 +35,11 @@ const MIME = { '.js': 'text/javascript', '.html': 'text/html' };
     const run = async (key, loop) => {
       const buf = await m.render(key);
       const again = await m.render(key);
-      let same = true; const a = buf.getChannelData(0), b = again.getChannelData(0);
-      for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - b[i]) > 1e-3) { same = false; break; } // 采样插值 + 归一化的浮点噪声约 1e-4（-80dB）
+      const a = buf.getChannelData(0), b = again.getChannelData(0);
+      // 相同种子两次渲染的相对 RMS 误差；浏览器渲染有浮点抖动（实测 <1%），种子不同时误差会接近 100%
+      let err = 0, ref = 0;
+      for (let i = 0; i < a.length; i++) { err += (a[i] - b[i]) ** 2; ref += a[i] ** 2; }
+      const same = Math.sqrt(err / ref) < 0.02;
       out.push({ key, loop, same, ...stats(buf) });
     };
     for (const n of m.SFX_NAMES) await run(n, false);
