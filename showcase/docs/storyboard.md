@@ -1,5 +1,7 @@
 # 20 种视效演示 · 分镜与音效脚本
 
+> ⚠️ 本文件对应 v1（90s 版），已作废。v2 见 `v2-animation-script.md` 与 `v2-transition-script.md`；v2 开工后本文件由 `src/timeline.js` 重新生成。
+
 > 由 `tools/gen-storyboard.js` 根据 `src/timeline.js` 生成，时间码与视频一一对应（1080p / 30fps / 90s / 2700 帧）。音效阶段尚未制作，本文件是下一阶段的制作依据。
 
 ## 全局约定
