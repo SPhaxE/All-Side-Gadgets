@@ -1,92 +1,105 @@
-// 17 Vaporwave grid — striped sunset, neon-outlined mountains, endless perspective grid, chrome katakana title, palms, VHS scanlines
+// 17 Vaporwave (v2) — a pastel "vaporwave temple": an endless colonnade of fluted columns in fog, a pink marble floor
+// that mirrors everything, a floating chrome sphere reflecting the sky and the columns, retro OS dialogs popping up
+// (ＡＥＳＴＨＥＴＩＣＳ.EXE, katakana), VHS chroma and scan-lines. At the climax the sphere rises, the sky turns to a
+// sunset gradient and the marble floor ripples like water.
 (() => { const E = Engine;
+const W = 1920, H = 1080;
+function dialog(c, x, y, w, h, title, body, prog, k) {
+  if (k <= 0) return;
+  const sc = .6 + .4 * E.ease(k / .6) + .04 * Math.sin(k * 18) * Math.exp(-k * 6);
+  c.save(); c.translate(x + w / 2, y + h / 2); c.scale(sc, sc); c.translate(-w / 2, -h / 2); c.globalAlpha = Math.min(1, k * 4);
+  c.fillStyle = 'rgba(0,0,0,.25)'; c.fillRect(10, 12, w, h);
+  c.fillStyle = '#f2ecff'; c.fillRect(0, 0, w, h); c.strokeStyle = '#2b1f4a'; c.lineWidth = 3; c.strokeRect(0, 0, w, h);
+  const g = c.createLinearGradient(0, 0, w, 0); g.addColorStop(0, '#ff7ad9'); g.addColorStop(1, '#7ad7ff');
+  c.fillStyle = g; c.fillRect(3, 3, w - 6, 34);
+  c.fillStyle = '#1b1035'; c.font = '700 20px "JetBrains Mono"'; c.fillText(title, 14, 27);
+  for (let i = 0; i < 3; i++) { c.strokeStyle = '#1b1035'; c.strokeRect(w - 30 - i * 28, 9, 20, 20); }
+  c.font = '500 26px "IPAGothic","WenQuanYi Zen Hei"'; c.fillStyle = '#2b1f4a'; body.forEach((l, i) => c.fillText(l, 20, 80 + i * 36));
+  if (prog >= 0) { c.strokeStyle = '#2b1f4a'; c.strokeRect(20, h - 46, w - 40, 22); c.fillStyle = '#9b6bff';
+    for (let i = 0; i < Math.floor(prog * 20); i++) c.fillRect(24 + i * (w - 48) / 20, h - 42, (w - 48) / 20 - 3, 14); }
+  c.restore();
+}
 E.register(17, E.postScene({
   hudDark: false,
-  draw(c, s, w, h) {
-    c.clearRect(0, 0, w, h);
-    const pulse = Math.max(0, Math.min(1, (s - 2.2) / .5)) * (1 - Math.max(0, Math.min(1, (s - 3.2) / .7)));
-    const ty = 285 + 12 * Math.sin(s * 1.5);
-    // chrome title
-    c.save(); c.translate(960, ty); c.scale(1 + .03 * pulse, 1 + .03 * pulse); c.transform(1, 0, -.18, 1, 0, 0);
-    c.font = '900 168px "Inter","Inter Display",sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    const txt = 'ＶＡＰＯＲＷＡＶＥ'; c.font = '900 150px "IPAGothic","Inter",sans-serif';
-    const g = c.createLinearGradient(0, -90, 0, 90); g.addColorStop(0, '#ffffff'); g.addColorStop(.46, '#9fe9ff'); g.addColorStop(.5, '#2a1050'); g.addColorStop(.58, '#ff7ad9'); g.addColorStop(1, '#ffe6fb');
-    c.lineWidth = 14; c.strokeStyle = '#2a0a55'; c.strokeText(txt, 4, 8); c.lineWidth = 6; c.strokeStyle = '#00f0ff'; c.shadowColor = '#00f0ff'; c.shadowBlur = 28; c.strokeText(txt, -3, -2);
-    c.shadowBlur = 0; c.fillStyle = g; c.fillText(txt, 0, 0);
-    c.restore();
-    c.save(); c.translate(960, ty + 118); c.font = '700 56px "IPAGothic","WenQuanYi Zen Hei",sans-serif'; c.textAlign = 'center'; c.fillStyle = '#ff9bf0'; c.shadowColor = '#ff2bd6'; c.shadowBlur = 20;
-    c.lineWidth = 8; c.strokeStyle = '#1a0538'; c.strokeText('ヴェイパーウェイヴ  ·  夕暮れのグリッド', 0, 0); c.fillText('ヴェイパーウェイヴ  ·  夕暮れのグリッド', 0, 0); c.restore();
-    // palms
-    const palm = (x, y, sc, flip) => {
-      c.save(); c.translate(x, y); c.scale(flip * sc, sc); c.fillStyle = '#12032b'; c.strokeStyle = '#ff2bd6'; c.lineWidth = 2.5;
-      c.beginPath(); c.moveTo(-10, 0); c.quadraticCurveTo(-26, -200, 6, -420); c.lineTo(22, -420); c.quadraticCurveTo(-4, -200, 16, 0); c.closePath(); c.fill();
-      for (let i = 0; i < 8; i++) { const a = -Math.PI * .5 + (i - 3.5) * .42 + Math.sin(s * 1.3 + i) * .04; c.save(); c.translate(14, -420); c.rotate(a);
-        c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(110, -60, 230, 50); c.quadraticCurveTo(120, -20, 0, 10); c.closePath(); c.fill(); c.stroke(); c.restore(); }
-      c.restore();
-    };
-    palm(150, 1040, 1.15, 1); palm(1790, 1040, 1.0, -1); palm(300, 1040, .62, 1);
-    // sparkles
-    for (let i = 0; i < 14; i++) { const x = 100 + ((i * 421) % 1700), y = 120 + ((i * 197) % 360); const t = .5 + .5 * Math.sin(s * 3 + i * 2); c.fillStyle = `rgba(255,255,255,${t * .9})`; c.fillRect(x - 1, y - 12 * t, 2, 24 * t); c.fillRect(x - 12 * t, y - 1, 24 * t, 2); }
+  draw(c, s) {
+    c.clearRect(0, 0, W, H);
+    dialog(c, 140, 140, 520, 250, 'ＡＥＳＴＨＥＴＩＣＳ.EXE', ['ようこそ  ·  WELCOME', '永遠の夏 · 1995'], -1, s - 2.25);
+    dialog(c, 1250, 210, 480, 230, 'LOADING...', ['データ読み込み中', ''], E.ease((s - 2.6) / 1.2), s - 2.55);
+    dialog(c, 980, 640, 440, 200, 'MESSAGE', ['⚠ 現実が見つかりません', 'reality.dll not found'], -1, s - 2.85);
   },
   frag: `
-float hash1(float x){ return fract(sin(x*127.1)*43758.5453); }
-float n1(float x){ float i = floor(x), f = fract(x); f = f*f*(3.-2.*f); return mix(hash1(i), hash1(i+1.), f); }
+float RISE, RIP;
+float sdCol(vec3 p){                                   // fluted column with base and capital, repeated along z
+  vec3 q = p; q.x = abs(q.x) - 2.4; q.z = mod(q.z, 2.6) - 1.3;
+  float a = atan(q.z, q.x); float r = .32 + .018*cos(a*18.);
+  float shaft = max(length(q.xz) - r, abs(q.y - 2.4) - 2.4);
+  float cap = max(max(abs(q.x) - .5, abs(q.z) - .5), abs(q.y - 4.85) - .12);
+  float base = max(max(abs(q.x) - .48, abs(q.z) - .48), abs(q.y - .1) - .1);
+  float beam = max(abs(q.x) - .5, abs(q.y - 5.15) - .2);          // architrave along the row
+  return min(min(shaft, min(cap, base)), beam);
+}
+vec3 SPH;
+float map(vec3 p, out int id){ float d1 = sdCol(p); float d2 = length(p - SPH) - .85; id = d1 < d2 ? 1 : 2; return min(d1, d2); }
+vec3 sky(vec3 rd){
+  float y = rd.y;
+  vec3 a = mix(vec3(1.,.72,.86), vec3(.55,.85,1.), smoothstep(-.05,.5,y));
+  vec3 sunset = mix(vec3(1.,.55,.45), vec3(.55,.3,.75), smoothstep(-.05,.45,y));
+  vec3 c = mix(a, sunset, RISE);
+  c += vec3(1.,.9,.8)*pow(max(dot(rd, normalize(vec3(0.,.12,1.))),0.), 40.)*(.4 + .6*RISE);
+  c = mix(c, vec3(1.,.95,1.), smoothstep(.55,.0,abs(fbm(rd.xz/(rd.y+.3)*1.3 + uS*.03)))*.25*step(0.,y));   // marble clouds
+  return c;
+}
+vec3 shade(vec3 ro, vec3 rd, out float tHit, out int id, out vec3 n){
+  float t = 0.; id = 0; tHit = 1e9;
+  for (int i=0;i<90;i++){ vec3 p = ro + rd*t; int k; float d = map(p, k); if (d < .002*t) { id = k; tHit = t; break; } t += d; if (t > 60.) break; }
+  if (id == 0) { n = vec3(0.); return sky(rd); }
+  vec3 p = ro + rd*tHit; vec2 e = vec2(.002,0.); int k;
+  n = normalize(vec3(map(p+e.xyy,k)-map(p-e.xyy,k), map(p+e.yxy,k)-map(p-e.yxy,k), map(p+e.yyx,k)-map(p-e.yyx,k)));
+  vec3 L = normalize(vec3(.4,.8,.5));
+  if (id == 1) { float dif = clamp(dot(n,L)*.5+.55, 0., 1.); vec3 marble = vec3(.98,.92,.95)*(.9 + .1*fbm(p.xy*3.));
+    vec3 c = marble*(.55 + .55*dif)*mix(vec3(1.,.9,.97), vec3(.95,.97,1.), n.x*.5+.5); return mix(c, sky(rd)*.95, 1. - exp(-tHit*.045)); }
+  return vec3(0.);
+}
 vec3 scene(vec2 fc){
-  vec2 p = (fc - .5*uRes)/uRes.y; float s = uS;
-  float y0 = -.04;
-  vec3 col;
-  float pulse = smoothstep(2.2,2.7,s)*(1.-smoothstep(3.2,3.9,s));
-  if (p.y > y0){
-    float t = (p.y - y0)/(.5-y0);
-    col = mix(vec3(.98,.28,.55), vec3(.09,.02,.26), pow(clamp(t,0.,1.),.55));
-    col = mix(col, vec3(1.,.62,.28), exp(-(p.y-y0)*9.)*.55);
-    // stars
-    vec2 sg = floor(p*vec2(1.78,1.)*95.); float hh = hash21(sg); col += step(.992,hh)*smoothstep(.1,.5,t)*(.5+.5*sin(s*3.+hh*50.));
-    // sun
-    vec2 sc = vec2(0., y0+.17); float R = .27 + .015*pulse;
-    vec2 d = p - sc; float r = length(d);
-    if (r < R){
-      float yn = (p.y - (sc.y-R))/(2.*R);
-      float stripe = fract(yn*14. - s*.05); float gap = (1.-yn)*(.85) - .05;   // thicker gaps toward the bottom
-      float on = step(gap, stripe) ;
-      if (yn > .55) on = 1.;
-      vec3 sunc = mix(vec3(1.,.25,.55), vec3(1.,.9,.25), smoothstep(.0,1.,yn));
-      col = mix(col, sunc, on*smoothstep(R,R-.004,r));
-    }
-    col += vec3(1.,.3,.6)*exp(-max(r-R,0.)*10.)*.25;
-    // mountains
-    float mx = p.x*2.4 + 40.;
-    float mh = y0 + .015 + .13*(1.-abs(2.*n1(mx)-1.))*(.55+.45*n1(mx*.31+7.));
-    float mfill = smoothstep(.002,-.002,p.y-mh);
-    col = mix(col, vec3(.06,.01,.16), mfill);
-    float mline = smoothstep(.0035,.0,abs(p.y-mh));
-    col += vec3(.1,.95,1.)*mline*(.8+.4*pulse);
-    // horizontal glow band
-    col += vec3(1.,.3,.7)*exp(-abs(p.y-y0)*40.)*.5;
-  } else {
-    float dy = y0 - p.y;
-    float gz = 1./dy + s*2.4;
-    float gx = p.x/dy;
-    float lw = .045;
-    float lx = abs(fract(gx*1.15)-.5); float lz = abs(fract(gz*.55)-.5);
-    float fx = fwidth(gx*1.15), fz = fwidth(gz*.55);
-    float line = max(1.-smoothstep(0.,max(fx*1.4,.012),lx), 1.-smoothstep(0.,max(fz*1.4,.012),lz));
-    float fade = smoothstep(0.,.14,dy);
-    vec3 base = mix(vec3(.30,.04,.42), vec3(.05,.0,.12), smoothstep(0.,.5,dy));
-    vec3 lc = mix(vec3(1.,.15,.85), vec3(.2,.95,1.), smoothstep(.0,.8,abs(p.x)));
-    col = base + lc*line*fade*1.35 + lc*line*fade*.25*pulse;
-    col += vec3(1.,.3,.7)*exp(-dy*14.)*.35;
+  float s = uS; vec2 q = (fc - .5*uRes)/uRes.y;
+  RISE = ease((s - 3.3)/1.1); RIP = RISE*(1. - ease((s - 5.)/1.));
+  SPH = vec3(0., 1.6 + 1.2*RISE + .12*sin(s*1.4), s*1.1 + 7.);
+  vec3 ro = vec3(.3*sin(s*.4), 1.5, s*1.1);
+  vec3 fw = normalize(vec3(-.05*sin(s*.4), .08 + .1*RISE, 1.)), rt = normalize(cross(vec3(0.,1.,0.), fw)), up = cross(fw, rt);
+  vec3 rd = normalize(fw*1.5 + rt*q.x + up*q.y);
+  vec3 col; float t; int id; vec3 n;
+  // floor plane y = 0 (pink marble mirror) vs scene
+  float tf = rd.y < 0. ? -ro.y/rd.y : 1e9;
+  col = shade(ro, rd, t, id, n);
+  if (id == 2) {                                                   // chrome sphere: reflect
+    vec3 p = ro + rd*t; vec3 r = reflect(rd, n); float t2; int id2; vec3 n2;
+    vec3 rc = shade(p + n*.01, r, t2, id2, n2);
+    if (r.y < 0.) { float tf2 = -p.y/r.y; if (tf2 < t2) rc = mix(vec3(1.,.66,.82), vec3(.95,.6,.8), fbm((p + r*tf2).xz*.8))*.9; }
+    col = rc*vec3(.95,.97,1.) + pow(1. - max(dot(-rd, n),0.), 4.)*.3;
   }
-  vec2 uvv = fc/uRes;
-  // chromatic overlay with a drifting VHS tracking band
-  float band = smoothstep(.04,.0,abs(fract(uvv.y*.9 - s*.12)-.5)-.45)*.0;
-  vec2 off = vec2(2.5,0.)/uRes;
-  vec4 ov = vec4(texture(uTex, uvv+off).r, texture(uTex, uvv).g, texture(uTex, uvv-off).b, texture(uTex, uvv).a);
+  if (tf < t) {
+    vec3 p = ro + rd*tf;
+    vec3 nf = vec3(0.,1.,0.);
+    nf = normalize(nf + vec3(sin(length(p.xz - SPH.xz)*3. - s*6.), 0., cos(length(p.xz - SPH.xz)*3. - s*6.))*.06*RIP*exp(-length(p.xz - SPH.xz)*.15));
+    vec3 r = reflect(rd, nf); float t2; int id2; vec3 n2;
+    vec3 rc = shade(p + nf*.01, r, t2, id2, n2);
+    if (id2 == 2) { vec3 p2 = p + r*t2; rc = sky(reflect(r, n2))*.95; }
+    vec3 marble = mix(vec3(1.,.70,.84), vec3(.96,.62,.80), smoothstep(.0,.6,abs(fbm(p.xz*.6 + vec2(fbm(p.xz*1.7)*1.5)))));
+    marble = mix(marble, vec3(1.,.9,.95), smoothstep(.02,.0,abs(fbm(p.xz*1.1)-.1))*.6);   // veins
+    float tile = step(.97, max(fract(p.x*.5), fract(p.z*.5)));
+    marble *= 1. - tile*.15;
+    float fres = .25 + .6*pow(1. + rd.y, 6.);
+    col = mix(marble, rc, fres);
+    col = mix(col, sky(rd)*.95, 1. - exp(-tf*.04));
+  }
+  // dialogs, VHS chroma + scan-lines + tracking noise
+  vec2 uv = fc/uRes; vec2 o = vec2(2.5,0.)/uRes;
+  vec4 ov = vec4(texture(uTex, uv+o).r, texture(uTex, uv).g, texture(uTex, uv-o).b, texture(uTex, uv).a);
   col = mix(col, ov.rgb, ov.a);
-  col += ov.rgb*ov.a*0.0;
-  col *= .9 + .1*sin(fc.y*3.14159);
-  col += (hash21(fc+floor(s*30.))-.5)*.05;
-  col *= 1. - .35*dot(p,p);
+  col *= .93 + .07*sin(fc.y*3.14159);
+  float tr = smoothstep(.02,.0,abs(fract(uv.y*.7 - s*.15) - .5) - .47);
+  col += tr*.05*(hash21(fc + floor(s*30.)) - .3);
+  col *= 1. - .3*dot(q,q);
   return col;
 }`,
 }));
