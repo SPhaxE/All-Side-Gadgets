@@ -1,6 +1,9 @@
 // Core engine: single WebGL2 context, stateless scenes, cyclic timeline.
 (() => {
-  const FPS = 30;
+  const Q = new URLSearchParams(location.search);
+  const FPS = +(Q.get('fps') || 30);       // output frame rate; all animation is in seconds, so any fps works
+  const MB = Math.max(1, +(Q.get('mb') || 1));          // motion-blur sub-frames per output frame (1 = off)
+  const SHUTTER = +(Q.get('shutter') || 0.5);           // fraction of a frame interval the shutter is open
   const NS = 20;               // scenes
   const D = 4.5;               // seconds per scene
   const HT = 0.6;              // half transition length (s) -> 1.2s soft transitions
@@ -9,7 +12,6 @@
   const PHASE = 0.5;           // video t=0 is 0.5s after the 20|1 boundary; the 20->1 transition (HT=0.6) still has its last 0.1s (3 frames) at the very start
   const W = 1920, H = 1080;
 
-  const Q = new URLSearchParams(location.search);
   const SCALE = +(Q.get('scale') || 1);
   const OW = Math.round(W * SCALE), OH = Math.round(H * SCALE);
 
@@ -312,35 +314,72 @@
     return { A: { k: k0, s: s0 }, B: null, p: 0, type: k0 };
   }
 
-  function renderFrame(f) {
-    f = ((f % N) + N) % N;
-    const tg = f / FPS + PHASE;
+  // draw the full composite for global time tg into `target` (null = canvas)
+  async function drawComposite(tg, fNoise, target) {
     const c = composite(tg);
-    const A = SCENES[c.A.k], texA = A.render(c.A.s, tg);
+    const A = SCENES[c.A.k], texA = await A.render(c.A.s, tg);
     let texB = texA, p = 0;
-    if (c.B) { texB = SCENES[c.B.k].render(c.B.s, tg); p = ease(c.p); }
+    if (c.B) { texB = await SCENES[c.B.k].render(c.B.s, tg); p = ease(c.p); }
     // hud index: stays on scene k until transition moves it
     const idxFloat = c.B ? c.A.k + smooth((c.p - .25) / .5) : c.A.k;
     const themeA = A.hudDark ? 1 : 0, themeB = c.B ? (SCENES[c.B.k].hudDark ? 1 : 0) : themeA;
     const themeMix = themeA + (themeB - themeA) * smooth((c.p - .25) / .5);
     drawHud(tg, idxFloat, themeMix);
 
-    bindTarget(null);
+    bindTarget(target);
     setBase(transProg, OW, OH, 0, tg);
     bindTex(0, texA, transProg.u.uA); bindTex(1, texB, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud); bindTex(3, E_.atlas || texA, transProg.u.uAtlas);
     gl.uniform1f(transProg.u.uP, c.B ? p : 0);
     gl.uniform1i(transProg.u.uType, c.type);
     gl.uniform1f(transProg.u.uHudOn, hudOn ? 1 : 0);
-    gl.uniform1f(transProg.u.uFrame, f);
+    gl.uniform1f(transProg.u.uFrame, fNoise);
     drawQuad();
+    return c;
+  }
+
+  // motion blur: average MB sub-frames spread over the shutter interval in a float buffer
+  let accT, subT, blitProg;
+  function initAccum() {
+    accT = makeTarget(OW, OH, { internal: gl.RGBA16F, type: gl.HALF_FLOAT });
+    subT = makeTarget(OW, OH);
+    blitProg = program(PRELUDE + `uniform sampler2D uTex; uniform float uW; void main(){ fragColor = vec4(texture(uTex, vUv).rgb*uW, 1.); }`);
+  }
+  function blit(tex, target, w, additive) {
+    bindTarget(target); gl.useProgram(blitProg.pr); bindTex(0, tex, blitProg.u.uTex); gl.uniform1f(blitProg.u.uW, w);
+    if (additive) { gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE); }
+    drawQuad(); gl.disable(gl.BLEND);
+  }
+
+  async function renderFrame(f) {
+    f = ((f % N) + N) % N;
+    let c;
+    if (MB <= 1) c = await drawComposite(f / FPS + PHASE, f, null);
+    else {
+      if (!accT) initAccum();
+      bindTarget(accT); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+      for (let i = 0; i < MB; i++) {
+        const tg = (f + SHUTTER * ((i + .5) / MB - .5)) / FPS + PHASE;
+        c = await drawComposite(tg, f, subT);
+        blit(subT.tex, accT, 1 / MB, true);
+      }
+      blit(accT.tex, null, 1, false);
+    }
     gl.finish();
     document.title = `f${f} s${c.A.k + 1}${c.B ? '->' + (c.B.k + 1) : ''}`;
   }
 
+  // raw RGBA of the canvas (bottom-up rows) for the GPU render pipeline
+  let readBuf;
+  function readFrame() {
+    if (!readBuf) readBuf = new Uint8Array(OW * OH * 4);
+    bindTarget(null); gl.readPixels(0, 0, OW, OH, gl.RGBA, gl.UNSIGNED_BYTE, readBuf);
+    return readBuf;
+  }
+
   // debug: show one scene alone at local time s (hud off)
-  function renderScene(k, s) {
+  async function renderScene(k, s) {
     const tg = k * D + s;
-    const tex = SCENES[k - 1].render(s, tg);
+    const tex = await SCENES[k - 1].render(s, tg);
     drawHud(tg, k - 1, SCENES[k - 1].hudDark ? 1 : 0);
     bindTarget(null); setBase(transProg, OW, OH, 0, tg);
     bindTex(0, tex, transProg.u.uA); bindTex(1, tex, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud); bindTex(3, E_.atlas || tex, transProg.u.uAtlas);
@@ -349,20 +388,54 @@
   }
 
   const E_ = window.Engine = {
-    FPS, NS, D, HT, T, N, PHASE, W, H, gl, canvas, PRELUDE, NAMES,
+    FPS, MB, NS, D, HT, T, N, PHASE, W, H, OW, OH, gl, canvas, PRELUDE, NAMES,
     program, makeTex, makeTarget, bindTarget, uploadCanvas, setBase, bindTex, drawQuad,
     shaderScene, canvasScene, postScene, customScene, register, SCENES, wrap,
   };
   window.renderFrame = renderFrame;
   window.renderScene = renderScene;
+  window.readFrame = readFrame;
   window.initEngine = async () => {
     await Promise.all([
       document.fonts.load('800 96px "Inter Display"'), document.fonts.load('700 40px "Inter"'),
       document.fonts.load('600 22px "JetBrains Mono"'), document.fonts.load('500 26px "WenQuanYi Zen Hei"'),
       document.fonts.load('900 200px "Inter"'),
     ]).catch(() => { });
+    await Promise.all([...document.fonts].map(f => f.load().catch(() => { })));   // bundled faces (assets/fonts): load every weight up front
     await document.fonts.ready;
     initCore();
     window.__ready = true;
+    if (Q.get('play') !== null) startPlayer();
   };
+
+  // ---------- realtime player (open index.html?play in a GPU browser) ----------
+  // space: pause  ←/→: previous/next effect  ,/.: step one frame  F: fullscreen
+  function startPlayer() {
+    const info = document.createElement('div');
+    info.style.cssText = 'position:fixed;left:8px;bottom:6px;font:12px JetBrains Mono,monospace;color:#fff;background:#0008;padding:2px 6px;z-index:9';
+    document.body.appendChild(info);
+    let playing = true, f0 = 0, t0 = performance.now(), cur = 0, busy = false, last = performance.now(), fpsAvg = 0;
+    const seek = f => { f0 = ((Math.round(f) % N) + N) % N; t0 = performance.now(); cur = f0; };
+    addEventListener('keydown', e => {
+      if (e.key === ' ') { playing = !playing; seek(cur); }
+      else if (e.key === 'ArrowRight') seek((Math.floor((cur / FPS + PHASE) / D) + 1) * D * FPS - PHASE * FPS);
+      else if (e.key === 'ArrowLeft') seek((Math.floor((cur / FPS + PHASE) / D) - 1) * D * FPS - PHASE * FPS);
+      else if (e.key === '.') { playing = false; seek(cur + 1); }
+      else if (e.key === ',') { playing = false; seek(cur - 1); }
+      else if (e.key === 'f' || e.key === 'F') document.documentElement.requestFullscreen?.();
+    });
+    const loop = async () => {
+      if (!busy) {
+        busy = true;
+        if (playing) cur = (f0 + Math.floor((performance.now() - t0) / 1000 * FPS)) % N;
+        await renderFrame(cur);
+        const now = performance.now(); fpsAvg = fpsAvg * .9 + (1000 / Math.max(1, now - last)) * .1; last = now;
+        const t = cur / FPS; info.textContent = `${String(Math.floor(t / 60)).padStart(2, '0')}:${(t % 60).toFixed(2).padStart(5, '0')}  f${cur}/${N}  ${document.title.split(' ')[1]}  ${fpsAvg.toFixed(0)} fps${playing ? '' : '  [paused]'}`;
+        busy = false;
+      }
+      requestAnimationFrame(loop);
+    };
+    canvas.style.width = '100vw'; canvas.style.height = '56.25vw'; canvas.style.maxHeight = '100vh';
+    requestAnimationFrame(loop);
+  }
 })();
