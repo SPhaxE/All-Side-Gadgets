@@ -1,71 +1,108 @@
-// 11 Particle swarm — 60k particles x 4 time-lagged copies (stateless trails): chaos -> torus knot -> burst -> sphere shell. Positions are closed-form f(id, s).
-(() => { const E = Engine; const gl = E.gl;
-const N = 60000, W = 1920, H = 1080;
+// 11 Particle swarm (v2) — a murmuration of 70k starlings at dusk: the flock breathes, folds, stretches into a ribbon
+// and rolls into a ball while density waves ripple through it; it spirals up as the sky turns to night, every bird
+// lights up as a star and the swarm settles into a rotating spiral galaxy with nebula gas. Positions are closed-form
+// f(id, s) (no simulation), so any frame renders on its own.
+(() => { const E = Engine, gl = E.gl;
+const N = 70000, W = 1920, H = 1080;
 const VS = `#version 300 es
-precision highp float;
-uniform float uS; uniform vec2 uRes;
+precision highp float; precision highp int;
+uniform float uS; uniform vec2 uRes; uniform int uPass;
 out vec3 vCol; out float vA;
 const float TAU = 6.28318530718;
-float h11(float p){ p = fract(p*.1031); p *= p+33.33; p *= p+p; return fract(p); }
 vec3 h31(float n){ vec3 p3 = fract(vec3(n)*vec3(.1031,.1030,.0973)); p3 += dot(p3,p3.yzx+33.33); return fract((p3.xxy+p3.yzz)*p3.zyx); }
-vec3 hsv2rgb(vec3 c){ vec3 p = abs(fract(c.xxx+vec3(0.,2./3.,1./3.))*6.-3.); return c.z*mix(vec3(1.), clamp(p-1.,0.,1.), c.y); }
+float ease(float x){ x = clamp(x,0.,1.); return x*x*x*(x*(x*6.-15.)+10.); }
 mat2 rot(float a){ float c = cos(a), s = sin(a); return mat2(c,-s,s,c); }
+vec3 flock(vec3 u, float t, float seed){
+  // base: points in a unit ball, shaped by a slowly changing anisotropic scale (blob -> ribbon -> ball)
+  float rib = ease((t-1.2)/.6)*(1.-ease((t-2.1)/.6));
+  vec3 sc = vec3(1.2 + 2.2*rib, .55 - .3*rib, .7);
+  vec3 p = u*sc;
+  // folding: a smooth domain warp that changes over time (the flock "pours" through itself)
+  p.y += .45*sin(p.x*1.3 + t*1.7) * (1. - .5*rib);
+  p.x += .35*sin(p.y*2.1 - t*1.3 + p.z);
+  p.z += .3*sin(p.x*1.7 + t*.9);
+  p.y += .25*sin(p.z*2.6 + p.x*.8 - t*2.1);                      // second fold: wisps and sheets
+  p.xy *= rot(.35*sin(t*.6) + rib*.4);
+  // density wave travelling along the flock: birds bunch up in bands
+  p.x += .16*sin(p.x*4. - t*6.);
+  // the flock drifts across the sky and climbs away at the end
+  float climb = ease((t-2.4)/1.3);
+  p += vec3(-1.1 + .55*t, .35 + .15*sin(t*.8) + 2.6*climb*0., 0.);
+  p.xz *= rot(climb*1.2);
+  return p;
+}
+vec3 galaxy(float id, float t, out vec3 col){
+  vec3 r = h31(id*1.37+5.), r2 = h31(id*.71+19.);
+  float rad = pow(r.x, .85)*2.7, arm = floor(r.y*4.)*1.5708;
+  float jit = (r.z + r2.x - 1.)*.42;                                             // arms with soft width
+  float th = arm + log(rad + .12)*1.9 + jit - t*.5/(.4+rad*.6);
+  if (r2.y < .14) th = r2.z*6.2832 - t*.5/(.4+rad*.6);                            // diffuse disk between the arms
+  vec3 p = vec3(cos(th)*rad, (r2.x-.5)*.16*exp(-rad*.4), sin(th)*rad);
+  if (r.y > .95) { float b = pow(r2.z,2.)*.55; vec3 d = normalize(r2 - .5 + 1e-3); p = d*b*vec3(1.,.55,1.); }   // bulge
+  p.yz *= rot(1.2); p.xy *= rot(.3);
+  col = mix(vec3(1.,.82,.55), vec3(.55,.72,1.), smoothstep(.2,1.4,rad));
+  if (fract(id*.6180339) < .05) col = vec3(1.,.38,.72);
+  return p + vec3(0., .15, 0.);
+}
 void main(){
-  int id = gl_VertexID/4; int k = gl_VertexID - id*4;
-  float fid = float(id);
-  float t = uS - float(k)*.024;
-  vec3 r = h31(fid);
-  float gather = smoothstep(.05,1.5,t);
-  float boom = smoothstep(2.45,2.85,t)*(1.-smoothstep(2.85,3.7,t));
-  float toSphere = smoothstep(3.0,3.9,t);
-  // chaos cloud with swirl
-  vec3 c = (r-.5)*vec3(3.4,2.1,2.6);
-  float ang = t*(.25+.5*r.y);
-  c.xz = rot(ang)*c.xz;
-  c += .32*vec3(sin(t*1.3+r.x*20.), sin(t*1.1+r.y*17.), sin(t*1.7+r.z*13.));
-  // torus knot (2,3)
-  float u = fract(r.x*7.31+.17)*TAU;
-  float rad = 2.+cos(3.*u);
-  vec3 knot = vec3(rad*cos(2.*u), rad*sin(2.*u), sin(3.*u))*.60;
-  vec3 tube = normalize(r*2.-1.+1e-3)*.07*(.4+h11(fid*1.7));
-  knot += tube;
-  knot.xy = rot(t*.4)*knot.xy;
-  // fibonacci sphere shell
-  float yy = 1.-2.*(fract(r.x*131.7)+.0);
-  float rr = sqrt(max(1.-yy*yy,0.)); float phi = fid*2.399963;
-  vec3 sph = vec3(rr*cos(phi), yy, rr*sin(phi))*(1.12+.05*sin(t*3.+r.y*30.)+.04*boom);
-  vec3 target = mix(knot, sph, toSphere);
-  float g = gather*(1.-.55*boom);
-  vec3 p = mix(c, target, g);
-  p += (1.-g)*0.0 + .012*vec3(sin(t*5.+fid), cos(t*4.3+fid*1.3), sin(t*3.7+fid*.7));
-  p += normalize(p+1e-3)*boom*(1.2+2.2*r.z);
+  float id = float(gl_VertexID);
+  vec3 r = h31(id);
+  vec3 u = vec3(r.x*2.-1., r.y*2.-1., r.z*2.-1.); u *= pow(h31(id+11.).x, .55)*1.15/max(length(u), 1e-3);   // dense core, soft edges
+  float t = uS;
+  vec3 pf = flock(u, t, r.x);
+  vec3 gc; vec3 pg = galaxy(id, t, gc);
+  float m = ease((t - 2.75 - r.x*.6)/1.1);
+  vec3 p = mix(pf, pg, m);
   // camera
-  float a = t*.33+.5; p.xz = rot(a)*p.xz; p.yz = rot(.35+.1*sin(t*.5))*p.yz;
-  float camz = 3.5; float dz = camz - p.z;
-  vec2 sc = p.xy/dz*2.0;
-  gl_Position = vec4(sc.x*(1080./1920.), sc.y, 0., 1.);
-  float dof = clamp(abs(dz-3.5)*.5, 0., 1.);
-  gl_PointSize = (3.4 + 4.2*r.z + 3.0*dof) * (uRes.y/1080.) * (3.5/dz);
-  float hue = fract(.52 + r.x*.40 + t*.04 + g*.07);
-  vCol = hsv2rgb(vec3(hue, .9 - .3*boom, 1.)) * (.7 + .8*r.y);
-  vCol = mix(vCol, vec3(1.,.9,.7), boom*.12);
-  vA = (1. - float(k)*.27) * (.55+.45*(1.-dof)) * (.8 + .3*boom) * mix(1., .42, toSphere*(1.-boom));
+  vec3 cam = vec3(0., 0., -6.5);
+  vec3 q = p - cam;
+  vec2 sc = q.xy/q.z*3.2;
+  gl_Position = vec4(sc.x*(uRes.y/uRes.x), sc.y, 0., 1.);
+  float px = uRes.y/1080.;
+  gl_PointSize = mix(2.0 + 1.4*r.y, 1.5 + 3.0*pow(r.z,3.), m)*px*(6.5/q.z);
+  float glow = m;
+  if (uPass == 0) { vCol = vec3(.05,.03,.07); vA = .5*(1.-glow); }
+  else { vCol = gc*(.55 + .9*pow(r.y,4.)); vA = glow; }
 }`;
 const FS = `#version 300 es
-precision highp float;
+precision highp float; precision highp int;
+uniform int uPass;
 in vec3 vCol; in float vA; out vec4 fragColor;
-void main(){ float d = length(gl_PointCoord-.5)*2.; float a = exp(-d*d*3.2); fragColor = vec4(vCol*a*vA*1.15, 1.); }`;
-let prog, target, vao;
+void main(){ float d = length(gl_PointCoord-.5)*2.; if (d > 1.) discard;
+  if (uPass == 0) fragColor = vec4(vCol, vA*smoothstep(1.,.5,d));
+  else { float a = exp(-d*d*3.); fragColor = vec4(vCol*a*vA*.9, 1.); } }`;
+let prog, sky, target, vao;
 E.register(11, E.customScene({
   hudDark: false,
-  init() { prog = E.program(FS, VS); target = E.makeTarget(W, H); vao = gl.createVertexArray(); },
+  init() {
+    prog = E.program(FS, VS); target = E.makeTarget(W, H); vao = gl.createVertexArray();
+    sky = E.program(E.PRELUDE + `
+      vec3 scene(vec2 fc){
+        vec2 q = (fc - .5*uRes)/uRes.y; float s = uS;
+        float night = ease((s - 2.85)/1.0), tilt = ease((s - 2.3)/1.4);
+        float hy = -.36 - 1.3*tilt;                                  // horizon slides down as the camera follows the climb
+        float h = q.y - hy;
+        vec3 dusk = mix(vec3(1.,.58,.32), vec3(.42,.22,.48), smoothstep(0.,.75,h));
+        dusk = mix(dusk, vec3(.12,.10,.28), smoothstep(.6,1.6,h));
+        dusk += vec3(1.,.7,.4)*exp(-length((q - vec2(.55, hy+.06))*vec2(1.,1.6))*5.)*.6;   // low sun
+        if (h < 0.) dusk = mix(vec3(.16,.1,.18), vec3(.05,.04,.08), clamp(-h*3.,0.,1.)); // dark land
+        vec3 nt = vec3(.008,.01,.03) + vec3(.02,.01,.05)*fbm(q*2.);
+        vec2 sg = floor(fc/2.); float st = step(.9975, hash21(sg)); nt += st*(.5+.5*hash21(sg+3.));
+        float neb = smoothstep(.0,.8,fbm(q*1.6 + vec2(s*.03,0.))*.5+.5 - length(q - vec2(0.,.1))*.6);
+        nt += neb*mix(vec3(.55,.12,.45), vec3(.1,.4,.6), fbm(q*3.+5.)*.5+.5)*.55;
+        float gal = ease((s - 3.4)/1.0);
+        nt += gal*(vec3(1.,.8,.55)*exp(-length(q*vec2(1.,2.2) - vec2(0.,.06))*7.)*.45 + vec3(.4,.5,1.)*exp(-length(q*vec2(1.,2.4))*2.2)*.25);
+        return mix(dusk, nt, night);
+      }
+      void main(){ fragColor = vec4(clamp(scene(gl_FragCoord.xy),0.,1.),1.); }`);
+  },
   render(s, tg) {
-    E.bindTarget(target);
-    gl.clearColor(.012, .012, .045, 1); gl.clear(gl.COLOR_BUFFER_BIT);
+    E.bindTarget(target); E.setBase(sky, W, H, s, tg); E.drawQuad();
     gl.useProgram(prog.pr); gl.uniform1f(prog.u.uS, s); gl.uniform2f(prog.u.uRes, W, H);
-    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
-    gl.bindVertexArray(vao); gl.drawArrays(gl.POINTS, 0, N * 4); gl.bindVertexArray(null);
-    gl.disable(gl.BLEND);
+    gl.bindVertexArray(vao); gl.enable(gl.BLEND);
+    gl.uniform1i(prog.u.uPass, 0); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.drawArrays(gl.POINTS, 0, N);
+    if (s > 2.7) { gl.uniform1i(prog.u.uPass, 1); gl.blendFunc(gl.ONE, gl.ONE); gl.drawArrays(gl.POINTS, 0, N); }
+    gl.disable(gl.BLEND); gl.bindVertexArray(null);
     return target.tex;
   },
 }));

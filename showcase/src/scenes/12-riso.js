@@ -1,70 +1,68 @@
-// 12 Risograph print — fluorescent pink / blue / yellow spot inks multiplied on paper, grainy stochastic coverage, drifting mis-registration, roller reveal
+// 12 Risograph print (v2) — a fluorescent poster (pink sun over mirrored mountains) printed in five spot inks as
+// coarse halftone with grain and mis-registration. Like the reference, the print is sliced into strips that slide
+// past each other: diagonal shear -> vertical mirrored "spine" -> full-frame diagonal stripes at the climax ->
+// everything slides home and the poster re-forms.
 (() => { const E = Engine;
-E.register(12, E.shaderScene({ hudDark: true, frag: `
-float sdSeg(vec2 p, vec2 a, vec2 b){ vec2 pa = p-a, ba = b-a; float h = clamp(dot(pa,ba)/dot(ba,ba),0.,1.); return length(pa-ba*h); }
-float sdTri(vec2 p, float r){ const float k = sqrt(3.); p.x = abs(p.x)-r; p.y = p.y + r/k; if (p.x+k*p.y>0.) p = vec2(p.x-k*p.y, -k*p.x-p.y)/2.; p.x -= clamp(p.x,-2.*r,0.); return -length(p)*sign(p.y); }
-// coverage fields (0..1) in screen-normalised space, y up, height = 1
-float pinkField(vec2 p, float s){
-  float pulse = smoothstep(2.2,2.8,s)*(1.-smoothstep(2.9,3.7,s));
-  vec2 c = vec2(-.22+.025*sin(s*.9), .07+.02*cos(s*.8));
-  float R = .30 + .04*pulse;
-  float disc = smoothstep(.003,-.003, length(p-c)-R);
-  float tone = .72 + .28*smoothstep(-.3,.3,p.y-c.y);
-  // rays
-  vec2 d = p-c; float ang = atan(d.y,d.x); float r = length(d);
-  float rays = step(.5, fract(ang/TAU*18. + s*.06)) * smoothstep(R+.02,R+.05,r) * smoothstep(.62,.38,r) * .75;
-  // diagonal stripe band lower right
-  float band = step(.5, fract((p.x*1.0 - p.y*1.0)*9. + s*.2)) * smoothstep(.0,.04,p.x-.18) * smoothstep(-.1,-.14,p.y) * smoothstep(-.5,-.3,p.y) * 0.0;
-  return max(disc*tone, rays);
+E.register(12, E.shaderScene({ scaled: true, hudDark: true,
+  uniforms(p, s, tg, gl) {
+    const e = E.ease, k1 = e((s - .9) / .6) * (1 - e((s - 2.0) / .45));    // diagonal shear
+    const k2 = e((s - 2.15) / .45) * (1 - e((s - 3.25) / .4));                // vertical mirrored spine
+    const k3 = e((s - 3.35) / .4) * (1 - e((s - 4.45) / .6));                 // climax: full-frame stripes
+    gl.uniform3f(p.u.uK, k1, k2, k3);
+  },
+  frag: `
+uniform vec3 uK;
+// spot inks
+const vec3 PINK = vec3(1.,.28,.72), RED = vec3(1.,.22,.24), YEL = vec3(1.,.78,.12), GRN = vec3(.25,.62,.42), BLU = vec3(.24,.55,.82);
+// poster coverage of each ink at poster coords p (height 1, centre 0): x = pink, y = red, z = yellow, w = green, v = blue
+void poster(vec2 p, float s, out float pk, out float rd, out float yl, out float gn, out float bl){
+  pk = 0.; rd = .35; yl = .92; gn = 0.; bl = 0.;
+  // sun with a ragged edge
+  vec2 c = vec2(0., .18 + .01*sin(s*1.3)); float a = atan(p.y-c.y, p.x-c.x);
+  float R = .30 + .012*sin(a*23. + s*2.) + .008*sin(a*41.);
+  float sun = smoothstep(.004, -.004, length(p - c) - R);
+  pk = max(pk, sun*.95); rd = mix(rd, 0., sun); yl = mix(yl, .08, sun);
+  // horizon band
+  float band = step(abs(p.y + .06), .045);
+  pk = max(pk, band*.9); rd = mix(rd, .25, band); yl = mix(yl, .1, band);
+  // mirrored mountains (hourglass) below the horizon
+  float m1 = step(p.y, -.1) * step(abs(p.x) - .9*(-.1 - p.y)*1.9, 0.) * step(-.42, p.y);
+  float m2 = step(p.y, -.1) * step(-.32, p.y) * step(abs(abs(p.x) - .62) - (p.y + .32)*1.2, 0.);
+  float m3 = step(p.y, -.42) * step(abs(p.x) - (p.y + .74)*1.5, 0.);
+  gn = max(gn, max(m2, m1*.0)); bl = max(bl, m3*.9 + m1*.55);
+  pk = max(pk, step(p.y, -.42)*step(-.5, p.y)*.85);
+  float mt = max(max(m2, m3), m1); rd = mix(rd, 0., mt); yl = mix(yl, .15, mt);
 }
-float blueField(vec2 p, float s){
-  float f = 0.;
-  for (int i=0;i<3;i++){
-    float fi = float(i);
-    float y = -.14 - fi*.11 + .05*sin(p.x*(3.5+fi*1.4) + s*(.5+fi*.2) + fi*2.);
-    float m = smoothstep(.003,-.003, p.y - y);
-    float tone = mix(.95, .45, fi*.5) ;
-    f = max(f, m*tone*(i==0?1.:1.));
-  }
-  // moon + dot grid sky
-  float moon = smoothstep(.003,-.003, length(p-vec2(.40,.28)+.02*vec2(sin(s*.7),cos(s*.6)))-.07);
-  vec2 g = fract(p*vec2(1.78,1.)*22.)-.5; float dots = smoothstep(.22,.16,length(g)) * smoothstep(.1,.45,p.y) * step(p.x,-.2)*.8;
-  return max(f, max(moon, dots));
-}
-float yellowField(vec2 p, float s){
-  float pulse = smoothstep(2.2,2.8,s)*(1.-smoothstep(2.9,3.7,s));
-  vec2 c = vec2(-.10+.05*cos(s*.7), .16+.03*sin(s*.9));
-  float disc = smoothstep(.003,-.003, length(p-c)-(.21+.03*pulse));
-  float tri = smoothstep(.003,-.003, sdTri((p-vec2(.38,-.04))*rot(s*.25), .13));
-  float star = 0.; for (int i=0;i<5;i++){ float a = float(i)/5.*TAU+s*.3; star = max(star, smoothstep(.012,.0, sdSeg(p-vec2(-.5,.3), vec2(0.), vec2(cos(a),sin(a))*.08))); }
-  return max(max(disc*.92, tri), star);
-}
-float ink(float cov, vec2 fc, float seed){
-  float g = .62*hash21(floor(fc/1.3)+seed*13.7) + .38*(fbm(fc*.012+seed)*.5+.5);
-  return smoothstep(g-.05, g+.05, cov*.985);
+float screen(vec2 d, float ang, float v, float cell){
+  vec2 q = rot(ang)*d/cell; vec2 f = fract(q)-.5;
+  float r = sqrt(clamp(v,0.,1.))*.62, aa = .9/cell*1.5 + .03;
+  return smoothstep(r+aa, r-aa, length(f));
 }
 vec3 scene(vec2 fc){
   float s = uS;
-  vec3 paper = vec3(.955,.93,.875);
-  float fiber = .5+.5*gnoise(fc*vec2(.9,.12)); paper *= .965 + .035*fiber + .02*hash21(fc);
-  float mis = 5. + 11.*smoothstep(2.0,2.7,s)*(1.-smoothstep(2.9,3.8,s)) + 1.5*sin(s*1.7);
-  vec2 oP = vec2(cos(s*.6),sin(s*.5))*mis, oB = vec2(sin(s*.45+2.),cos(s*.55))*mis, oY = vec2(cos(s*.35+4.),sin(s*.4+1.))*mis*.8;
-  vec2 nrm = vec2(uRes.y*.5);
-  // roller reveal per layer (top -> bottom)
-  float yn = fc.y/uRes.y;
-  float rP = smoothstep(.0,.04, (1.35 - (s+.6)*1.3) - (1.-yn)*0. - (1.-yn)) ;
-  float rB = smoothstep(.0,.04, (1.35 - (s-.0)*1.3) - (1.-yn));
-  float rY = smoothstep(.0,.04, (1.35 - (s-.6)*1.3) - (1.-yn));
-  float revP = 1.-smoothstep(.0,.04, yn - (1.2-(s+.6)*1.4)); float revB = 1.-smoothstep(.0,.04, yn - (1.2-(s+.0)*1.4)); float revY = 1.-smoothstep(.0,.04, yn - (1.2-(s-.6)*1.4));
-  vec2 pP = (fc+oP - .5*uRes)/uRes.y, pB = (fc+oB - .5*uRes)/uRes.y, pY = (fc+oY - .5*uRes)/uRes.y;
-  float iP = ink(pinkField(pP,s), fc+oP, 1.) * (s>.0 ? 1. : revP*step(-.6,s)) ;
-  float iB = ink(blueField(pB,s), fc+oB, 2.) * (s>.7 ? 1. : revB);
-  float iY = ink(yellowField(pY,s), fc+oY, 3.) * (s>1.3 ? 1. : revY);
-  vec3 col = paper;
-  col *= mix(vec3(1.), vec3(1.,.30,.58), iP*.94);
-  col *= mix(vec3(1.), vec3(.0,.47,.78), iB*.92);
-  col *= mix(vec3(1.), vec3(1.,.88,.05), iY*.95);
-  col += (hash21(fc*1.7+s)-.5)*.02;
+  vec2 d = vec2(fc.x, uRes.y-fc.y)*(1920./uRes.x);                 // design px, y down
+  vec2 p = (d - vec2(960.,540.))/1080.; p.y = -p.y;                 // poster coords, y up
+  // ---- strip slicing ----
+  vec2 pp = p;
+  if (uK.x > 0.) { vec2 dir = normalize(vec2(1.,-.62)), nrm = vec2(-dir.y, dir.x);
+    float k = floor(dot(pp, nrm)/.11); pp += dir*(mod(k,2.)*2.-1.)*.42*uK.x*(.6+.4*hash11(k)); }
+  if (uK.y > 0.) { float k = floor(pp.x/.09); float off = (mod(k,2.)*2.-1.)*.5*uK.y; pp.y += off; pp.x = mix(pp.x, abs(pp.x), uK.y); }
+  if (uK.z > 0.) { vec2 dir = normalize(vec2(.62,1.)), nrm = vec2(-dir.y, dir.x);
+    float k = floor(dot(pp, nrm)/.075); pp = mix(pp, pp + dir*(mod(k,2.)*2.-1.)*.9 + nrm*.0, uK.z); pp = mix(pp, rot(1.5708*uK.z)*pp, .35*uK.z); }
+  // ---- mis-registration per ink (bigger during the climax) ----
+  float mis = (.006 + .02*uK.z + .01*uK.x)*1.;
+  vec3 col = vec3(.97,.94,.86);
+  float pk, rd, yl, gn, bl, t0, t1, t2, t3;
+  float cell = 7.5 + 5.*uK.z;
+  poster(pp + vec2(mis, 0.), s, pk, t0, t1, t2, t3);  col *= mix(vec3(1.), PINK, screen(d, .26, pk, cell)*.95);
+  poster(pp + vec2(-mis, mis*.6), s, t0, rd, t1, t2, t3); col *= mix(vec3(1.), RED, screen(d, 1.31, rd, cell)*.9);
+  poster(pp + vec2(0., -mis), s, t0, t1, yl, t2, t3); col *= mix(vec3(1.), YEL, screen(d, 0., yl, cell)*.92);
+  poster(pp + vec2(mis*.5, mis), s, t0, t1, t2, gn, t3); col *= mix(vec3(1.), GRN, smoothstep(.4,.6,gn)*.9);
+  poster(pp + vec2(-mis*.5, -mis*.4), s, t0, t1, t2, t3, bl); col *= mix(vec3(1.), BLU, smoothstep(.3,.5,bl)*.85);
+  // drum grain, scratches, uneven ink
+  col *= .93 + .07*fbm(d*.012 + 3.);
+  col += (hash21(floor(d/1.5) + floor(s*12.)) - .5)*.07;
+  col = mix(col, vec3(.97,.94,.86), step(.997, hash21(floor(d/3.)+7.))*.8);
   return col;
 }` }));
 })();

@@ -1,72 +1,100 @@
-// 13 Glitch effect — a bold graphic is torn apart in bursts: slice displacement, RGB split, block corruption, row smears, scanlines, vertical roll
-(() => { const E = Engine;
-E.register(13, E.postScene({
+// 13 Glitch effect (v2) — designed glitch on the hypercar footage. Clean product shots in a vertical triptych
+// (headlight / wheel / wing), cut on the beat with designed insert frames: scan-lines pushed up by the car's profile,
+// a binary pixel silhouette, a glowing outline, a typed data HUD, RGB tear; a rapid 4-insert burst at the climax.
+// The intra-scene hard cuts are the effect's own language; the boundaries to 12 and 14 stay continuous.
+(() => { const E = Engine, gl = E.gl;
+const W = 1920, H = 1080;
+// side profile of a wedge hypercar (normalised: x 0..1 nose->tail, y 0..1 ground->roof)
+const PROFILE = [[0, .16], [.03, .30], [.18, .36], [.36, .47], [.47, .70], [.60, .74], [.72, .66], [.86, .58], [.94, .62], [1, .60], [1, .28], [.97, .16],
+  [.88, .14], [.86, .30], [.83, .34], [.75, .34], [.72, .26], [.70, .14], [.30, .14], [.28, .28], [.25, .33], [.16, .33], [.13, .26], [.12, .14]];
+let prog, target, hud, hudCtx, hudTex, sil, silCtx, silTex, panels;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+// insert schedule: [start, end, mode]; 0 = clean triptych, 1 scan-lines, 2 binary silhouette, 3 glow outline, 4 inverted, 5 mosaic, 6 RGB tear
+const CUTS = [[-9, .8, 1], [.8, 1.6, 0], [1.6, 1.97, 2], [1.97, 3.37, 0], [3.37, 3.56, 3], [3.56, 3.75, 4], [3.75, 3.94, 5], [3.94, 4.12, 6], [4.12, 4.85, 0], [4.85, 9, 1]];
+const modeAt = s => CUTS.find(c => s >= c[0] && s < c[1])[2];
+E.register(13, E.customScene({
   hudDark: false,
-  draw(c, s, w, h) {
-    c.fillStyle = '#0a0a14'; c.fillRect(0, 0, w, h);
-    // backdrop gradient circle
-    const cx = 960 + 60 * Math.sin(s * .9), cy = 500 + 25 * Math.cos(s * 1.2), R = 330;
-    const g = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R); g.addColorStop(0, '#ff2d95'); g.addColorStop(1, '#2de2ff');
-    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
-    // grid
-    c.strokeStyle = 'rgba(255,255,255,.14)'; c.lineWidth = 2;
-    for (let x = ((s * 60) % 120); x < w; x += 120) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke(); }
-    for (let y = 0; y < h; y += 120) { c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke(); }
-    // giant word
-    c.font = '900 440px "Inter","Inter Display",sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.lineWidth = 10; c.strokeStyle = '#0a0a14'; c.strokeText('GLITCH', 960, 520);
-    c.fillStyle = '#ffffff'; c.fillText('GLITCH', 960, 520);
-    // caption + bars
-    c.font = '700 34px "JetBrains Mono",monospace'; c.textAlign = 'left'; c.fillStyle = '#7dffb0';
-    c.fillText('ERR_0x7F  SIGNAL LOST', 150, 160); c.fillText('FRAME ' + String(((Math.floor(s * 30) % 1000) + 1000) % 1000).padStart(3, '0'), 150, 205);
-    const bars = ['#ffffff', '#ffe600', '#00e5ff', '#00ff66', '#ff2dff', '#ff2a2a', '#2a3cff'];
-    bars.forEach((col, i) => { c.fillStyle = col; c.fillRect(0 + i * (1920 / 7), 880, 1920 / 7 + 1, 70); });
-    c.fillStyle = '#fff'; c.fillRect(((s * 480) % 2100) - 90, 975, 180, 16);
+  init() {
+    target = E.makeTarget(W, H);
+    panels = [Footage('assets/build/car/rgb/%03d.jpg', 482), Footage('assets/build/car/rgb/%03d.jpg', 482), Footage('assets/build/car/rgb/%03d.jpg', 482)];
+    hud = document.createElement('canvas'); hud.width = W; hud.height = H; hudCtx = hud.getContext('2d'); hudTex = E.makeTex(W, H);
+    sil = document.createElement('canvas'); sil.width = W; sil.height = H; silCtx = sil.getContext('2d'); silTex = E.makeTex(W, H);
+    // silhouette mask, drawn once: car profile centred, 1500px long
+    const c = silCtx; c.fillStyle = '#000'; c.fillRect(0, 0, W, H); c.fillStyle = '#fff'; c.beginPath();
+    PROFILE.forEach(([x, y], i) => { const X = 210 + x * 1500, Y = 760 - y * 560; i ? c.lineTo(X, Y) : c.moveTo(X, Y); }); c.closePath(); c.fill();
+    c.fillStyle = '#000'; for (const wx of [.205, .79]) { c.beginPath(); c.arc(210 + wx * 1500, 760 - .14 * 560, 92, 0, Math.PI * 2); c.fill(); }
+    c.fillStyle = '#fff'; for (const wx of [.205, .79]) { c.beginPath(); c.arc(210 + wx * 1500, 760 - .14 * 560, 80, 0, Math.PI * 2); c.fill(); }
+    E.uploadCanvas(silTex, sil);
+    prog = E.program(E.PRELUDE + `
+      uniform sampler2D uP0, uP1, uP2, uSil, uHud; uniform float uMode, uRise, uTear, uScan;
+      vec3 panel(vec2 d){                       // triptych: three 640px columns, each a cropped portrait shot
+        float k = floor(d.x/640.); vec2 l = vec2(mod(d.x,640.)/640., d.y/1080.);
+        vec2 uv = vec2(l.x, 1. - (l.y*(1080./1138.) + (1.-1080./1138.)*.5));
+        vec3 c = k < .5 ? texture(uP0, uv).rgb : (k < 1.5 ? texture(uP1, uv).rgb : texture(uP2, uv).rgb);
+        c = pow(c, vec3(.9))*1.15;
+        float sep = smoothstep(3., 0., abs(mod(d.x+2.,640.)-2.));
+        return mix(c, vec3(0.), sep*step(1.,d.x)*step(d.x,1918.));
+      }
+      float silAt(vec2 d){ return texture(uSil, vec2(d.x/1920., 1.-d.y/1080.)).r; }
+      vec3 scene(vec2 fc){
+        vec2 d = vec2(fc.x, uRes.y-fc.y)*(1920./uRes.x);
+        float s = uS; int m = int(uMode + .5);
+        vec3 col;
+        if (m == 1) {                           // scan-lines pushed up by the profile; at the end they start to roll like terrain
+          col = vec3(0.);
+          for (int k=-2;k<=8;k++){
+            float y0 = floor(d.y/22.)*22. + float(k)*22.;
+            float push = 130.*silAt(vec2(d.x, y0)) + uRise*(70.*sin(d.x*.006 + y0*.02 + s*2.) + 45.*sin(d.x*.013 - s*3.1 + y0*.05))*smoothstep(1080.,300.,y0);
+            float y = y0 - push;
+            col = max(col, vec3(1.)*smoothstep(3.2, 1.6, abs(d.y - y)));
+          }
+        } else if (m == 2 || m == 4) {           // binary pixel silhouette (and its inverse)
+          vec2 cell = floor(d/24.)*24. + 12.;
+          float v = step(.5, silAt(cell));
+          col = vec3(m == 2 ? 1. - v : v);
+        } else if (m == 3) {                     // glowing outline on deep teal
+          float e = 0.; for (int i=0;i<8;i++){ float a = float(i)*.785; e += abs(silAt(d + vec2(cos(a),sin(a))*4.) - silAt(d)); }
+          float g = 0.; for (int i=0;i<12;i++){ float a = float(i)*.5236; g += silAt(d + vec2(cos(a),sin(a))*28.); } g = g/12.*(1.-silAt(d));
+          col = vec3(.02,.12,.10) + vec3(.2,1.,.75)*(min(e,1.)*1.2 + g*.55);
+          col *= .85 + .15*sin(d.y*1.6);
+        } else if (m == 5) {                     // coarse mosaic of the triptych
+          vec2 cell = floor(d/48.)*48. + 24.; col = panel(cell); col = floor(col*5.)/5.;
+        } else {
+          col = panel(d);
+          if (m == 6) { float band = floor(d.y/36.); float off = (hash11(band + floor(s*30.)) - .5)*220.*step(.4, hash11(band*3.1));
+            col = vec3(panel(d + vec2(off + 14., 0.)).r, panel(d + vec2(off, 0.)).g, panel(d + vec2(off - 14., 0.)).b); }
+          col += (hash21(d + floor(s*30.)) - .5)*.035;
+        }
+        // light tracking tear on every cut (first 2 frames)
+        if (uTear > 0.) { float band = step(.7, hash11(floor(d.y/14.) + floor(s*60.))); col = mix(col, col.gbr, band*uTear); }
+        vec4 h = texture(uHud, vec2(d.x/1920., 1.-d.y/1080.)); col = mix(col, h.rgb, h.a);
+        return col;
+      }
+      void main(){ fragColor = vec4(clamp(scene(gl_FragCoord.xy),0.,1.),1.); }`);
   },
-  frag: `
-float bursts(float s, out float big){
-  float e = 0.; big = 0.;
-  float T[9] = float[9](-.2,.4,1.0,1.55,2.1,2.6,3.05,3.7,4.3);
-  float Dd[9] = float[9](.3,.22,.26,.24,.3,.7,.3,.28,.3);
-  for (int i=0;i<9;i++){ float d = s - T[i]; float w = step(0.,d)*step(d,Dd[i]); float amp = (i==5)?1.:.55+.4*hash11(float(i)*3.7); e = max(e, w*amp); if (i==5) big = w; }
-  return e;
-}
-vec3 scene(vec2 fc){
-  vec2 uv = fc/uRes; float s = uS;
-  float big; float e = bursts(s, big); float e0 = .035;
-  float en = max(e, e0);
-  float tq = floor(s*30.);
-  // vertical hold roll
-  if (hash11(tq*1.7+3.) > .86 && e > .05) uv.y = fract(uv.y + e*.1*sin(tq));
-  // slice displacement
-  float nb = mix(14., 56., e);
-  float band = floor(uv.y*nb);
-  float hb = hash21(vec2(band, tq));
-  float on = step(.62 - .25*e, hb);
-  float dx = (hash21(vec2(band*1.3, tq+9.))-.5)*2.*en*.30*on;
-  vec2 u = vec2(fract(uv.x + dx), uv.y);
-  // row smear
-  float hs = hash21(vec2(floor(uv.y*90.), tq+21.));
-  if (hs > 1. - .12*e) u.x = fract(hash21(vec2(band, 5.))*.9 + uv.x*.02);
-  // block corruption
-  vec2 bl = floor(uv*vec2(22.,13.)); float hbk = hash21(bl + tq*1.31);
-  if (hbk > 1.-.22*e) u = fract(u + (hash22(bl+tq)-.5)*.5);
-  // rgb split
-  float sp = (4. + 26.*en)/uRes.x;
-  float ch = hash11(tq+7.)>.5 ? 1. : -1.;
-  vec3 col;
-  col.r = texture(uTex, u + vec2( sp,  .0)*ch).r;
-  col.g = texture(uTex, u).g;
-  col.b = texture(uTex, u - vec2( sp, -.0006*e*uRes.y/uRes.y)*ch).b;
-  // posterize / invert in corrupted blocks
-  if (hbk > 1.-.10*e) col = 1. - col;
-  if (hbk < .06*e) col = floor(col*3.)/2.;
-  // scanlines + noise
-  float scan = .88 + .12*sin(fc.y*3.14159);
-  col *= scan;
-  col += (hash21(fc + tq*3.)-.5)*(.04+.12*e);
-  col += vec3(.5,.0,.4)*step(.995, hash21(vec2(floor(fc.y/3.), tq)))*e;
-  return col;
-}`,
+  async render(s, tg) {
+    // each panel plays a slow, ping-ponged window of its shot (headlight / wheel / wing)
+    const pp = (a, b, rate) => { const L = b - a, x = Math.max(0, s + .75) * rate * 30; const k = x % (2 * L); return a + (k < L ? k : 2 * L - k); };
+    const fr = [pp(92, 146, .5), pp(196, 246, .45), pp(399, 413, .25)].map(v => Math.floor(v));
+    const [t0, t1, t2] = await Promise.all(panels.map((p, i) => p.tex(fr[i])));
+    // HUD
+    const c = hudCtx; c.clearRect(0, 0, W, H); const m = modeAt(s);
+    if (m === 0 && s > 1.97 && s < 3.37) {
+      const typ = (str, t0) => str.slice(0, Math.max(0, Math.floor((s - t0) * 42)));
+      c.fillStyle = '#e8fff6'; c.font = '600 20px "JetBrains Mono"';
+      [['PROTOTYPE · HYPERCAR', 2.05], ['GPS 45.0703N  7.6869E', 2.2], ['ELEV 239 M · FREQ 5.5 MHZ', 2.35], ['SPEED 000 KM/H', 2.5]].forEach(([str, t0], i) => c.fillText(typ(str, t0), 676, 120 + i * 30));
+      c.font = '800 64px "Inter"'; const tt = typ('TYPE', 2.6); c.fillText(tt, 676, 330);
+      if (s > 2.75) { c.fillRect(840, 270, 88, 76); c.fillStyle = '#000'; c.font = '700 60px "JetBrains Mono"'; c.fillText('01', 846, 330); }
+    }
+    E.uploadCanvas(hudTex, hud);
+    E.bindTarget(target); E.setBase(prog, W, H, s, tg);
+    E.bindTex(0, t0, prog.u.uP0); E.bindTex(1, t1, prog.u.uP1); E.bindTex(2, t2, prog.u.uP2); E.bindTex(3, silTex, prog.u.uSil); E.bindTex(4, hudTex, prog.u.uHud);
+    gl.uniform1f(prog.u.uMode, m);
+    gl.uniform1f(prog.u.uRise, E.ease((s - 4.85) / 1.4));
+    const cutT = CUTS.filter(cc => cc[0] > -1 && cc[0] <= s).map(cc => cc[0]).pop() ?? -9;
+    gl.uniform1f(prog.u.uTear, s - cutT < 2 / 60 && m !== 1 ? 1 : 0);
+    E.drawQuad();
+    return target.tex;
+  },
 }));
 })();
