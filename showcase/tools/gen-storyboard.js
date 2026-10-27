@@ -1,7 +1,7 @@
 // Generates docs/storyboard.md (Chinese storyboard + sound-design brief) from src/timeline.js so time codes can never drift from the video.
 const fs = require('fs'); const path = require('path');
 const { TIMELINE } = require('../src/timeline.js');
-const D = 4.5, HT = 0.6, PHASE = 0.5, T = TIMELINE.length * D;
+const D = 6.0, HT = 0.75, PHASE = 0.0, T = TIMELINE.length * D;
 const wrap = t => ((t % T) + T) % T;
 const tc = t => { t = wrap(t); const m = Math.floor(t / 60), s = t - m * 60; return `${String(m).padStart(2, '0')}:${s.toFixed(1).padStart(4, '0')}`; };
 const vt = (k, s) => (k - 1) * D + s - PHASE;

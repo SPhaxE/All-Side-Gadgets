@@ -2,7 +2,7 @@
 // usage: node tools/preview.js 1 2 3      -> out/preview/NN-name.mp4
 const { execFileSync } = require('child_process'); const path = require('path'); const fs = require('fs');
 const NAMES = ['liquid', 'ascii', 'holo', 'bauhaus', 'neon', 'dither', 'clay', 'halftone', 'kinetic', 'pixel', 'particles', 'riso', 'glitch', 'topo', 'glass', 'paper', 'vapor', 'flow', 'metaballs', 'fractal'];
-const FPS = 30, D = 4.5, HT = 0.6, PHASE = 0.5;
+const FPS = 30, D = 6.0, HT = 0.75, PHASE = 0.0;
 const root = path.resolve(__dirname, '..');
 for (const k of process.argv.slice(2).map(Number)) {
   const from = Math.round(((k - 1) * D - PHASE - HT) * FPS), to = from + Math.round((D + 2 * HT) * FPS);
