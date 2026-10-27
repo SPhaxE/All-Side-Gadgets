@@ -2,6 +2,18 @@
 // boundaries without an entry here still use the v1 transitions (src/transitions.js) until they are rebuilt.
 (() => { const E = Engine;
 
+// ---- 03 Holographic foil -> 04 Bauhaus : the foil plate is already cut along the Bauhaus grid (scene 03); tile by tile
+// (diagonal wave) the iridescence drains into the flat colour that tile has in scene 04, with a last specular glint
+E.bridge(2, { glsl: `
+  vec3 transition(vec2 uv, float p){
+    vec2 d = vec2(uv.x, 1.-uv.y)*vec2(1920.,1080.); vec2 g = vec2(d.x + 120., d.y); vec2 id = floor(g/360.);
+    float delay = (id.x + id.y)/7.;
+    float k = ease(clamp((p*1.5 - delay*.5)/.6, 0., 1.));
+    vec3 a = A(uv), b = B(uv);
+    float glint = exp(-pow((k-.5)*5.,2.)) * .6;
+    return mix(a, b, k) + glint*vec3(1.,.97,.92);
+  }` });
+
 // ---- 04 Bauhaus -> 05 Neon : the fills sink and the edges ignite — and those edges ARE scene 05's tubes (same geometry, same clock)
 E.bridge(3, { glsl: `
   float edgeA(vec2 uv){ vec2 o = vec2(2.,0.)/uRes, o2 = vec2(0.,2.)/uRes; return length(A(uv+o)-A(uv-o)) + length(A(uv+o2)-A(uv-o2)); }

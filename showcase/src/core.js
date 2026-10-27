@@ -57,8 +57,9 @@
     const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
       const log = gl.getShaderInfoLog(s);
-      const lines = src.split('\n').map((l, i) => (i + 1) + ': ' + l).join('\n');
-      throw new Error('Shader compile error: ' + log + '\n' + lines.slice(0, 6000));
+      const L = src.split('\n'), m = /ERROR: 0:(\d+)/.exec(log), at = m ? +m[1] : 1;
+      const ctx = L.map((l, i) => (i + 1) + ': ' + l).slice(Math.max(0, at - 6), at + 3).join('\n');
+      throw new Error('Shader compile error: ' + log + '\n' + ctx);
     }
     return s;
   }
@@ -125,7 +126,8 @@
   // ---------- scene factories ----------
   // shader scene: frag defines `vec3 scene(vec2 fc)` (fc = pixel coords in the scene's own resolution)
   function shaderScene(def) {
-    const w = def.w || W, h = def.h || H;
+    const rs = def.scaled ? SCALE : 1;           // opt-in: internal resolution follows ?scale (cheap drafts); shaders must use design-space units
+    const w = Math.round((def.w || W) * rs), h = Math.round((def.h || H) * rs);
     let prog, target;
     return {
       ...def,
@@ -422,7 +424,7 @@
   const E_ = window.Engine = {
     FPS, MB, NS, D, HT, T, N, PHASE, W, H, OW, OH, gl, canvas, PRELUDE, NAMES,
     program, makeTex, makeTarget, bindTarget, uploadCanvas, setBase, bindTex, drawQuad,
-    shaderScene, canvasScene, postScene, customScene, register, SCENES, wrap, bridge, BRIDGES, stepT, ease, smooth,
+    SCALE, shaderScene, canvasScene, postScene, customScene, register, SCENES, wrap, bridge, BRIDGES, stepT, ease, smooth,
   };
   window.renderFrame = renderFrame;
   window.renderScene = renderScene;
