@@ -257,7 +257,7 @@
     ['Neon glow', '霓虹辉光'], ['Dithering', '抖动'], ['Clay 3D', '黏土 3D'], ['Halftone dots', '半调网点'],
     ['Kinetic typography', '动态字体'], ['Pixel art', '像素画'], ['Particle swarm', '粒子群'], ['Risograph print', '孔版印刷'],
     ['Glitch effect', '故障效果'], ['Topographic lines', '等高线'], ['Glassmorphism', '玻璃拟态'], ['Paper cutout', '剪纸'],
-    ['Vaporwave grid', '蒸汽波网格'], ['Flow fields', '流场'], ['Metaballs', '融球'], ['Ray-marched fractals', '光线步进分形'],
+    ['Vaporwave', '蒸汽波'], ['Flow fields', '流场'], ['Metaballs', '融球'], ['Ray-marched fractals', '光线步进分形'],
   ];
   const clamp01 = x => Math.min(1, Math.max(0, x));
   const smooth = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
