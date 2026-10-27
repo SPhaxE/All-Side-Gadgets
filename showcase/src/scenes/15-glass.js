@@ -1,105 +1,96 @@
-// 15 Glassmorphism — saturated moving crisp shapes behind frosted-glass UI cards (analytic blur, bevel highlight, noise, soft shadow, parallax)
+// 15 Glassmorphism (v2) — five kinds of glass slide over a glowing backdrop (the topo glow from scene 14, now bokeh,
+// plus crisp shapes so the refraction reads): reeded/fluted glass, pillow-grid glass, coarse frosted glass, rippling
+// water glass and a classic frosted UI card. Each panel has its own refraction, a bevel highlight and a soft shadow.
+// At the climax they line up in depth and the camera trucks sideways; at the end they turn into paper (scene 16).
 (() => { const E = Engine;
-E.register(15, E.shaderScene({ hudDark: false, frag: `
+const NP = 5;
+const rects = new Float32Array(NP * 4), depth = new Float32Array(NP), paper = new Float32Array(NP);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+E.register(15, E.shaderScene({ scaled: true, hudDark: false,
+  uniforms(p, s, tg, gl) {
+    const e = E.ease;
+    // [x, y] at rest (design px), entry direction, entry time
+    const D = [[560, 470, 1, .7, .9], [1010, 560, -1, 1.15, .6], [1420, 430, 0, 1.9, .3], [760, 760, 0, 2.3, .1], [1240, 820, 1, 2.6, 0]];
+    const sizes = [[230, 330], [250, 250], [220, 300], [270, 190], [300, 170]];
+    const truck = e((s - 3.1) / 1.4) * 260 - e((s - 4.6) / 1.0) * 260;
+    for (let i = 0; i < NP; i++) {
+      const [x, y, dir, t0, z] = D[i], k = e((s - t0) / .75);
+      const ex = dir === 1 ? 2400 : dir === -1 ? -500 : x, ey = dir === 0 ? 1500 : y;
+      rects.set([ex + (x - ex) * k + truck * (z - .45) * 1.6, ey + (y - ey) * k, sizes[i][0], sizes[i][1]], i * 4);
+      depth[i] = z; paper[i] = e((s - 4.55 - i * .08) / .7);
+    }
+    gl.uniform4fv(p.u.uR, rects); gl.uniform1fv(p.u.uPaper, paper);
+    gl.uniform1f(p.u.uDrop, s - 2.55);
+  },
+  frag: `
+uniform vec4 uR[${NP}]; uniform float uPaper[${NP}]; uniform float uDrop;
 float sdRBox(vec2 p, vec2 b, float r){ vec2 d = abs(p)-b+r; return length(max(d,0.))+min(max(d.x,d.y),0.)-r; }
-float sdTri(vec2 p, float r){ const float k = sqrt(3.); p.x = abs(p.x)-r; p.y = p.y + r/k; if (p.x+k*p.y>0.) p = vec2(p.x-k*p.y, -k*p.x-p.y)/2.; p.x -= clamp(p.x,-2.*r,0.); return -length(p)*sign(p.y); }
-float cov(float d, float w){ return smoothstep(w,-w,d); }
-vec3 bgc(vec2 p, float w){
-  float s = uS;
-  vec3 col = mix(vec3(.16,.05,.42), vec3(.02,.30,.62), smoothstep(-.5,.5,p.y + .15*sin(p.x*2.+s*.4)));
-  col += vec3(.55,.1,.5)*exp(-length(p-vec2(.5,.3))*2.2)*.5;
-  // big orange ring
-  vec2 c1 = vec2(-.38+.08*sin(s*.5), .02+.06*cos(s*.4));
-  col = mix(col, vec3(1.,.55,.12), cov(abs(length(p-c1)-.26)-.05, w)*.95);
-  // pink disc
-  vec2 c2 = vec2(.45+.06*cos(s*.45), .22+.05*sin(s*.6));
-  col = mix(col, vec3(1.,.2,.58), cov(length(p-c2)-.20, w));
-  // cyan disc bottom
-  vec2 c3 = vec2(.05+.1*sin(s*.35+1.), -.30+.04*cos(s*.5));
-  col = mix(col, vec3(.1,.9,.95), cov(length(p-c3)-.17, w));
-  // yellow orbs with highlight
-  for (int i=0;i<4;i++){ float fi = float(i); vec2 c = vec2(cos(s*(.3+.1*fi)+fi*1.9)*.62, sin(s*(.4+.08*fi)+fi*2.3)*.30);
-    float r = .045+.015*fi; float d = length(p-c)-r;
-    vec3 oc = mix(vec3(1.,.9,.2), vec3(1.,.5,.1), fi/4.);
-    float hl = smoothstep(r*.8,0.,length(p-c-vec2(-.4,.4)*r));
-    col = mix(col, oc + hl*.5, cov(d, w)); }
-  // lime triangle
-  col = mix(col, vec3(.6,1.,.25), cov(sdTri((p-vec2(.18+.05*sin(s*.6),.34))*rot(s*.4), .09), w));
-  // violet thin ring
-  col = mix(col, vec3(.8,.5,1.), cov(abs(length(p-vec2(-.1,-.1))-.12)-.012, w)*.9);
+float cov(float d, float w){ return smoothstep(w, -w, d); }
+// backdrop (design px): bokeh glows + crisp shapes
+vec3 bg(vec2 d, float blur){
+  float s = uS; vec2 p = d/1080.;
+  vec3 col = mix(vec3(.04,.03,.09), vec3(.10,.05,.16), p.y);
+  col += vec3(1.,.45,.12)*exp(-length(p - vec2(.55 + .05*sin(s*.4), .62))*3.2)*.8;
+  col += vec3(.2,.5,1.)*exp(-length(p - vec2(1.25, .35 + .05*cos(s*.5)))*3.)*.8;
+  col += vec3(.9,.25,.6)*exp(-length(p - vec2(.95, .95))*4.)*.55;
+  float w = 1.5 + blur;
+  col = mix(col, vec3(1.,.55,.18), cov(length(d - vec2(520. + 30.*sin(s*.5), 520.)) - 190., w)*.9);
+  col = mix(col, vec3(.35,.7,1.), cov(abs(length(d - vec2(1350., 420. + 25.*cos(s*.6))) - 170.) - 26., w));
+  col = mix(col, vec3(1.,.35,.65), cov(sdRBox(d - vec2(1000. + 40.*sin(s*.35), 800.), vec2(230.,70.), 70.), w));
+  vec2 g = mod(d + vec2(s*20., 0.), 48.) - 24.; col = mix(col, vec3(.95,.92,1.), cov(length(g) - 4., w*.6)*smoothstep(1.,.6,p.y)*.55);
+  col = mix(col, vec3(1.,.9,.3), cov(length(d - vec2(1650., 860.)) - 90., w));
+  float st = step(.5, fract((d.x + d.y)/60.)); col = mix(col, col*1.25 + .04, st*cov(sdRBox(d - vec2(260., 880.), vec2(200.,120.), 20.), w)*.6);
   return col;
 }
-// card style: behind colour is already blurred
-vec3 glass(vec3 behind, float d, vec2 q, float seed){
-  vec3 c = behind*.82 + vec3(.20,.22,.30)*.55;
-  c += (hash21(q*900.+seed)-.5)*.045;
-  float bevel = smoothstep(.010,.0,abs(d+.003));
-  float lit = dot(normalize(q+1e-4), vec2(-.65,.75))*.5+.5;
-  c += bevel*(.15+.7*lit);
-  c += smoothstep(.05,.0,-d)*.06;
-  return c;
-}
-float bar(vec2 p, vec2 c, vec2 hs){ return cov(sdRBox(p-c, hs, hs.y), .0015); }
-vec3 layer12(vec2 p){
-  float s = uS;
-  vec3 col = bgc(p, .004);
-  // card 1 (far): profile
-  vec2 c1 = vec2(.44+.03*sin(s*.5), .22+.015*cos(s*.7)); vec2 h1 = vec2(.21,.13);
-  float d1 = sdRBox(p-c1, h1, .05);
-  col *= 1. - .3*smoothstep(.07,.0,sdRBox(p-c1-vec2(.01,-.025), h1, .05));
-  if (d1 < 0.){
-    vec3 bh = bgc(p+vec2(.012*sin(p.y*30.),0.), .06);
-    vec3 g = glass(bh, d1, p-c1, 1.);
-    vec2 q = p-c1;
-    g = mix(g, vec3(1.), cov(length(q-vec2(-.12,.0))-.05, .002)*.9);
-    g = mix(g, vec3(1.), bar(q, vec2(.045,.025), vec2(.10,.008))*.85);
-    g = mix(g, vec3(1.), bar(q, vec2(.03,-.01), vec2(.075,.007))*.5);
-    g = mix(g, vec3(1.,.9,.4), bar(q, vec2(.035,-.06), vec2(.08,.014))*.85);
-    col = g;
-  }
-  // card 2 (mid): circular progress
-  vec2 c2 = vec2(.32+.025*cos(s*.45), -.22+.02*sin(s*.6)); vec2 h2 = vec2(.17,.17);
-  float d2 = sdRBox(p-c2, h2, .07);
-  col *= 1. - .3*smoothstep(.07,.0,sdRBox(p-c2-vec2(.01,-.025), h2, .07));
-  if (d2 < 0.){
-    vec3 bh = bgc(p+vec2(.0,.012*sin(p.x*30.)), .06);
-    vec3 g = glass(bh, d2, p-c2, 2.);
-    vec2 q = p-c2; float ring = abs(length(q)-.095)-.012;
-    float a = fract(atan(q.x,q.y)/TAU); float prog = .25 + .5*(.5+.5*sin(s*.9));
-    g = mix(g, vec3(1.), cov(ring,.002)*(a<prog?1.:.22));
-    g = mix(g, vec3(1.), bar(q, vec2(0.,.0), vec2(.03,.01))*.9);
-    col = g;
-  }
-  return col;
-}
+vec3 bgBlur(vec2 d, float r){ vec3 c = vec3(0.); for (int i=0;i<12;i++){ float a = float(i)*2.39996; float rr = sqrt((float(i)+.5)/12.)*r; c += bg(d + vec2(cos(a),sin(a))*rr, r*.5); } return c/12.; }
 vec3 scene(vec2 fc){
-  vec2 p = (fc - .5*uRes)/uRes.y; float s = uS;
-  vec3 col = layer12(p);
-  // card 0 (front): dashboard
-  float pulse = smoothstep(2.2,2.8,s)*(1.-smoothstep(2.9,3.6,s));
-  vec2 c0 = vec2(-.14+.035*sin(s*.4), .01+.02*cos(s*.5)); vec2 h0 = vec2(.36+.01*pulse,.215+.01*pulse);
-  float d0 = sdRBox(p-c0, h0, .055);
-  col *= 1. - .34*smoothstep(.08,.0,sdRBox(p-c0-vec2(.012,-.03), h0, .055));
-  if (d0 < 0.){
-    float k = .022;
-    vec3 bh = (layer12(p+vec2(k,0.))+layer12(p-vec2(k,0.))+layer12(p+vec2(0.,k))+layer12(p-vec2(0.,k)))*.25;
-    bh = mix(bh, bgc(p+vec2(.015*sin(p.y*25.+s),0.), .08), .45);
-    vec3 g = glass(bh, d0, p-c0, 3.);
-    vec2 q = p-c0;
-    g = mix(g, vec3(1.), bar(q, vec2(-.19,.15), vec2(.10,.014))*.92);
-    g = mix(g, vec3(1.), bar(q, vec2(-.16,.10), vec2(.17,.008))*.55);
-    g = mix(g, vec3(1.), bar(q, vec2(-.19,.07), vec2(.13,.008))*.4);
-    float on = .5+.5*sin(s*1.4);
-    g = mix(g, mix(vec3(.55,.58,.7), vec3(.55,1.,.4), on), bar(q, vec2(.27,.15), vec2(.05,.026)));
-    g = mix(g, vec3(1.), cov(length(q-vec2(.27+(on-.5)*.05,.15))-.021, .0015));
-    for (int i=0;i<7;i++){ float fi = float(i); float hh = .035 + .10*(.5+.5*sin(s*1.7+fi*.9));
-      vec3 bc = mix(vec3(.4,1.,1.), vec3(1.,.5,.95), fi/6.);
-      g = mix(g, bc, cov(sdRBox(q-vec2(-.25+fi*.065,-.18+hh*.5), vec2(.019,hh*.5), .012), .0015)*.95); }
-    // sparkline
-    float sx = (q.x-.02)/.3; if (sx>0. && sx<1.){ float yy = -.02 + .07*sin(sx*9.+s*2.) + .03*sin(sx*17.-s*3.); g = mix(g, vec3(1.), smoothstep(.004,.0,abs(q.y-yy+.0)-.002)*.95); }
-    col = g;
+  float s = uS;
+  vec2 d = vec2(fc.x, uRes.y-fc.y)*(1920./uRes.x);
+  // shadows of all panels first
+  float shadow = 0.;
+  for (int i=0;i<${NP};i++){ vec4 R = uR[i]; float sd = sdRBox(d - R.xy - vec2(18.,26.), R.zw, 34.); shadow = max(shadow, smoothstep(40., -10., sd)*.45); }
+  // find the top-most panel under this pixel (later = on top)
+  int top = -1; float topD = 1.;
+  for (int i=0;i<${NP};i++){ vec4 R = uR[i]; float sd = sdRBox(d - R.xy, R.zw, 34.); if (sd < 0.) { top = i; topD = sd; } }
+  if (top < 0) return bg(d, 0.)*(1. - shadow);
+  vec4 R = uR[top]; vec2 l = d - R.xy;                          // panel-local px
+  vec2 off = vec2(0.); float blur = 0.; vec3 tint = vec3(1.); float extra = 0.;
+  if (top == 0) {                                                // reeded / fluted
+    float w = 26.; float u = mod(l.x, w)/w*2. - 1.; off.x = -u*34.; tint = vec3(.96,.98,1.); extra = .08*(1. - u*u);
+  } else if (top == 1) {                                         // pillow grid glass
+    vec2 cell = mod(l, 64.)/64.*2. - 1.; off = -cell*26.*(1. - .3*dot(cell,cell)); extra = .1*smoothstep(.75,1.,max(abs(cell.x),abs(cell.y)));
+  } else if (top == 2) {                                         // coarse frosted
+    off = (hash22(floor(l/2.)) - .5)*36.; blur = 14.; tint = vec3(.97);
+  } else if (top == 3) {                                         // water ripple from a drop
+    vec2 c = vec2(-60., -20.); float r = length(l - c); float wv = sin(r*.09 - uDrop*9.)*exp(-r*.006)*step(0., uDrop)*exp(-max(uDrop,0.)*.35);
+    off = normalize(l - c + 1e-3)*wv*22.; extra = wv*.06; tint = vec3(.93,.98,1.);
+  } else {                                                       // classic frosted UI card
+    blur = 30.; tint = vec3(.92,.94,1.);
   }
-  col *= 1. - .3*dot(p,p);
+  vec3 behind = blur > 0. ? bgBlur(d + off, blur) : bg(d + off, 0.);
+  vec3 col = behind*tint*.92 + vec3(.06,.06,.09) + extra;
+  col += (hash21(d + floor(s*24.)) - .5)*.03;
+  // classic card: UI elements
+  if (top == 4) {
+    col = mix(col, vec3(1.), cov(sdRBox(l - vec2(-150., -95.), vec2(80., 9.), 9.), 1.2)*.9);
+    col = mix(col, vec3(1.), cov(sdRBox(l - vec2(-120., -62.), vec2(110., 5.), 5.), 1.2)*.45);
+    for (int i=0;i<6;i++){ float fi = float(i); float hh = 20. + 40.*(.5+.5*sin(s*2.+fi)); col = mix(col, mix(vec3(.4,.9,1.), vec3(1.,.5,.9), fi/5.), cov(sdRBox(l - vec2(-170. + fi*36., 90. - hh*.5), vec2(11., hh*.5), 6.), 1.2)*.95); }
+    float on = step(0., sin(s*1.6)); col = mix(col, mix(vec3(.5), vec3(.4,1.,.5), on), cov(sdRBox(l - vec2(200., -90.), vec2(46., 24.), 24.), 1.2));
+    col = mix(col, vec3(1.), cov(length(l - vec2(200. + (on*2.-1.)*22., -90.)) - 19., 1.2));
+  }
+  // bevel highlight (top-left light) + rim
+  float rim = smoothstep(3., 0., abs(topD + 2.));
+  float lit = dot(normalize(l + 1e-3), normalize(vec2(-.6,-.8)))*.5 + .5;
+  col += rim*(.15 + .75*lit);
+  col += smoothstep(26., 0., -topD)*.05;
+  // turning into paper (scene 16): flat paper colours, fibres, cut edge
+  float pp = uPaper[top];
+  if (pp > 0.) {
+    vec3 P[5] = vec3[5](vec3(.95,.90,.80), vec3(.62,.78,.80), vec3(.36,.56,.66), vec3(.20,.37,.48), vec3(.91,.66,.48));
+    vec3 pc = P[top]*(.95 + .05*fbm(d*.05)) * (.97 + .03*sin(d.x*.9 + fbm(d*.1)*6.));
+    pc = mix(pc, vec3(.99,.97,.93), smoothstep(5., 1., -topD));      // white paper core at the cut edge
+    col = mix(col, pc, pp);
+  }
   return col;
 }` }));
 })();
