@@ -1,15 +1,15 @@
 // Core engine: single WebGL2 context, stateless scenes, cyclic timeline.
 (() => {
   const Q = new URLSearchParams(location.search);
-  const FPS = +(Q.get('fps') || 30);       // output frame rate; all animation is in seconds, so any fps works
+  const FPS = +(Q.get('fps') || 60);       // output frame rate; all animation is in seconds, so any fps works
   const MB = Math.max(1, +(Q.get('mb') || 1));          // motion-blur sub-frames per output frame (1 = off)
   const SHUTTER = +(Q.get('shutter') || 0.5);           // fraction of a frame interval the shutter is open
   const NS = 20;               // scenes
-  const D = 4.5;               // seconds per scene
-  const HT = 0.6;              // half transition length (s) -> 1.2s soft transitions
+  const D = 6.0;               // seconds per scene (8 beats at 80 BPM)
+  const HT = 0.75;             // half transition length (s) -> 1.5s transitions centred on each boundary
   const T = NS * D;            // loop length
   const N = Math.round(T * FPS);
-  const PHASE = 0.5;           // video t=0 is 0.5s after the 20|1 boundary; the 20->1 transition (HT=0.6) still has its last 0.1s (3 frames) at the very start
+  const PHASE = 0.0;           // video t=0 sits exactly on the 20|1 boundary (= middle of the 20->1 bridge), so bar lines align with the loop point
   const W = 1920, H = 1080;
 
   const SCALE = +(Q.get('scale') || 1);
@@ -192,25 +192,58 @@
   const hudCv = document.createElement('canvas'); hudCv.width = OW; hudCv.height = OH;
   const hudCtx = hudCv.getContext('2d');
 
-  function initCore() {
-    transProg = program(PRELUDE + `
-      uniform sampler2D uA; uniform sampler2D uB; uniform float uP; uniform int uType;
-      uniform sampler2D uHud; uniform float uHudOn; uniform float uFrame; uniform sampler2D uAtlas;
+  // ---------- bridges (per-boundary transitions) ----------
+  // Engine.bridge(type, def), type = index of the outgoing scene (0-based; 19 = the 20->1 loop seam).
+  //   def.glsl   : texture re-interpretation. GLSL defining `vec3 transition(vec2 uv, float p)`; helpers A(uv), B(uv),
+  //                uniforms uSA/uSB (scene-local times), uT, uAtlas. Compiled into its own program.
+  //   def.render : full takeover. async render(ctx) -> texture, ctx = { p, praw, sA, sB, tg, renderA(), renderB(), target }.
+  //                Use it when one object must carry straight through the boundary (same shader, same geometry).
+  const BRIDGES = [];
+  function bridge(type, def) { BRIDGES[type] = def; }
+  const BRIDGE_HEAD = `
+      uniform sampler2D uA; uniform sampler2D uB; uniform float uP; uniform float uSA; uniform float uSB; uniform sampler2D uAtlas;
       vec3 A(vec2 uv){ return texture(uA, uv).rgb; }
       vec3 B(vec2 uv){ return texture(uB, uv).rgb; }
-      ` + window.TRANSITION_GLSL + `
+  `;
+  let finalProg, legacyProg, transT;
+  async function initCore() {
+    finalProg = program(PRELUDE + `
+      uniform sampler2D uBase; uniform sampler2D uHud; uniform float uHudOn; uniform float uFrame;
       void main(){
-        vec2 uv = vUv; vec3 c;
-        if (uP <= 0.) c = texture(uA, uv).rgb;
-        else if (uP >= 1.) c = texture(uB, uv).rgb;
-        else c = transition(uType, uv, uP);
-        vec4 h = texture(uHud, uv);
+        vec3 c = texture(uBase, vUv).rgb;
+        vec4 h = texture(uHud, vUv);
         c = mix(c, h.rgb, h.a * uHudOn);
         c += (hash21(gl_FragCoord.xy + uFrame*1.37) - .5) / 255.;
         fragColor = vec4(c, 1.);
       }`);
+    if (window.TRANSITION_GLSL) legacyProg = program(PRELUDE + BRIDGE_HEAD + `uniform int uType;
+` + window.TRANSITION_GLSL + `
+      void main(){ fragColor = vec4(uP <= 0. ? A(vUv) : (uP >= 1. ? B(vUv) : transition(uType, vUv, uP)), 1.); }`);
+    BRIDGES.forEach((b, i) => {
+      if (!b) return;
+      if (b.glsl) b.prog = program(PRELUDE + BRIDGE_HEAD + b.glsl + `
+      void main(){ fragColor = vec4(clamp(uP <= 0. ? A(vUv) : (uP >= 1. ? B(vUv) : transition(vUv, uP)), 0., 1.), 1.); }`);
+      if (b.init) b.init();
+    });
+    transT = makeTarget(OW, OH);
     hudTex = makeTex(OW, OH);
-    SCENES.forEach(s => s.init());
+    for (const sc of SCENES) await sc.init();
+  }
+  async function runBridge(c, tg, texA, texB) {
+    const b = BRIDGES[c.type], p = ease(c.p);
+    if (b && b.render) return b.render({ p, praw: c.p, sA: c.A.s, sB: c.B.s, tg, target: transT,
+      renderA: () => SCENES[c.A.k].render(c.A.s, tg), renderB: () => SCENES[c.B.k].render(c.B.s, tg) });
+    texA = texA || await SCENES[c.A.k].render(c.A.s, tg);
+    texB = texB || await SCENES[c.B.k].render(c.B.s, tg);
+    const pr = (b && b.prog) || legacyProg;
+    bindTarget(transT); setBase(pr, OW, OH, 0, tg);
+    bindTex(0, texA, pr.u.uA); bindTex(1, texB, pr.u.uB); bindTex(3, E_.atlas || texA, pr.u.uAtlas);
+    gl.uniform1f(pr.u.uP, p);
+    if (pr.u.uSA) gl.uniform1f(pr.u.uSA, c.A.s);
+    if (pr.u.uSB) gl.uniform1f(pr.u.uSB, c.B.s);
+    if (pr.u.uType) gl.uniform1i(pr.u.uType, c.type);
+    drawQuad();
+    return transT.tex;
   }
 
   // wrap seconds into [-T/2, T/2)
@@ -317,22 +350,18 @@
   // draw the full composite for global time tg into `target` (null = canvas)
   async function drawComposite(tg, fNoise, target) {
     const c = composite(tg);
-    const A = SCENES[c.A.k], texA = await A.render(c.A.s, tg);
-    let texB = texA, p = 0;
-    if (c.B) { texB = await SCENES[c.B.k].render(c.B.s, tg); p = ease(c.p); }
-    // hud index: stays on scene k until transition moves it
+    const A = SCENES[c.A.k];
+    const base = c.B ? await runBridge(c, tg) : await A.render(c.A.s, tg);
+    // hud index: stays on scene k until the bridge moves it
     const idxFloat = c.B ? c.A.k + smooth((c.p - .25) / .5) : c.A.k;
     const themeA = A.hudDark ? 1 : 0, themeB = c.B ? (SCENES[c.B.k].hudDark ? 1 : 0) : themeA;
     const themeMix = themeA + (themeB - themeA) * smooth((c.p - .25) / .5);
     drawHud(tg, idxFloat, themeMix);
-
     bindTarget(target);
-    setBase(transProg, OW, OH, 0, tg);
-    bindTex(0, texA, transProg.u.uA); bindTex(1, texB, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud); bindTex(3, E_.atlas || texA, transProg.u.uAtlas);
-    gl.uniform1f(transProg.u.uP, c.B ? p : 0);
-    gl.uniform1i(transProg.u.uType, c.type);
-    gl.uniform1f(transProg.u.uHudOn, hudOn ? 1 : 0);
-    gl.uniform1f(transProg.u.uFrame, fNoise);
+    setBase(finalProg, OW, OH, 0, tg);
+    bindTex(0, base, finalProg.u.uBase); bindTex(2, hudTex, finalProg.u.uHud);
+    gl.uniform1f(finalProg.u.uHudOn, hudOn ? 1 : 0);
+    gl.uniform1f(finalProg.u.uFrame, fNoise);
     drawQuad();
     return c;
   }
@@ -378,19 +407,22 @@
 
   // debug: show one scene alone at local time s (hud off)
   async function renderScene(k, s) {
-    const tg = k * D + s;
+    const tg = (k - 1) * D + s;
     const tex = await SCENES[k - 1].render(s, tg);
     drawHud(tg, k - 1, SCENES[k - 1].hudDark ? 1 : 0);
-    bindTarget(null); setBase(transProg, OW, OH, 0, tg);
-    bindTex(0, tex, transProg.u.uA); bindTex(1, tex, transProg.u.uB); bindTex(2, hudTex, transProg.u.uHud); bindTex(3, E_.atlas || tex, transProg.u.uAtlas);
-    gl.uniform1f(transProg.u.uP, 0); gl.uniform1i(transProg.u.uType, 0); gl.uniform1f(transProg.u.uHudOn, hudOn ? 1 : 0); gl.uniform1f(transProg.u.uFrame, 0);
+    bindTarget(null); setBase(finalProg, OW, OH, 0, tg);
+    bindTex(0, tex, finalProg.u.uBase); bindTex(2, hudTex, finalProg.u.uHud);
+    gl.uniform1f(finalProg.u.uHudOn, hudOn ? 1 : 0); gl.uniform1f(finalProg.u.uFrame, 0);
     drawQuad(); gl.finish();
   }
+
+  // quantise time to a stop-motion / footage rate (integer-safe at 60fps: 12fps = 5 frames, 10fps = 6 frames)
+  const stepT = (t, rate) => Math.floor(t * rate + 1e-4) / rate;
 
   const E_ = window.Engine = {
     FPS, MB, NS, D, HT, T, N, PHASE, W, H, OW, OH, gl, canvas, PRELUDE, NAMES,
     program, makeTex, makeTarget, bindTarget, uploadCanvas, setBase, bindTex, drawQuad,
-    shaderScene, canvasScene, postScene, customScene, register, SCENES, wrap,
+    shaderScene, canvasScene, postScene, customScene, register, SCENES, wrap, bridge, BRIDGES, stepT, ease, smooth,
   };
   window.renderFrame = renderFrame;
   window.renderScene = renderScene;
@@ -403,7 +435,7 @@
     ]).catch(() => { });
     await Promise.all([...document.fonts].map(f => f.load().catch(() => { })));   // bundled faces (assets/fonts): load every weight up front
     await document.fonts.ready;
-    initCore();
+    await initCore();
     window.__ready = true;
     if (Q.get('play') !== null) startPlayer();
   };

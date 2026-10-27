@@ -1,6 +1,7 @@
 // Deterministic frame renderer: drives showcase/index.html via window.renderFrame(frameIndex)
 // usage: node tools/render.js --from 0 --to 2700 --out frames [--workers 4] [--fmt png|jpg]
 const { chromium } = require('playwright');
+const { createServer } = require('./lib-server');
 const path = require('path');
 const fs = require('fs');
 
@@ -22,7 +23,7 @@ async function worker(id, frames) {
   const page = await browser.newPage({ viewport: { width: W, height: H } });
   page.on('pageerror', e => console.error(`[w${id}] pageerror`, e.message));
   page.on('console', m => { if (m.type() === 'error') console.error(`[w${id}]`, m.text()); });
-  await page.goto('file://' + path.resolve(__dirname, '..', 'index.html') + `?scale=${scale}` + (query ? '&' + query : ''));
+  await page.goto(`http://127.0.0.1:${PORT}/index.html?scale=${scale}&fps=${arg('fps', 30)}` + (query ? '&' + query : ''));
   await page.waitForFunction('window.__ready === true', null, { timeout: 120000 });
   let n = 0; const t0 = Date.now();
   for (const f of frames) {
@@ -35,10 +36,12 @@ async function worker(id, frames) {
   await browser.close();
 }
 
+let PORT = 0;
 (async () => {
+  const srv = createServer(path.resolve(__dirname, '..')); await new Promise(r => srv.listen(0, '127.0.0.1', r)); PORT = srv.address().port;
   // interleave frames across workers so slow scenes spread evenly
   const buckets = Array.from({ length: workers }, () => []);
   for (let f = from; f < to; f++) buckets[(f - from) % workers].push(f);
   await Promise.all(buckets.map((b, i) => worker(i, b)));
-  console.log('done', from, to);
+  console.log('done', from, to); srv.close();
 })().catch(e => { console.error(e); process.exit(1); });
