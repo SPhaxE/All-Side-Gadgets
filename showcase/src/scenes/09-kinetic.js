@@ -1,116 +1,104 @@
-// 09 Kinetic typography — four type states (lime / black / pink / cream) switched by expanding colour irises:
-// bouncing letter drop -> sliced word shear -> counter-moving marquee rows -> elastic letter pops
+// 09 Kinetic typography (v2) — Swiss grid poster in motion. 12-column grid, black/white + signal red, every move on
+// the beat (80 BPM). The halftone dot from 08 opens into the O of FORM; F R M slide out from behind it; FOLLOWS spins
+// in on a 3D letter cylinder; MOTION lands letter by letter on split-flap tiles; weight breathes Thin<->Black across
+// the words while a red block sweeps the grid and knocks the type out; annotations type themselves in.
 (() => { const E = Engine;
+const W = 1920, H = 1080, M = 96, GUT = 24, COLW = (W - 2 * M - 11 * GUT) / 12;
+const RED = '#ff3b1f', INK = '#111111', PAPER = '#f4f1ea';
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-const eOutCubic = x => 1 - Math.pow(1 - clamp(x), 3);
-const eInOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
-const eOutBack = x => { x = clamp(x); const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
-const eOutBounce = x => { x = clamp(x); const n1 = 7.5625, d1 = 2.75; if (x < 1 / d1) return n1 * x * x; if (x < 2 / d1) return n1 * (x -= 1.5 / d1) * x + .75; if (x < 2.5 / d1) return n1 * (x -= 2.25 / d1) * x + .9375; return n1 * (x -= 2.625 / d1) * x + .984375; };
-const eElastic = x => { x = clamp(x); return x === 0 ? 0 : x === 1 ? 1 : Math.pow(2, -10 * x) * Math.sin((x * 10 - .75) * (2 * Math.PI / 3)) + 1; };
+const eo = x => 1 - Math.pow(1 - clamp(x), 4), eio = x => { x = clamp(x); return x < .5 ? 8 * x ** 4 : 1 - (-2 * x + 2) ** 4 / 2; };
 const hash = a => { a = Math.sin(a * 127.1 + 311.7) * 43758.5453; return a - Math.floor(a); };
-const FONT = n => `900 ${n}px "Inter","Inter Display",sans-serif`;
-const LIME = '#c8ff2e', INK = '#0b0b0b', PINK = '#ff2e88', CREAM = '#f3ecdc';
-const T1 = 1.35, T2 = 2.55, T3 = 3.75, IRIS = .5;
-const P = [null, [1500, 260], [380, 820], [1100, 540]];
-
-function letters(c, text, size, cx, cy, fn) {           // draw each letter with per-letter transform fn(i, n) -> {dx,dy,rot,sx,sy,fill,alpha}
-  c.font = FONT(size); c.textBaseline = 'middle'; c.textAlign = 'left';
-  const ws = [...text].map(ch => c.measureText(ch).width), total = ws.reduce((a, b) => a + b, 0);
-  let x = cx - total / 2;
-  [...text].forEach((ch, i) => {
-    const t = fn(i, text.length) || {};
-    c.save(); c.translate(x + ws[i] / 2 + (t.dx || 0), cy + (t.dy || 0)); c.rotate(t.rot || 0); c.scale(t.sx ?? 1, t.sy ?? 1);
-    c.globalAlpha = t.alpha ?? 1; c.fillStyle = t.fill || INK; c.textAlign = 'center'; c.fillText(ch, 0, 0); c.restore();
-    x += ws[i];
-  });
+const colX = c => M + c * (COLW + GUT);
+const font = (w, px) => `${w} ${px}px "Inter"`;
+const W9 = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+// draw text at weight wf (100..900, fractional -> crossfade the two neighbouring cuts)
+function wtext(c, str, x, y, px, wf, fill) {
+  const k = clamp((wf - 100) / 100, 0, 8), i0 = Math.floor(k), i1 = Math.min(8, i0 + 1), f = k - i0;
+  c.fillStyle = fill;
+  c.globalAlpha = 1; c.font = font(W9[i0], px); c.fillText(str, x, y);
+  if (f > .01) { c.globalAlpha = f; c.font = font(W9[i1], px); c.fillText(str, x, y); c.globalAlpha = 1; }
 }
-function asterisk(c, x, y, r, rot, col) {
-  c.save(); c.translate(x, y); c.rotate(rot); c.fillStyle = col;
-  for (let i = 0; i < 3; i++) { c.rotate(Math.PI / 3); c.fillRect(-r * .14, -r, r * .28, r * 2); }
-  c.restore();
-}
-function stateLime(c, ls) {
-  c.fillStyle = LIME; c.fillRect(0, 0, 1920, 1080);
-  letters(c, 'KINETIC', 330, 960, 470, (i, n) => {
-    const t0 = i * .075, b = eOutBounce((ls - t0) / .7), r = (hash(i + 3) - .5) * .9;
-    const wob = ls > 1.2 ? Math.sin(ls * 6 + i) * 6 * clamp((ls - 1.2) / .5) : 0;
-    return { dy: -(1 - b) * 1000 + wob, rot: r * (1 - b), alpha: clamp((ls - t0) * 6) };
-  });
-  // outlined sub-word slides in
-  const sl = eOutCubic((ls - .85) / .55);
-  c.save(); c.font = FONT(150); c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 5; c.strokeStyle = INK;
-  c.strokeText('TYPOGRAPHY', 960 + (1 - sl) * 1300, 720); c.restore();
-  asterisk(c, 1700, 180, 70, ls * 2.4, INK);
-  c.fillStyle = INK; c.fillRect(120, 880, 1680 * eOutCubic((ls - .6) / .8), 10);
-}
-function stateInk(c, ls) {
-  c.fillStyle = INK; c.fillRect(0, 0, 1920, 1080);
-  const amp = 300 * Math.pow(Math.sin(Math.PI * clamp(ls / 1.15)), 1.2);
-  const bandN = 5, y0 = 330, y1 = 610, bh = (y1 - y0) / bandN;
-  // lime bar sweeping behind the word
-  c.fillStyle = LIME; c.fillRect(0, 730, 1920 * eOutCubic((ls - .15) / .7), 26);
-  for (let k = 0; k < bandN; k++) {
-    c.save(); c.beginPath(); c.rect(0, y0 + k * bh - .5, 1920, bh + 1); c.clip();
-    const dir = k % 2 ? 1 : -1, dx = dir * amp * (.55 + .45 * Math.sin(k * 1.7 + 1));
-    const sc = 1 + .14 * eInOut(ls / 1.2);
-    c.translate(960, 470); c.scale(sc, sc); c.translate(-960, -470);
-    letters(c, 'KINETIC', 330, 960 + dx, 470, () => ({ fill: '#fff' }));
-    c.restore();
-  }
-  c.fillStyle = '#fff'; c.font = '700 40px "JetBrains Mono",monospace'; c.textAlign = 'left';
-  c.globalAlpha = eOutCubic((ls - .3) / .5); c.fillText('SHEAR · SLICE · SNAP', 270, 790); c.globalAlpha = 1;
-  asterisk(c, 220, 190, 55, -ls * 2.4, LIME);
-}
-function stateMarquee(c, ls) {
-  c.fillStyle = PINK; c.fillRect(0, 0, 1920, 1080);
-  const rows = 5, rh = 216, word = 'MOTION  ';
-  c.font = FONT(230); const wW = c.measureText(word).width;
-  for (let r = 0; r < rows; r++) {
-    const y = 540 + (r - 2) * rh, enter = eOutBack((ls - r * .07) / .55), yy = y - (1 - enter) * 1300;
-    c.save(); c.beginPath(); c.rect(0, yy - rh / 2 + 6, 1920, rh - 12); c.clip();
-    const dir = r % 2 ? 1 : -1, off = (dir * ls * (360 + r * 120)) % wW;
-    c.font = FONT(230); c.textBaseline = 'middle'; c.textAlign = 'left';
-    const filled = r % 2 === 0, accent = r === 2;
-    for (let k = -2; k < Math.ceil(1920 / wW) + 3; k++) {
-      const x = k * wW + off;
-      if (accent) { c.fillStyle = '#fff'; c.fillText('TYPE  ', x, yy + 6); }
-      else if (filled) { c.fillStyle = INK; c.fillText(word, x, yy + 6); }
-      else { c.lineWidth = 5; c.strokeStyle = INK; c.strokeText(word, x, yy + 6); }
-    }
-    c.restore();
-  }
-}
-function statePop(c, ls) {
-  c.fillStyle = CREAM; c.fillRect(0, 0, 1920, 1080);
-  const cols = [INK, PINK, '#1f4bff', INK];
-  letters(c, 'TYPE', 560, 960, 520, (i, n) => {
-    const t0 = .04 + i * .11; const k = (ls - t0) / .75;
-    const sc = eElastic(k), flip = Math.cos(Math.PI * (1 - clamp(k * 1.6)) * .5);
-    const wob = Math.sin(ls * 3.2 + i * 1.3) * .05 * clamp((ls - .9) / .5);
-    return { sx: Math.max(.001, sc * Math.abs(flip)), sy: sc, rot: wob, fill: cols[i], dy: Math.sin(ls * 4 + i) * 10 * clamp((ls - .8) / .5) };
-  });
-  asterisk(c, 1700, 880, 90, ls * 2.4, PINK);
-  c.fillStyle = INK; c.fillRect(120, 930, 1680 * eOutCubic((ls - .5) / .7), 10);
-}
-const STATES = [(c, s) => stateLime(c, s + .45), (c, s) => stateInk(c, s - T1), (c, s) => stateMarquee(c, s - T2), (c, s) => statePop(c, s - T3)];
-const TS = [-1e9, T1, T2, T3];
+function typed(str, t, cps = 40) { return str.slice(0, Math.max(0, Math.floor(t * cps))); }
 E.register(9, E.canvasScene({
-  hudDark: false,
-  draw(c, s) {
-    let cur = 0; for (let i = 1; i < 4; i++) if (s >= TS[i]) cur = i;
-    STATES[cur](c, s);
-    // iris into the next state (if mid-iris), drawn on top of the current one
-    if (cur < 3) { const nt = TS[cur + 1], q = (s - (nt - 0)) / IRIS; }
-    for (let i = 1; i < 4; i++) {
-      const q = (s - TS[i]) / IRIS;
-      if (q > 0 && q < 1) {
-        // state i is entering: draw state i-1 as base then state i inside the expanding circle
-        c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
-        STATES[i - 1](c, s);
-        const r = eInOut(q) * 2300; c.beginPath(); c.arc(P[i][0], P[i][1], r, 0, Math.PI * 2); c.clip();
-        STATES[i](c, s); c.restore();
-      }
+  hudDark: true,
+  draw(c, s, w, h) {
+    c.fillStyle = PAPER; c.fillRect(0, 0, W, H);
+    c.textBaseline = 'alphabetic'; c.textAlign = 'left';
+    // ---- grid ----
+    const gA = clamp((s - .1) / .6) * (1 - .6 * clamp((s - 4.4) / .6));
+    if (gA > 0) {
+      c.strokeStyle = `rgba(255,59,31,${.28 * gA})`; c.lineWidth = 1;
+      for (let i = 0; i < 12; i++) { const x = colX(i), hh = H * eo((s - .1 - i * .02) / .5); c.strokeRect(x + .5, 0, COLW, hh); }
+      c.beginPath(); for (const y of [120, 560, 640, 930]) { c.moveTo(0, y + .5); c.lineTo(W * eo((s - .2) / .6), y + .5); } c.stroke();
     }
+    // ---- breathing weight wave (climax) ----
+    const breathe = clamp((s - 2.95) / .2) * (1 - clamp((s - 4.35) / .3));
+    const wAt = (i, base) => base + ((100 + 800 * (.5 + .5 * Math.cos((s - 3.0) * 4.19 - i * .7))) - base) * breathe;
+    // ---- FORM: the O is the dot from scene 08 ----
+    const PX = 400, baseY = 500;
+    c.font = font(900, PX);
+    const letters = ['F', 'O', 'R', 'M'], wd = letters.map(l => c.measureText(l).width), total = wd.reduce((a, b) => a + b, 0) - 3 * 24;
+    let x0 = (W - total) / 2; const xs = []; for (let i = 0; i < 4; i++) { xs.push(x0); x0 += wd[i] - 24; }
+    const oCx = xs[1] + wd[1] / 2, oCy = baseY - PX * .365, oR = PX * .385;         // geometric O, sized to the Inter Black cap height
+    const settle = eio((s - .75) / .6);                                             // beat 1: the dot shrinks into its slot
+    const open = eio((s - .0) / .5);                                                // beat 0: the counter opens
+    const cx = W / 2 + (oCx - W / 2) * settle, cy = H / 2 + (oCy - H / 2) * settle, R = 324 + (oR - 324) * settle;
+    // F R M slide out from behind the O (masked), one after another
+    letters.forEach((L, i) => {
+      if (i === 1) return;
+      const k = eo((s - .8 - (i === 0 ? 0 : i === 2 ? .08 : .16)) / .55);
+      if (k <= 0) return;
+      const dx = (1 - k) * (oCx - xs[i] - wd[i] / 2);
+      c.save(); c.beginPath(); c.rect(0, 0, W, H); c.arc(cx, cy, R * 1.02, 0, Math.PI * 2, true); c.clip('evenodd');
+      wtext(c, L, xs[i] + dx, baseY, PX, wAt(i, 900), INK); c.restore();
+    });
+    // the O itself (ring), weight follows the breathing too: ring thickness
+    const thick = .37 + ((.12 + .5 * (wAt(1, 900) - 100) / 800) - .37) * breathe;
+    c.fillStyle = INK; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
+    const inner = R * (1 - thick) * open; if (inner > 0) { c.fillStyle = PAPER; c.beginPath(); c.ellipse(cx, cy, inner * .78, inner, 0, 0, Math.PI * 2); c.fill(); }
+    // ---- FOLLOWS on a letter cylinder (beat 2) ----
+    const fa = clamp((s - 1.4) / .3);
+    if (fa > 0) {
+      const str = 'FOLLOWS', n = str.length, px2 = 150, Rc = 520, spin = (1 - eio((s - 1.45) / 1.0)) * 2.4;
+      for (let i = 0; i < n; i++) {
+        const th = (i - (n - 1) / 2) * .19 + spin, z = Math.cos(th); if (z < .05) continue;
+        const x = W / 2 + Math.sin(th) * Rc, y = 700;
+        c.save(); c.translate(x, y); c.scale(z, 1); c.globalAlpha = fa * clamp(z * 1.6);
+        c.textAlign = 'center'; wtext(c, str[i], 0, 0, px2, wAt(i + 4, 300 + 600 * (1 - z)), INK); c.restore();
+      }
+      c.globalAlpha = 1; c.textAlign = 'left';
+    }
+    // ---- MOTION on split-flap tiles (beat 3) ----
+    if (s > 2.2) {
+      const str = 'MOTION', tw = COLW + GUT, th = 190, y0 = 780, x1 = colX(3);
+      for (let i = 0; i < 6; i++) {
+        const t0 = 2.25 + i * .09, land = t0 + .45; if (s < t0) continue;
+        const x = x1 + i * tw, flips = Math.floor((Math.min(s, land) - t0) * 18);
+        const ch = s >= land ? str[i] : String.fromCharCode(65 + Math.floor(hash(i * 31 + flips) * 26));
+        const fp = s >= land ? 1 : ((s - t0) * 18) % 1;
+        c.fillStyle = INK; c.fillRect(x, y0, tw - 10, th);
+        c.save(); c.beginPath(); c.rect(x, y0, tw - 10, th); c.clip();
+        c.textAlign = 'center'; wtext(c, ch, x + (tw - 10) / 2, y0 + th * .78, 170, wAt(i + 11, 800), PAPER);
+        if (fp < 1) { const sy = Math.abs(Math.cos(fp * Math.PI)); c.fillStyle = 'rgba(0,0,0,.55)'; c.fillRect(x, y0 + th / 2 - th / 2 * sy, tw - 10, th / 2 * sy); }
+        c.restore();
+        c.fillStyle = PAPER; c.fillRect(x, y0 + th / 2 - 1.5, tw - 10, 3);
+      }
+      c.textAlign = 'left';
+    }
+    // ---- red block sweeps the grid and knocks the type out (climax, beats 4-5) ----
+    const sweep = eio((s - 3.0) / 1.2);
+    if (sweep > 0 && sweep < 1) {
+      const bx = -400 + (W + 400) * sweep, bw = 4 * (COLW + GUT);
+      c.save(); c.globalCompositeOperation = 'difference'; c.fillStyle = '#00c4e0'; c.fillRect(bx, 0, bw, H); c.restore();
+    }
+    // ---- annotations ----
+    c.fillStyle = INK; c.font = '500 18px "JetBrains Mono"';
+    const ann = [[colX(0), 100, 'FORM FOLLOWS MOTION', .3], [colX(0), 128, 'GRID 12 × 1 · GUTTER 24 · MARGIN 96', .45], [colX(9), 100, 'INTER BLACK · 400 PX', .6],
+      [colX(9), 128, `WGHT ${Math.round(wAt(0, 900))}`, .7], [colX(0), 1000, 'TRACKING −24 / BASELINE 500', 1.6], [colX(9), 1000, `${(s * 80 / 60).toFixed(2)} BEATS · 80 BPM`, 1.7]];
+    ann.forEach(([x, y, str, t0]) => c.fillText(typed(str, s - t0, 45), x, y));
+    // crop marks
+    c.strokeStyle = INK; c.lineWidth = 2; const cm = clamp((s - .2) / .4) * 30;
+    for (const [x, y, sx, sy] of [[40, 40, 1, 1], [W - 40, 40, -1, 1], [40, H - 40, 1, -1], [W - 40, H - 40, -1, -1]]) { c.beginPath(); c.moveTo(x, y); c.lineTo(x + sx * cm, y); c.moveTo(x, y); c.lineTo(x, y + sy * cm); c.stroke(); }
   },
 }));
 })();

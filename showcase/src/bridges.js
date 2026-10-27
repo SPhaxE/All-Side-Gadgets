@@ -35,4 +35,24 @@ E.bridge(4, { glsl: `
     float hold = 1. - ease(clamp((p-.3)/.7, 0., 1.));      // neon glow lingers over the filling pixels, then fades
     return b + a*hold*(1.-.5*lum(b));
   }` });
+// ---- 06 Dithering -> 07 Clay : the swollen dither balls soften, warm up and pick up clay colours while the clay set
+// (whose pellets are rolling in from the same spots) fades up underneath
+E.bridge(5, { glsl: `
+  vec3 transition(vec2 uv, float p){
+    vec3 a = A(uv), b = B(uv);
+    vec2 px = 1./uRes; vec3 s = a; for (int i=0;i<8;i++){ float an = float(i)*.785; s += A(uv + vec2(cos(an),sin(an))*px*8.*p); } s /= 9.;
+    vec3 warm = mix(s, s*vec3(1.05,.8,.7) + vec3(.35,.22,.18), ease(p/.6));
+    return mix(warm, b, ease((p-.25)/.75));
+  }` });
+
+// ---- 07 Clay -> 08 Halftone : the bloom is printed: CMYK dots grow out of the clay photo, round cells swelling from the flowers
+E.bridge(6, { glsl: `
+  vec3 transition(vec2 uv, float p){
+    vec2 d = vec2(uv.x, 1.-uv.y)*vec2(1920.,1080.); mat2 R = rot(.7854); vec2 q = R*d/15.; vec2 f = fract(q)-.5, id = floor(q);
+    vec2 cp = transpose(R)*((id+.5)*15.);
+    float delay = length(cp - vec2(960.,420.))/1300.;
+    float r = ease(clamp((p*1.6 - delay)/.7, 0., 1.))*.75;
+    float inside = smoothstep(r+.03, r-.03, length(f))*step(.001, r);
+    return mix(A(uv), B(uv), max(inside, ease((p-.6)/.4)));
+  }` });
 })();
