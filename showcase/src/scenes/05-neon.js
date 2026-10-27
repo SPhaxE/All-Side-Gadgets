@@ -47,8 +47,8 @@ E.register(5, E.customScene({
         for (int k=0;k<8;k++){
           float a = float(k)*.7853982; vec2 d = vec2(cos(a),sin(a));
           vec3 c1 = texture(uFill, uv + d*2.5*px).rgb, c2 = texture(uFill, uv + d*5.5*px).rgb;
-          if (distance(c1,c0) > .12){ core = 1.; col = max(col, max(neonOf(c0), neonOf(c1))); }
-          if (distance(c2,c0) > .12){ soft = max(soft,.55); col = max(col, max(neonOf(c0), neonOf(c2))); }
+          if (distance(c1,c0) > .12){ core = 1.; col = max(col, neonOf(c0)); }
+          if (distance(c2,c0) > .12){ soft = max(soft,.55); col = max(col, neonOf(c0)); }
         }
         vec2 cp = vec2(gl_FragCoord.x/uRes.x*1920. + 120., (1.-uv.y)*1080.);
         int ti = int(clamp(floor(cp.y/360.),0.,2.))*6 + int(clamp(floor(cp.x/360.),0.,5.));
@@ -108,8 +108,7 @@ E.register(5, E.customScene({
     lineCtx.clearRect(0, 0, W, H);
     const m = E.ease((s - 4.8) / .85);
     if (s > 4.78) {
-      const t = G.tilesAt(tau).find(t => t.c === 3 && t.r === 1);
-      const A = resample(t.layers[0].pts, 320), HL = HorseLayout, B = horse.map(([u, v]) => [HL.X0 + u * HL.SQ, v * HL.SQ]);
+      const A = resample(G.keyOutline(tau), 320), HL = HorseLayout, B = horse.map(([u, v]) => [HL.X0 + u * HL.SQ, v * HL.SQ]);
       let k0 = 0, bd = 1e9; for (let k = 0; k < 320; k += 4) { const d = Math.hypot(A[k][0] - B[0][0], A[k][1] - B[0][1]); if (d < bd) { bd = d; k0 = k; } }   // align start points
       lineCtx.beginPath(); for (let k = 0; k < 320; k++) { const a = A[(k + k0) % 320], b = B[k]; const x = a[0] + (b[0] - a[0]) * m, y = a[1] + (b[1] - a[1]) * m; k ? lineCtx.lineTo(x, y) : lineCtx.moveTo(x, y); }
       lineCtx.closePath(); lineCtx.lineJoin = 'round'; lineCtx.lineWidth = 7; lineCtx.strokeStyle = 'rgb(255,90,190)'; lineCtx.stroke();

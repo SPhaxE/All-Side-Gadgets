@@ -6,10 +6,6 @@ E.register(4, E.canvasScene({
   draw(c, s, w, h) {
     c.fillStyle = G.PAL.char; c.fillRect(0, 0, w, h);
     G.drawFills(c, s);                       // tau = scene-local time
-    // hairline grid (ref has none, but it keeps the composition taut at 16:9)
-    c.strokeStyle = 'rgba(20,20,22,.55)'; c.lineWidth = 2;
-    for (let i = 0; i <= G.COLS; i++) { const x = G.OX + i * G.TILE; c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke(); }
-    for (let j = 1; j < G.ROWS; j++) { c.beginPath(); c.moveTo(0, j * G.TILE); c.lineTo(w, j * G.TILE); c.stroke(); }
   },
 }));
 })();

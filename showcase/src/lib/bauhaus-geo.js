@@ -1,142 +1,152 @@
-// Shared Bauhaus geometry for scenes 04 (flat fills) and 05 (the same shapes as neon tubes) and their bridges.
-// Every shape is a 48-point radial polygon around its own centre, so any two shapes morph vertex-to-vertex.
-// geometry is a pure function of tau = seconds since scene 04 started (global time - 18s).
+// Shared Bauhaus tiles for scenes 04 (flat fills) and 05 (the same fills read as neon tubes) and their bridges.
+// Like the reference, every tile is a small self-running mechanism (pinwheel, conveyor, iris, ...) that moves
+// continuously in eased steps on the beat; each mechanism is seamless by construction (state after a step == state
+// before it with colours rotated), so it can run for any length of time. Pure function of tau (s since scene 04 start).
 (() => {
-  const N = 48;                                   // vertices per shape
-  const TILE = 360, COLS = 6, ROWS = 3, OX = -120; // 6x3 full-bleed grid (outer columns are cropped 120px)
+  const TILE = 360, COLS = 6, ROWS = 3, OX = -120;   // 6x3 full-bleed grid (outer columns cropped by 120px)
   const PAL = { coral: '#f07a63', lav: '#b493ff', purple: '#6a45c2', char: '#2c2c2e' };
-  const COLORS = [PAL.coral, PAL.lav, PAL.purple, PAL.char];
-  const NEON = { [PAL.coral]: [1.0, .42, .30], [PAL.lav]: [.78, .55, 1.0], [PAL.purple]: [.55, .35, 1.0], [PAL.char]: [.35, .95, 1.0] };
+  const P = [PAL.coral, PAL.lav, PAL.purple, PAL.char];
+  const BEAT = .75, MOVE = .55;
   const hash = a => { a = Math.sin(a * 127.1 + 311.7) * 43758.5453; return a - Math.floor(a); };
   const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-  const eio = x => { x = clamp(x); return x < .5 ? 16 * x ** 5 : 1 - (-2 * x + 2) ** 5 / 2; };   // easeInOutQuint: snappy, ref-like
+  const eio = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2; };
+  const col = (k) => P[((k % 4) + 4) % 4];
 
-  // ---- shape library: polygons in tile-local units ([-1,1], y down) ----
-  const circ = (cx, cy, r, a0 = 0, a1 = Math.PI * 2, n = 96) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; });
-  const SHAPES = {
-    disc: () => circ(0, 0, .78),
-    dot: () => circ(0, 0, .30),
-    square: () => [[-.72, -.72], [.72, -.72], [.72, .72], [-.72, .72]],
-    full: () => [[-1, -1], [1, -1], [1, 1], [-1, 1]],
-    diamond: () => [[0, -.95], [.95, 0], [0, .95], [-.95, 0]],
-    tri: () => [[0, -.95], [.95, .95], [-.95, .95]],
-    half: () => [[-1, 1], ...circ(0, 1, 1, Math.PI, Math.PI * 2, 64).slice(1, -1), [1, 1]],          // dome on the bottom edge
-    quarter: () => [[1, 1], ...circ(1, 1, 2, Math.PI, Math.PI * 1.5, 64)],                           // quarter disc from bottom-right corner
-    star4: () => Array.from({ length: 8 }, (_, i) => { const a = i * Math.PI / 4 - Math.PI / 2, r = i % 2 ? .30 : 1.0; return [Math.cos(a) * r, Math.sin(a) * r]; }),
-    bar: () => [[-1, -.32], [1, -.32], [1, .32], [-1, .32]],
-    pill: () => [...circ(-.45, 0, .42, Math.PI * .5, Math.PI * 1.5, 32), ...circ(.45, 0, .42, -Math.PI * .5, Math.PI * .5, 32)],
-    hex: () => Array.from({ length: 6 }, (_, i) => { const a = i * Math.PI / 3 - Math.PI / 2; return [Math.cos(a) * .82, Math.sin(a) * .82]; }),
-    kite: () => [[0, -1], [.62, .1], [0, 1], [-.62, .1]],
+  // continuous step counter: every tile moves every 2 beats (checkerboard parity), everyone moves on the climax beat (tau 3.0)
+  function phase(tau, parity, extra) {
+    let ph = 0;
+    for (let k = -2; k < 20; k++) ph += eio((tau - (parity * BEAT + k * 2 * BEAT)) / MOVE);
+    if (parity === 1) ph += eio((tau - 3.0) / MOVE);            // climax: the odd tiles join in
+    for (const t of extra) ph += eio((tau - t) / MOVE);
+    return ph;
+  }
+  const poly = (c, pts, fill) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fillStyle = fill; c.fill(); c.strokeStyle = fill; c.lineWidth = 1; c.stroke(); };
+  const disc = (c, x, y, r, fill) => { if (r <= 0) return; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fillStyle = fill; c.fill(); };
+  const S = TILE, H2 = TILE / 2;
+
+  // ---- mechanisms: draw(c, ph, b) in tile-local px (0..S), b = colour offset of this tile ----
+  const MECH = {
+    // four wedges meeting at a centre point that orbits in 90-degree eased steps (ref tile 1)
+    pinwheel(c, ph, b) {
+      const a = ph * Math.PI / 2 + Math.PI / 4, cx = H2 + Math.cos(a) * S * .3, cy = H2 + Math.sin(a) * S * .3;
+      const C = [[0, 0], [S, 0], [S, S], [0, S]];
+      for (let i = 0; i < 4; i++) poly(c, [C[i], C[(i + 1) % 4], [cx, cy]], col(b + i));
+    },
+    // stacked chevrons scrolling up one band per step (ref tile 3)
+    chevron(c, ph, b) {
+      const per = S / 3, f = ph - Math.floor(ph), n = Math.floor(ph);
+      for (let j = -3; j <= 6; j++) {          // top to bottom: each lower band overlaps the one above
+        const y = (j - f) * per;
+        poly(c, [[-1, y + H2], [H2, y], [S + 1, y + H2], [S + 1, y + H2 + per * 3], [-1, y + H2 + per * 3]], col(b + j + n));
+      }
+    },
+    // concentric rings expanding outward one ring per step (infinite zoom)
+    iris(c, ph, b) {
+      const f = ph - Math.floor(ph), n = Math.floor(ph), step = S * .17;
+      c.fillStyle = col(b + n - 1); c.fillRect(0, 0, S, S);
+      for (let j = 0; j < 7; j++) disc(c, H2, H2, (6 - j + f) * step, col(b + n + j - 6));
+    },
+    // four quarter discs grow from the corners until they flood the tile, then the next colour starts (ref 4-point star)
+    quarters(c, ph, b) {
+      const f = ph - Math.floor(ph), n = Math.floor(ph);
+      c.fillStyle = col(b + n); c.fillRect(0, 0, S, S);
+      const r = f * S * .72, fill = col(b + n + 1);
+      for (const [x, y] of [[0, 0], [S, 0], [S, S], [0, S]]) disc(c, x, y, r, fill);
+      disc(c, H2, H2, S * .11 * Math.sin(Math.PI * f), col(b + n + 2));
+    },
+    // domes hanging from the top and rising from the bottom, sliding sideways in opposite directions (ref "D C")
+    domes(c, ph, b) {
+      const f = ph - Math.floor(ph), n = Math.floor(ph);
+      c.fillStyle = col(b + 3); c.fillRect(0, 0, S, S);
+      for (let j = -1; j <= 2; j++) {
+        const x1 = (j + f) * S, x2 = (j - f + .5) * S;
+        c.beginPath(); c.arc(x1, 0, H2 * .98, 0, Math.PI); c.fillStyle = col(b + n - j); c.fill();
+        c.beginPath(); c.arc(x2, S, H2 * .98, Math.PI, Math.PI * 2); c.fillStyle = col(b + n + j + 1); c.fill();
+      }
+    },
+    // dashed bars, alternate columns travelling up / down (ref meander)
+    stripes(c, ph, b) {
+      const n = Math.floor(ph), f = ph - n, w = S / 3;
+      c.fillStyle = col(b + 2); c.fillRect(0, 0, S, S);
+      for (let i = 0; i < 3; i++) {
+        const dir = i % 2 ? 1 : -1;
+        for (let j = -2; j <= 2; j++) {
+          const y = (j + dir * f) * S * .5 + (i % 2) * S * .25;
+          c.fillStyle = col(b + (i % 2 ? 0 : 1) + ((j + n * dir) & 1) * 3); c.fillRect(i * w, y, w + .5, S * .5 * .7);
+        }
+      }
+    },
+    // a diamond that turns 45 degrees per step (diamond <-> square), counter-rotating square and a pulsing dot inside (ref)
+    turn(c, ph, b) {
+      c.fillStyle = col(b); c.fillRect(0, 0, S, S);
+      const sq = (r, a, fill) => poly(c, [0, 1, 2, 3].map(k => [H2 + Math.cos(a + k * Math.PI / 2) * r, H2 + Math.sin(a + k * Math.PI / 2) * r]), fill);
+      sq(S * .48, ph * Math.PI / 4, col(b + 3));
+      sq(S * .30, -ph * Math.PI / 4 + Math.PI / 4, col(b + 1));
+      const pulse = Math.sin((ph - Math.floor(ph)) * Math.PI);
+      disc(c, H2, H2, S * (.08 + .06 * pulse), col(b + 0));
+    },
+    // 2x2 blocks sliding one quadrant clockwise per step
+    checker(c, ph, b) {
+      const n = Math.floor(ph), f = ph - n;
+      const Q = [[0, 0], [H2, 0], [H2, H2], [0, H2]];
+      for (let i = 0; i < 4; i++) {
+        const a = Q[(((i + n) % 4) + 4) % 4], z = Q[(((i + n + 1) % 4) + 4) % 4];
+        c.fillStyle = col(b + i); c.fillRect(a[0] + (z[0] - a[0]) * f - .5, a[1] + (z[1] - a[1]) * f - .5, H2 + 1, H2 + 1);
+      }
+      disc(c, H2, H2, S * .14, col(b + 2));
+    },
+    // big triangle whose apex slides along the top edge, ping-pong (ref "A" tent), inner triangle lags
+    tent(c, ph, b) {
+      const n = Math.floor(ph), f = ph - n, u = n % 2 ? 1 - f : f;
+      c.fillStyle = col(b + 1); c.fillRect(0, 0, S, S);
+      poly(c, [[0, S], [S, S], [u * S, 0]], col(b + 3));
+      const v = .25 + .5 * (1 - u);
+      poly(c, [[S * .2, S], [S * .8, S], [S * (.2 + .6 * v), S * .38]], col(b + 0));
+    },
+    // circle of alternating quadrants rotating 90 degrees per step
+    pie(c, ph, b) {
+      c.fillStyle = col(b + 2); c.fillRect(0, 0, S, S);
+      const a0 = ph * Math.PI / 2, r = S * .44;
+      for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(H2, H2); c.arc(H2, H2, r, a0 + i * Math.PI / 2, a0 + (i + 1) * Math.PI / 2); c.closePath(); c.fillStyle = col(b + (i % 2 ? 1 : 3)); c.fill(); }
+      disc(c, H2, H2, S * .12, col(b));
+    },
+    // quarter-circle bands from a corner, expanding outward
+    arcs(c, ph, b) {
+      const n = Math.floor(ph), f = ph - n, step = S * .28;
+      c.fillStyle = col(b + n - 1); c.fillRect(0, 0, S, S);
+      for (let j = 0; j < 7; j++) disc(c, 0, S, (6 - j + f) * step, col(b + n + j));
+    },
+    // inscribed square: vertices slide along the edges (full -> diamond -> full), a second one nested and lagging
+    inscribe(c, ph, b) {
+      c.fillStyle = col(b + 1); c.fillRect(0, 0, S, S);
+      const ins = (u, x0, y0, s, fill) => { const P4 = [[x0 + u * s, y0], [x0 + s, y0 + u * s], [x0 + s - u * s, y0 + s], [x0, y0 + s - u * s]]; poly(c, P4, fill); return P4; };
+      const u1 = (ph % 1 + 1) % 1 * .5 + (((Math.floor(ph) % 2) + 2) % 2) * .5;
+      ins(u1, 0, 0, S, col(b + 3));
+      const u2 = ((ph - .35) % 1 + 1) % 1;
+      ins(u2, S * .22, S * .22, S * .56, col(b + 0));
+    },
   };
-  function centroid(P) { let x = 0, y = 0; P.forEach(p => { x += p[0]; y += p[1]; }); return [x / P.length, y / P.length]; }
-  function radialize(P) {              // ray-cast N directions from the centroid -> N perimeter points (consistent start at -90deg)
-    const c = centroid(P), out = [];
-    for (let i = 0; i < N; i++) {
-      const a = -Math.PI / 2 + i * 2 * Math.PI / N, dx = Math.cos(a), dy = Math.sin(a); let best = 1e9;
-      for (let j = 0; j < P.length; j++) {
-        const p = P[j], q = P[(j + 1) % P.length], ex = q[0] - p[0], ey = q[1] - p[1], den = dx * ey - dy * ex;
-        if (Math.abs(den) < 1e-9) continue;
-        const t = ((p[0] - c[0]) * ey - (p[1] - c[1]) * ex) / den, u = ((p[0] - c[0]) * dy - (p[1] - c[1]) * dx) / den;
-        if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && t < best) best = t;
-      }
-      out.push([c[0] + dx * best, c[1] + dy * best]);
-    }
-    return out;
-  }
-  const CACHE = {}; const shapePts = k => CACHE[k] || (CACHE[k] = radialize(SHAPES[k]()));
-  const KEYS = ['disc', 'square', 'diamond', 'tri', 'half', 'quarter', 'star4', 'bar', 'pill', 'hex', 'kite', 'dot'];
+  const LAYOUT = [
+    ['chevron', 'iris', 'pinwheel', 'quarters', 'domes', 'chevron'],
+    ['stripes', 'turn', 'checker', 'tent', 'pie', 'iris'],
+    ['pinwheel', 'arcs', 'inscribe', 'stripes', 'quarters', 'turn'],
+  ];
+  const ROT = [[0, 0, 1, 0, 0, 2], [0, 0, 0, 0, 1, 3], [3, 0, 0, 2, 2, 1]];   // quarter turns per tile, for variety
+  const MIRROR = [[1, 1, 1, 1, 1, -1], [1, 1, -1, 1, 1, -1], [-1, 1, 1, 1, -1, 1]];
 
-  // ---- per-tile states ----
-  // state = { bg, layers:[{shape, color, rot(quarter turns, may be .5), scale}] }
-  function randomState(tile, step) {
-    const k = tile * 131 + step * 977;
-    const bg = COLORS[Math.floor(hash(k) * 4)];
-    const n = 1 + Math.floor(hash(k + 1) * 2.2);
-    const layers = []; let under = bg;
-    for (let i = 0; i < n; i++) {
-      const kk = k + 10 + i * 7;
-      let color = COLORS[Math.floor(hash(kk) * 4)]; if (color === under) color = COLORS[(COLORS.indexOf(color) + 1 + Math.floor(hash(kk + 5) * 3)) % 4];
-      const shape = i === 0 ? KEYS[Math.floor(hash(kk + 1) * 11)] : ['dot', 'diamond', 'square', 'disc'][Math.floor(hash(kk + 1) * 4)];
-      const rot = Math.floor(hash(kk + 2) * 4) + (hash(kk + 3) > .8 ? .5 : 0);
-      layers.push({ shape, color, rot, scale: i === 0 ? 1 : .55 }); under = color;
-    }
-    if (hash(k + 50) > .6 && layers.length === 1) layers.push({ shape: 'dot', color: bg, rot: 0, scale: 1 });   // ring
-    return { bg, layers };
+  function drawTile(ctx, cx, cy, tau) {
+    const x = OX + cx * TILE, y = cy * TILE, parity = (cx + cy) & 1, b = Math.floor(hash(cx * 7 + cy * 13) * 4);
+    let ph = phase(tau, parity, []) * MIRROR[cy][cx];
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, TILE, TILE); ctx.clip();
+    ctx.translate(x + H2, y + H2); ctx.rotate(ROT[cy][cx] * Math.PI / 2); ctx.translate(-H2, -H2);
+    MECH[LAYOUT[cy][cx]](ctx, ph, b);
+    ctx.restore();
   }
-  // climax super-graphic (step 3): a big circle over the centre 2x2, a "sunset" bowl under it, arrows and stripes around
-  function climaxState(c, r) {
-    const { coral, lav, purple, char } = PAL;
-    const Q = (rot, col, bg) => ({ bg, layers: [{ shape: 'quarter', color: col, rot, scale: 1 }] });
-    if (c === 2 && r === 0) return Q(0, coral, lav);  if (c === 3 && r === 0) return Q(1, coral, lav);
-    if (c === 2 && r === 1) return Q(3, coral, lav);  if (c === 3 && r === 1) return Q(2, coral, lav);
-    if (r === 2 && (c === 2 || c === 3)) return { bg: char, layers: [{ shape: 'half', color: purple, rot: 2, scale: 1 }, { shape: 'dot', color: char, rot: 0, scale: .9 }] };
-    if (c === 1) return { bg: r === 1 ? coral : purple, layers: [{ shape: 'tri', color: r === 1 ? char : lav, rot: 1, scale: 1 }] };
-    if (c === 0) return { bg: char, layers: [{ shape: 'bar', color: r % 2 ? coral : lav, rot: 0, scale: 1 }] };
-    if (c === 4) return { bg: purple, layers: [{ shape: r === 1 ? 'star4' : 'bar', color: r === 1 ? coral : lav, rot: 1, scale: 1 }] };
-    return { bg: lav, layers: [{ shape: 'disc', color: char, rot: 0, scale: 1 }, { shape: 'dot', color: coral, rot: 0, scale: 1 }] };
+  function drawFills(ctx, tau) { for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) drawTile(ctx, c, r, tau); }
+  // outer triangle of the 'tent' tile (col 3, row 1) in canvas px — scene 05 peels this tube off into the horse outline
+  function keyOutline(tau) {
+    const cx = 3, cy = 1, x = OX + cx * TILE, y = cy * TILE, n0 = phase(tau, (cx + cy) & 1, []), n = Math.floor(n0), f = n0 - n, u = n % 2 ? 1 - f : f;
+    return [[x, y + S], [x + S, y + S], [x + u * S, y]];
   }
-  // step k happens at STEP_T[k] (tau seconds); step 0 is the emergence from flat tiles
-  const STEP_T = [0.0, 1.5, 3.0, 3.75, 4.5, 7.5, 9.0, 10.5];   // no step inside the 04->05 bridge (tau 5.25-6.75): geometry holds while it ignites
-  const MORPH = .6;
-  function stateFor(c, r, k) { const tile = r * COLS + c; return k === 3 ? climaxState(c, r) : randomState(tile, k); }
-  function delayFor(c, r, k) {
-    const pat = k % 3;
-    if (k === 3) return 0;                                     // climax: everything together
-    if (pat === 0) return (c + r) / (COLS + ROWS - 2) * .32;   // diagonal
-    if (pat === 1) return Math.hypot(c - 2.5, r - 1) / 3 * .32; // radial
-    return hash(c * 13 + r * 7 + k) * .32;                      // scatter
-  }
-  const lerp = (a, b, t) => a + (b - a) * t;
-  // geometry of one tile at time tau: { x, y, bg, layers:[{pts:[[x,y]..] (canvas px), color}] , emerge }
-  function tileAt(c, r, tau) {
-    const x = OX + c * TILE, y = r * TILE;
-    // which step are we morphing into?
-    let k = 0; while (k + 1 < STEP_T.length && tau >= STEP_T[k + 1] + delayFor(c, r, k + 1)) k++;
-    const nk = Math.min(k + 1, STEP_T.length - 1);
-    const t0 = STEP_T[nk] + delayFor(c, r, nk);
-    const m = nk === k ? 0 : eio((tau - t0) / MORPH);
-    const A = stateFor(c, r, k), B = stateFor(c, r, nk);
-    const emerge = eio((tau - delayFor(c, r, 0) * 1.5 + .15) / .7);   // shapes grow out of flat tiles around tau 0
-    const bg = m < .5 ? A.bg : B.bg;
-    const L = Math.max(A.layers.length, B.layers.length), layers = [];
-    for (let i = 0; i < L; i++) {
-      const la = A.layers[i] || { ...A.layers[A.layers.length - 1], scale: 0 }, lb = B.layers[i] || { ...B.layers[B.layers.length - 1], scale: 0 };
-      const pa = shapePts(la.shape), pb = shapePts(lb.shape);
-      const rot = lerp(la.rot, lb.rot + (lb.rot < la.rot - 2 ? 4 : 0), m) * Math.PI / 2;
-      const sc = lerp(la.scale, lb.scale, m) * emerge;
-      const cs = Math.cos(rot), sn = Math.sin(rot), pts = [];
-      for (let j = 0; j < N; j++) {
-        const px = lerp(pa[j][0], pb[j][0], m) * sc, py = lerp(pa[j][1], pb[j][1], m) * sc;
-        pts.push([x + TILE / 2 + (px * cs - py * sn) * TILE / 2, y + TILE / 2 + (px * sn + py * cs) * TILE / 2]);
-      }
-      layers.push({ pts, color: m < .5 ? la.color : lb.color, alpha: clamp(sc * 4) });
-    }
-    return { x, y, c, r, bg, layers, emerge };
-  }
-  function tilesAt(tau) { const out = []; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) out.push(tileAt(c, r, tau)); return out; }
-  function pathOf(ctx, pts) { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); }
-  // flat Bauhaus fills (scene 04)
-  function drawFills(ctx, tau) {
-    for (const t of tilesAt(tau)) {
-      ctx.save(); ctx.beginPath(); ctx.rect(t.x, t.y, TILE, TILE); ctx.clip();
-      ctx.fillStyle = t.bg; ctx.fillRect(t.x, t.y, TILE, TILE);
-      for (const l of t.layers) { if (l.alpha <= 0) continue; ctx.globalAlpha = l.alpha; ctx.fillStyle = l.color; pathOf(ctx, l.pts); ctx.fill(); }
-      ctx.restore();
-    }
-  }
-  // neon tubes (scene 05): outlines of the same polygons; light(tile) in 0..1 drives ignition per tile
-  function drawTubes(ctx, tau, light) {
-    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    for (const t of tilesAt(tau)) {
-      const L = light(t); if (L <= 0) continue;
-      ctx.save(); ctx.beginPath(); ctx.rect(t.x + 4, t.y + 4, TILE - 8, TILE - 8); ctx.clip();
-      for (const l of t.layers) {
-        if (l.alpha <= 0) continue;
-        const n = NEON[l.color]; ctx.strokeStyle = `rgb(${n.map(v => Math.round(v * 255 * L)).join(',')})`; ctx.lineWidth = 7;
-        pathOf(ctx, l.pts); ctx.stroke();
-      }
-      ctx.restore();
-    }
-  }
-  window.BauhausGeo = { TILE, COLS, ROWS, OX, PAL, COLORS, NEON, STEP_T, tilesAt, drawFills, drawTubes, eio, hash };
+  window.BauhausGeo = { TILE, COLS, ROWS, OX, PAL, COLORS: P, drawFills, keyOutline, eio, hash };
 })();
