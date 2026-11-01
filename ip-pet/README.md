@@ -3,6 +3,7 @@
 - `index.html`：完整验收页（复刻对照、流程、舞台 + 控制台、法则表、状态表）。
 - `share.html`：分享页，手机优先：名字 + 性格 + 实时心情 → 舞台 → 角色切换 → 模拟 Agent（事件按钮 + 一键跑完整会话）→ 手势提示。由 `python3 .claude/skills/ip-to-desktop-pet/scripts/build_share.py ip-pet/index.html` 生成，改引擎后重新生成即可。
 - 整个流程（IP 复刻 → 动态桌宠）已归档为技能：`.claude/skills/ip-to-desktop-pet/`。
+- 项目复盘（每轮反馈与优化、20 条踩坑、已知取舍）：[`RETRO.md`](RETRO.md)。
 
 纯静态、无构建、无外部脚本；字体走 Google Fonts，离线时回退系统字体。
 
