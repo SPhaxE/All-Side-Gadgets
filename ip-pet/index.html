@@ -50,7 +50,7 @@ header .mini { width: 92px; height: 92px; }
 .eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
 section { display: flex; flex-direction: column; gap: 18px; }
 .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; }
-.sec-head > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sec-head > div:first-child { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 
 /* ---------- 8 步复刻 ---------- */
 .strip { background: var(--strip); border-radius: 6px; padding: 14px; display: grid; gap: 14px;
@@ -77,7 +77,7 @@ section { display: flex; flex-direction: column; gap: 18px; }
 .note { font-size: 13px; color: var(--muted); }
 
 /* ---------- pet-forge 流程 ---------- */
-.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px;
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px;
   background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .flow li { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .flow b { font-size: 14px; }
@@ -123,7 +123,7 @@ section { display: flex; flex-direction: column; gap: 18px; }
 .btn { border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 4px; padding: 7px 12px; cursor: pointer; font: 500 13px var(--f-body); }
 .btn.ghost { background: transparent; color: var(--ink); }
 
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 13px; }
 .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { font: 600 11px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
@@ -365,10 +365,10 @@ const STEPS = [
   ['拖动圆角为水滴形状', '三个角 r = 60（半边长），右上角 r = 9'],
   ['来个华丽的渐变色', '线性渐变 左上 → 右下 #FF413B → #FCD685', true],
   ['画个高光形状', '白色椭圆 rx 8.5 / ry 15，旋转 35°'],
-  ['外轮廓加内发光', '内发光 · 滤色 · #FDE3A7 · 60% · 模糊 100px · 边缘 → 反相 alpha 模糊 + feBlend screen'],
-  ['高光添加高斯模糊', '高斯模糊 半径 129.1 px → stdDeviation 3.6（按画板比例换算）'],
+  ['外轮廓加内发光', '教程：滤色 · #FDE3A7 · 60% · 模糊 100px · 边缘。SVG 等效值（对照原图调出）：不透明度 0.9 · stdDeviation 13 · feBlend screen'],
+  ['高光添加高斯模糊', '教程：半径 129.1 px。SVG 等效值（对照原图调出，原画板尺寸未知）：stdDeviation 3.6'],
   ['绘制眼睛与投影', '圆角矩形眼 13.4×22.6；ω 嘴描边 5；投影椭圆 #FF785A 右下偏移'],
-  ['投影添加高斯模糊 · GET', '投影 stdDeviation 12 · 不透明度 55%'],
+  ['投影添加高斯模糊 · GET', '投影 stdDeviation 12 · 不透明度 55%（对照原图调出）'],
 ];
 // 卡片视窗与原图裁切框对齐，方便逐像素对照
 const CARD_VB = '-0.4 9.2 173.4 156';
