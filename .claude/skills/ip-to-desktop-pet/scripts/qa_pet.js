@@ -9,7 +9,8 @@
  *  1. 控制台 / 页面零报错
  *  2. 所有身体关键形、五官拟合 G2（拼接点切向角差、曲率差 < 1e-6）
  *  3. 所有眼睛表情最低点 = 下眼睑（偏差 < 0.3）
- *  4. 遍历全部状态 + 拖拽 + 抛落：身体最小曲率半径 ≥ 5.9，五官 ≥ 1.3；五官始终在身体轮廓内
+ *  4. 遍历全部状态 + 拖拽 + 抛落：身体最小曲率半径 ≥ 2.9（生气等状态允许变尖，但不能有尖点），五官 ≥ 1.3；五官始终在身体轮廓内；
+ *     标记 convex 的角色轮廓曲率不得变号（无拐点），其他角色报告最大变号数
  *  5. 抛落逐帧：有中间高度、≥ 1 次回弹、出现压扁、最终 y = 0
  *  6. 375px 宽无横向滚动
  *  7. 4× CPU 降速下 rAF 中位数（仅报告）
@@ -49,10 +50,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const bsR = (a, b, c, e, t) => { const d1 = [0, 1].map(k => .5 * ((c[k] - a[k]) + 2 * t * (a[k] - 2 * b[k] + c[k]) + t * t * (-a[k] + 3 * b[k] - 3 * c[k] + e[k])));
         const d2 = [0, 1].map(k => (a[k] - 2 * b[k] + c[k]) + t * (-a[k] + 3 * b[k] - 3 * c[k] + e[k])); const cr = Math.abs(d1[0] * d2[1] - d1[1] * d2[0]); return cr < 1e-9 ? Infinity : Math.hypot(...d1) ** 3 / cr; };
       const minR = P => { let r = Infinity; const n = P.length; for (let i = 0; i < n; i++) for (const t of [0, .25, .5, .75]) r = Math.min(r, bsR(P[(i - 1 + n) % n], P[i], P[(i + 1) % n], P[(i + 2) % n], t)); return r; };
-      window.__qa = { body: Infinity, face: Infinity, outside: 0, where: '' };
+      window.__qa = { body: Infinity, face: Infinity, outside: 0, where: '', signs: {} };
+      const signs = P => { const C = window.__pet.curvePts(P, 12), n = C.length; let s = 0, prev = 0; for (let i = 0; i <= n; i++) { const a = C[(i - 1 + n) % n], b = C[i % n], c = C[(i + 1) % n], cr = Math.sign((b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0])); if (prev && cr && cr !== prev) s++; if (cr) prev = cr; } return s; };
       const tick = () => { const pet = window.__pet.pet, P = window.__pet;
         if (pet && pet.body && pet.lastFace) {
           const rb = minR(pet.body); if (rb < __qa.body) { __qa.body = rb; __qa.where = P.state + '/' + pet.ch.name; }
+          if (P.state !== 'intro') __qa.signs[pet.ch.name] = Math.max(__qa.signs[pet.ch.name] || 0, signs(pet.body)); __qa.convex = __qa.convex || {}; __qa.convex[pet.ch.name] = !!pet.ch.convex;
           for (const f of pet.lastFace) __qa.face = Math.min(__qa.face, minR(f));
           const poly = P.curvePts(pet.body, 8), inside = (x, y) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > y) !== (b[1] > y) && x < (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
           for (const f of pet.lastFace) for (const q of P.curvePts(f, 3)) if (!inside(q[0], q[1])) __qa.outside++;
@@ -65,8 +68,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     for (const k of states) {
       await p.evaluate(k => window.__pet.mount(k), k); await sleep(1300);
       await host.screenshot({ path: path.join(outDir, `${k}-idle.png`) });
-      for (const s of ['idle', 'happy', 'react-poke', 'idle-yawn', 'idle-dozing', 'sleeping', 'wake', 'thinking', 'working-typing', 'error', 'notification', 'idle-look']) {
-        await p.evaluate(s => window.__pet.setState(s), s); await sleep(s === 'sleeping' ? 1500 : 1200);
+      for (const s of ['intro', 'idle', 'happy', 'react-poke', 'idle-yawn', 'idle-dozing', 'sleeping', 'wake', 'thinking', 'working-typing', 'error', 'notification', 'idle-look']) {
+        await p.evaluate(s => window.__pet.setState(s), s); await sleep(s === 'sleeping' ? 1500 : s === 'intro' ? 2400 : 1200);
         await host.screenshot({ path: path.join(outDir, `${k}-${s}.png`) });
       }
       // 5：拖拽 + 抛落
@@ -74,7 +77,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await p.mouse.move(cx, cy); await p.mouse.down();
       for (let i = 1; i <= 12; i++) { await p.mouse.move(cx + 18 * i, cy - 16 * i); await sleep(16); }
       await p.mouse.up();
-      const tr = await p.evaluate(async () => { const s = [], t0 = performance.now(); while (performance.now() - t0 < 2000) { await new Promise(r => requestAnimationFrame(r)); s.push([Math.round(window.__pet.phys.y), window.__pet.pet.w.sq.x]); } return s; });
+      const tr = await p.evaluate(async () => { const s = [], t0 = performance.now(); while (performance.now() - t0 < 2000) { await new Promise(r => requestAnimationFrame(r)); s.push([Math.round(window.__pet.phys.y), window.__pet.pet.P.sq.x]); } return s; });
       const ys = tr.map(v => v[0]); let bounces = 0; for (let i = 1; i < ys.length - 1; i++) if (ys[i] === 0 && ys[i + 1] > 0) bounces++;
       const squash = Math.max(...tr.map(v => v[1]));
       console.log(`${k} 抛落：中间高度 ${new Set(ys).size} 种，回弹 ${bounces} 次，最大压扁权重 ${squash.toFixed(2)}，终点 y=${ys.at(-1)}`);
@@ -83,7 +86,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     }
     const q = await p.evaluate(() => window.__qa);
     console.log(`最小曲率半径：身体 ${q.body.toFixed(2)}（${q.where}），五官 ${q.face.toFixed(2)}；五官出界采样 ${q.outside}`);
-    if (q.body < 5.9) fails.push('身体尖角'); if (q.face < 1.3) fails.push('五官尖角'); if (q.outside) fails.push('五官出界');
+    console.log('轮廓曲率变号（不含登场）：', JSON.stringify(q.signs));
+    for (const [n, c] of Object.entries(q.convex || {})) if (c && q.signs[n] > 0) fails.push(n + ' 出现拐点');
+    if (q.body < 2.9) fails.push('身体尖角'); if (q.face < 1.3) fails.push('五官尖角'); if (q.outside) fails.push('五官出界');
 
     // 7：性能
     const cdp = await p.context().newCDPSession(p); await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
