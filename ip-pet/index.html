@@ -3,22 +3,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: 一条深灰「画板胶片」放 8 步复刻 → pet-forge 流程表 → 交互舞台 + 状态控制台 */
+/* Layout: 深灰「画板胶片」放 8 步复刻 → pet-forge 流程 → 三只桌宠舞台 + 控制台 → 迪士尼法则对照 */
 :root {
-  --bg: #f4f2f3;
-  --surface: #ffffff;
-  --ink: #2a2426;
-  --muted: #6f6467;
-  --line: #e2dcde;
-  --strip: #444043;          /* 参考图里的深灰底 */
-  --artboard: #ffffff;       /* 画板始终是白纸，和原教程一致 */
-  --artboard-ink: #222;
-  --accent: #f0533a;
-  --accent-soft: #ffe3d6;
-  --warm: #fcd685;
-  --chip: #f7eef0;
-  --stage-top: #fff8f3;
-  --stage-floor: #f5e6df;
+  --bg: #f4f2f3; --surface: #ffffff; --ink: #2a2426; --muted: #6f6467; --line: #e2dcde;
+  --strip: #444043; --artboard: #ffffff; --artboard-ink: #222;
+  --accent: #f0533a; --chip: #f7eef0; --stage-top: #fff8f3; --stage-floor: #f3e7e2;
   --ok: #2f8f5b; --warn: #c27a00; --bad: #c8372d;
   --f-display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
   --f-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
@@ -26,14 +15,12 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #1d1a1c; --surface: #272325; --ink: #f2ecee; --muted: #b0a4a8; --line: #3a3437;
-  --strip: #121011; --accent: #ff7a5e; --accent-soft: #4a2b25; --chip: #332d30;
-  --stage-top: #2b2426; --stage-floor: #3a2e2c; --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70;
-  color-scheme: dark; } }
+  --strip: #121011; --accent: #ff7a5e; --chip: #332d30; --stage-top: #2b2426; --stage-floor: #382d2c;
+  --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #1d1a1c; --surface: #272325; --ink: #f2ecee; --muted: #b0a4a8; --line: #3a3437;
-  --strip: #121011; --accent: #ff7a5e; --accent-soft: #4a2b25; --chip: #332d30;
-  --stage-top: #2b2426; --stage-floor: #3a2e2c; --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70;
-  color-scheme: dark; }
+  --strip: #121011; --accent: #ff7a5e; --chip: #332d30; --stage-top: #2b2426; --stage-floor: #382d2c;
+  --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70; color-scheme: dark; }
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
@@ -51,171 +38,87 @@ header .mini { width: 92px; height: 92px; }
 section { display: flex; flex-direction: column; gap: 18px; }
 .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; }
 .sec-head > div:first-child { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.note { font-size: 13px; color: var(--muted); max-width: 80ch; }
+code { font-family: var(--f-mono); font-size: .9em; background: var(--chip); padding: 0 4px; border-radius: 3px; }
 
 /* ---------- 8 步复刻 ---------- */
-.strip { background: var(--strip); border-radius: 6px; padding: 14px; display: grid; gap: 14px;
-  grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.strip { background: var(--strip); border-radius: 6px; padding: 14px; display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 860px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; gap: 10px; } }
-.card { background: var(--artboard); color: var(--artboard-ink); display: flex; flex-direction: column; padding: 10px 10px 14px; gap: 8px; }
+.card { background: var(--artboard); color: var(--artboard-ink); display: flex; flex-direction: column; padding: 10px 10px 14px; gap: 8px; margin: 0; }
 .card .art { position: relative; aspect-ratio: 400 / 360; max-width: 100%; }
 .card .art > * { position: absolute; inset: 0; width: 100%; height: 100%; }
 .card .art img { object-fit: cover; opacity: 0; transition: opacity .25s; }
-.card .art .tag { position: absolute; inset: auto auto 4px 4px; width: auto; height: auto; font: 600 10px/1 var(--f-mono);
-  letter-spacing: .08em; padding: 4px 6px; border-radius: 3px; background: #222; color: #fff; opacity: 0; transition: opacity .25s; }
-.strip[data-view="ref"] .art img, .strip[data-view="ref"] .art .tag { opacity: 1; }
-.card:hover .art img, .card:focus-within .art img { opacity: 1; }
-.card:hover .art .tag { opacity: 1; }
+.card .art .tag { inset: auto auto 4px 4px; width: auto; height: auto; font: 600 10px/1 var(--f-mono); letter-spacing: .08em; padding: 4px 6px; border-radius: 3px; background: #222; color: #fff; opacity: 0; transition: opacity .25s; }
+.strip[data-view="ref"] .art img, .strip[data-view="ref"] .art .tag, .card:hover .art img, .card:hover .art .tag, .card:focus-within .art img { opacity: 1; }
 .card .cap { display: flex; gap: 8px; align-items: baseline; }
 .card .num { font: 600 12px/1 var(--f-mono); color: #c0392b; }
 .card .ttl { font-weight: 700; font-size: 15px; }
 .card .param { font: 11px/1.5 var(--f-mono); color: #6a5f62; min-height: 3em; }
-.card .grad-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #ff413b, #fcd685); margin-top: 2px; }
+.card .grad-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #ff413b, #fcd685); }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
 .seg button { border: 0; background: transparent; color: var(--muted); font: 500 13px var(--f-body); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.seg button:focus-visible, .btn:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.note { font-size: 13px; color: var(--muted); }
+button:focus-visible, .pet-host:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* ---------- pet-forge 流程 ---------- */
-.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px;
-  background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+/* ---------- 流程 ---------- */
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .flow li { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .flow b { font-size: 14px; }
 .flow .k { font: 600 11px var(--f-mono); color: var(--accent); letter-spacing: .08em; }
 .flow span { font-size: 13px; color: var(--muted); }
-.flow code, .note code, td code { font-family: var(--f-mono); font-size: .9em; background: var(--chip); padding: 0 4px; border-radius: 3px; }
 
-/* ---------- 交互舞台 ---------- */
+/* ---------- 角色卡 ---------- */
+.cast { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .cast { grid-template-columns: minmax(0, 1fr); } }
+.who { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center; text-align: left; padding: 12px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); border-radius: 6px; cursor: pointer; font: inherit; }
+.who[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.who svg { width: 84px; height: 84px; overflow: visible; }
+.who b { font-family: var(--f-display); font-weight: 400; font-size: 20px; display: block; }
+.who small { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.who .sw { display: flex; gap: 4px; margin-top: 6px; }
+.who .sw i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+
+/* ---------- 舞台 ---------- */
 .play { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; }
 @media (max-width: 900px) { .play { grid-template-columns: minmax(0, 1fr); } }
-.stage { position: relative; height: 420px; border-radius: 6px; overflow: hidden; touch-action: none; user-select: none;
-  background: linear-gradient(var(--stage-top) 0 78%, var(--stage-floor) 78% 100%); border: 1px solid var(--line); }
-.stage .hud { position: absolute; left: 12px; top: 10px; right: 12px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none;
-  font: 12px var(--f-mono); color: var(--muted); }
+.stage { position: relative; height: 440px; border-radius: 6px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
+  background: linear-gradient(var(--stage-top) 0 80%, var(--stage-floor) 80% 100%); border: 1px solid var(--line); }
+.stage .hud { position: absolute; left: 12px; top: 10px; right: 12px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; font: 12px var(--f-mono); color: var(--muted); }
 .stage .hud b { color: var(--ink); font-weight: 600; }
-.pet-host { position: absolute; width: 230px; height: 230px; left: 50%; top: calc(78% - 186px); margin-left: -115px; cursor: grab; touch-action: none; }
+.pet-host { position: absolute; left: 0; top: 0; width: 230px; height: 230px; cursor: grab; touch-action: none; will-change: transform; }
 .pet-host.dragging { cursor: grabbing; }
-.pet-host.falling { transition: top .55s cubic-bezier(.3, 1.6, .5, 1); }
 .pet-host svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.shadow { position: absolute; left: 0; top: 0; height: 26px; border-radius: 50%; pointer-events: none; will-change: transform, opacity; }
 .hint { position: absolute; left: 12px; bottom: 10px; right: 12px; font-size: 12px; color: var(--muted); pointer-events: none; }
-
 .console { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.console h3 { margin: 0; font-size: 13px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; }
+.console h3 { margin: 0 0 6px; font-size: 13px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .console h3 small { font: 11px var(--f-mono); color: var(--muted); font-weight: 400; }
 .grid-btn { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 4px; padding: 5px 8px; cursor: pointer;
-  font: 12px var(--f-mono); display: inline-flex; gap: 6px; align-items: center; }
+.chip { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 4px; padding: 5px 8px; cursor: pointer; font: 12px var(--f-mono); display: inline-flex; gap: 6px; align-items: center; }
 .chip:hover { border-color: var(--accent); }
 .chip[aria-current="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.cls { font-size: 10px; font-weight: 600; padding: 0 4px; border-radius: 3px; border: 1px solid currentColor; opacity: .8; }
+.cls { font-size: 10px; font-weight: 600; padding: 0 4px; border-radius: 3px; border: 1px solid currentColor; opacity: .85; }
 .cls-A { color: var(--ok); } .cls-B { color: var(--warn); } .cls-C { color: var(--bad); }
 .chip[aria-current="true"] .cls { color: inherit; }
 .ev { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; }
-.ev .chip { justify-content: flex-start; }
 .ev span { font: 11px var(--f-mono); color: var(--muted); }
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
 .row label { color: var(--muted); }
 .row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--accent); }
 .row output { font: 12px var(--f-mono); min-width: 4.5em; text-align: right; font-variant-numeric: tabular-nums; }
-.log { font: 12px/1.6 var(--f-mono); background: var(--bg); border-radius: 4px; padding: 8px 10px; height: 138px; overflow: auto; margin: 0; list-style: none; }
+.log { font: 12px/1.6 var(--f-mono); background: var(--bg); border-radius: 4px; padding: 8px 10px; height: 128px; overflow: auto; margin: 0; list-style: none; }
 .log li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
 .log li b { color: var(--ink); font-weight: 600; }
 .btn { border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 4px; padding: 7px 12px; cursor: pointer; font: 500 13px var(--f-body); }
 .btn.ghost { background: transparent; color: var(--ink); }
 
-table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 13px; }
 .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font: 600 11px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+th { font: 600 11px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
 tr:last-child td { border-bottom: 0; }
-
-/* ---------- 宠物 rig（pet-forge hello-idle 约定：viewBox 0 0 200 200，<g id="pet">，CSS 变量） ---------- */
-.pet-svg {
-  --breath-period: 4.8s; --breath-min: 0.97; --breath-max: 1.02;
-  --blink-min-gap: 3000; --blink-max-gap: 7000; --blink-duration: 150;
-}
-.pet-svg #lift { transition: transform .12s linear; }
-.pet-svg #pet, .pet-svg .eyes, .pet-svg .mouth, .pet-svg .shadow, .pet-svg .eye, .pet-svg .fx > * { transform-box: view-box; }
-.pet-svg #pet { transform-origin: 86px 150px; }
-.pet-svg .shadow { transform-origin: 100px 140px; }
-.pet-svg .eye { transform-box: fill-box; transform-origin: center; transition: transform .07s; }
-.pet-svg .eyes.blink .eye { transform: scaleY(.08); }
-.pet-svg .gaze { transition: transform .18s ease-out; }
-.pet-svg [data-v] { display: none; }
-.pet-svg[data-eyes="open"] [data-v="eyes-open"],
-.pet-svg[data-eyes="half"] [data-v="eyes-open"],
-.pet-svg[data-eyes="wide"] [data-v="eyes-open"],
-.pet-svg[data-eyes="happy"] [data-v="eyes-happy"],
-.pet-svg[data-eyes="closed"] [data-v="eyes-closed"],
-.pet-svg[data-eyes="x"] [data-v="eyes-x"],
-.pet-svg[data-eyes="squint"] [data-v="eyes-squint"],
-.pet-svg[data-mouth="w"] [data-v="mouth-w"],
-.pet-svg[data-mouth="o"] [data-v="mouth-o"],
-.pet-svg[data-mouth="small"] [data-v="mouth-small"],
-.pet-svg[data-mouth="open"] [data-v="mouth-open"],
-.pet-svg[data-mouth="wavy"] [data-v="mouth-wavy"] { display: inline; }
-.pet-svg[data-eyes="half"] .eye { transform: scaleY(.42) translateY(14px); }
-.pet-svg[data-eyes="wide"] .eye { transform: scale(1.12); }
-.pet-svg .blush { opacity: 0; transition: opacity .3s; }
-.pet-svg[data-blush="1"] .blush { opacity: .85; }
-.pet-svg .body-tone { transition: filter .3s; }
-.pet-svg[data-state="error"] .body-tone { filter: saturate(.35) brightness(1.08); }
-.pet-svg .fx > * { opacity: 0; }
-
-/* A 循环 */
-.pet-svg[data-state="idle"] #pet, .pet-svg[data-state="idle-look"] #pet, .pet-svg[data-state="react-poke"] #pet { animation: breathe var(--breath-period) ease-in-out infinite; }
-@keyframes breathe { 0%, 100% { transform: scale(1, var(--breath-min)); } 50% { transform: scale(.99, var(--breath-max)); } }
-.pet-svg[data-state="idle-dozing"] #pet { animation: doze 3.2s ease-in-out infinite; }
-@keyframes doze { 0%, 100% { transform: rotate(0) scale(1, .98); } 45% { transform: rotate(-4deg) scale(1.01, .96); } 55% { transform: rotate(-4deg) scale(1.01, .96); } }
-.pet-svg[data-state="sleeping"] #pet { animation: sleepy 5.6s ease-in-out infinite; }
-@keyframes sleepy { 0%, 100% { transform: rotate(-6deg) scale(1.1, .82); } 50% { transform: rotate(-6deg) scale(1.12, .79); } }
-.pet-svg[data-state="sleeping"] .fx-zzz { animation: zzz 2.8s ease-out infinite; }
-@keyframes zzz { 0% { opacity: 0; transform: translate(0, 6px) scale(.7); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(14px, -22px) scale(1.15); } }
-.pet-svg[data-state="thinking"] #pet { animation: sway 2.4s ease-in-out infinite; }
-@keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
-.pet-svg[data-state="thinking"] .fx-dots { opacity: 1; }
-.pet-svg[data-state="thinking"] .fx-dots circle { animation: dot 1.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-.pet-svg .fx-dots circle:nth-child(2) { animation-delay: .2s !important; }
-.pet-svg .fx-dots circle:nth-child(3) { animation-delay: .4s !important; }
-@keyframes dot { 0%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-5px); opacity: 1; } }
-.pet-svg[data-state="working-typing"] #pet { animation: type .32s ease-in-out infinite; }
-@keyframes type { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-3px) scale(.99, 1.02); } }
-.pet-svg[data-state="working-typing"] .fx-keys { opacity: 1; }
-.pet-svg .fx-keys rect { animation: key .64s steps(1) infinite; }
-.pet-svg .fx-keys rect:nth-child(2n) { animation-delay: .32s; }
-@keyframes key { 0% { opacity: 1; } 50% { opacity: .35; } }
-.pet-svg[data-state="error"] #pet { animation: shake 2s ease-in-out infinite; }
-@keyframes shake { 0%, 30%, 100% { transform: translateX(0); } 5%, 15%, 25% { transform: translateX(-4px) rotate(-2deg); } 10%, 20% { transform: translateX(4px) rotate(2deg); } }
-.pet-svg[data-state="error"] .fx-sweat { animation: sweat 2s ease-in infinite; }
-@keyframes sweat { 0% { opacity: 0; transform: translateY(-4px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
-.pet-svg[data-state="react-drag"] #pet { animation: dangle .9s ease-in-out infinite; }
-@keyframes dangle { 0%, 100% { transform: scale(.94, 1.08) rotate(-3deg); } 50% { transform: scale(.95, 1.07) rotate(3deg); } }
-/* B 一次性，首尾同姿态 */
-.pet-svg[data-state="react-poke"] #pet { animation: poke .7s cubic-bezier(.3, 1.5, .5, 1) 1; }
-@keyframes poke { 0% { transform: scale(1, 1); } 18% { transform: scale(1.14, .84); } 45% { transform: scale(.95, 1.07); } 70% { transform: scale(1.03, .98); } 100% { transform: scale(1, 1); } }
-.pet-svg[data-state="happy"] #pet { animation: hop .8s ease-in-out 2; }
-.pet-svg[data-state="happy"] .shadow { animation: hopShadow .8s ease-in-out 2; }
-@keyframes hop { 0%, 100% { transform: translateY(0) scale(1.08, .9); } 15% { transform: translateY(0) scale(.94, 1.08); } 50% { transform: translateY(-30px) scale(.98, 1.03); } 85% { transform: translateY(0) scale(1.06, .92); } }
-@keyframes hopShadow { 0%, 15%, 85%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.72); opacity: .55; } }
-.pet-svg[data-state="notification"] #pet { animation: ping .9s ease-in-out 2; }
-@keyframes ping { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-14px) rotate(3deg); } 60% { transform: translateY(0) scale(1.04, .96); } }
-.pet-svg[data-state="notification"] .fx-bang { animation: pop 1.8s ease-out 1 forwards; }
-@keyframes pop { 0% { opacity: 0; transform: scale(.3); } 20% { opacity: 1; transform: scale(1.15); } 30%, 85% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1); } }
-.pet-svg .fx-bang { transform-origin: 150px 30px; }
-.pet-svg[data-state="idle-look"] .look { animation: look 1.8s ease-in-out 1; }
-@keyframes look { 0%, 100% { transform: translateX(0); } 20%, 40% { transform: translateX(-6px); } 60%, 80% { transform: translateX(6px) translateY(-1px); } }
-.pet-svg[data-state="idle-yawn"] #pet { animation: yawn 2.2s ease-in-out 1; }
-@keyframes yawn { 0%, 100% { transform: scale(1, 1); } 35%, 60% { transform: scale(.95, 1.08); } 80% { transform: scale(1.03, .96); } }
-/* C 过渡，首 ≠ 尾 */
-.pet-svg[data-state="collapse-sleep"] #pet { animation: collapse 1.2s cubic-bezier(.5, 0, .3, 1) 1 forwards; }
-@keyframes collapse { 0% { transform: rotate(0) scale(1, 1); } 30% { transform: rotate(-2deg) scale(.97, 1.04); } 100% { transform: rotate(-6deg) scale(1.1, .82); } }
-.pet-svg[data-state="wake"] #pet { animation: wake .9s cubic-bezier(.3, 1.6, .5, 1) 1 forwards; }
-@keyframes wake { 0% { transform: rotate(-6deg) scale(1.1, .82); } 45% { transform: rotate(2deg) scale(.93, 1.1); } 100% { transform: rotate(0) scale(1, 1); } }
-
-@media (prefers-reduced-motion: reduce) {
-  .pet-svg *, .pet-svg #pet { animation-duration: .01s !important; animation-iteration-count: 1 !important; }
-  .pet-host.falling { transition: none; }
-}
+td b { white-space: nowrap; }
 </style>
 
 <div class="wrap">
@@ -223,8 +126,8 @@ tr:last-child td { border-bottom: 0; }
     <svg class="mini" viewBox="10 14 160 150" aria-hidden="true" id="hdr-mini"></svg>
     <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
       <span class="eyebrow">IP 复刻 · pet-forge SVG 路线</span>
-      <h1>暖橙水滴：从一个方块到会动的桌宠</h1>
-      <p class="lede">先按原教程 8 步把形象用 SVG 一层层复刻出来，参数取自教程截图；再按 pet-forge 的 SVG 路线给它装上骨骼、状态机和交互，做成可以拖、可以戳、会犯困的小家伙。</p>
+      <h1>暖橙水滴和它的两个朋友</h1>
+      <p class="lede">先按原教程 8 步把形象用 SVG 复刻出来；再按 pet-forge 的 SVG 路线做成桌宠，并扩展出两只性格、形态、配色都不同的伙伴。三只共用一套引擎：轮廓全是 G2 连续的 B 样条，表情与形变都靠锚点驱动，动作节奏按迪士尼 12 条动画法则来做。</p>
     </div>
   </header>
 
@@ -233,7 +136,7 @@ tr:last-child td { border-bottom: 0; }
       <div>
         <span class="eyebrow">Part 1 · 逐步复刻</span>
         <h2 id="s-steps">8 步绘制</h2>
-        <p class="note">每张画板都是代码实时画出的 SVG。鼠标悬停单张可看原图，或切到「原图」整排对照。</p>
+        <p class="note">这一部分忠实还原教程本身（教程里的圆角矩形是 G1 拼接）；桌宠形态在 Part 3 里改成了 G2 曲线。悬停单张看原图，或切到「原图」整排对照。</p>
       </div>
       <div class="seg" role="group" aria-label="对照方式">
         <button id="view-mine" aria-pressed="true">复刻</button>
@@ -249,26 +152,28 @@ tr:last-child td { border-bottom: 0; }
       <h2 id="s-flow">按 SVG 路线逐项落地</h2>
     </div></div>
     <ol class="flow">
-      <li><span class="k">0 · 拓扑清点</span><b>只给它有的部件做 rig</b><span>身体（水滴）、双眼、ω 嘴、高光、投影。没有四肢、耳朵、尾巴，所以不做肢体骨骼，动作全靠身体挤压拉伸和表情。</span></li>
-      <li><span class="k">1 · 基础形象</span><b>教程 8 步 = 设计稿</b><span>源图本身是矢量教程，直接手写 SVG 复刻，没有跑 png2svg / vtracer 描摹。</span></li>
-      <li><span class="k">2 · 可编辑 SVG</span><b>分层命名</b><span><code>shadow</code> / <code>body</code> / <code>highlight</code> / <code>eyes</code> / <code>mouth</code> 各自独立，滤镜 id 按实例加前缀，避免冲突。</span></li>
-      <li><span class="k">3 · hello-idle 基线</span><b>沿用模板约定</b><span><code>viewBox 0 0 200 200</code>、<code>&lt;g id="pet"&gt;</code>、<code>--breath-period</code>、<code>--blink-min-gap</code> 等变量名，呼吸 + 随机眨眼。</span></li>
-      <li><span class="k">4 · 逐动作迭代</span><b>14 个状态</b><span>取自 state-map 模板库，按 A 循环 / B 一次性回原姿态 / C 过渡链接三类实现。</span></li>
-      <li><span class="k">5 · 接入运行时</span><b>事件 → 状态</b><span>按 state-map 的 Agent 事件映射接线；拖、戳、长时间无事件入睡都在下方舞台可试。</span></li>
+      <li><span class="k">0 · 拓扑清点</span><b>只给角色有的部件做 rig</b><span>小橙：身体、双眼、ω 嘴、高光。糯糯多一根嫩芽，噼啪多一根天线。都没有四肢，动作靠身体挤压拉伸、表情和附属物的跟随。</span></li>
+      <li><span class="k">1 · 基础形象</span><b>教程 8 步 = 小橙设计稿</b><span>源图是矢量教程，手写 SVG 复刻，没有跑 png2svg / vtracer。糯糯、噼啪是在同一画风下发散的新设计。</span></li>
+      <li><span class="k">2 · 可编辑矢量</span><b>G2 轮廓 + 锚点表情</b><span>身体、眼、嘴、高光、腮红、特效都是闭合均匀三次 B 样条（C2 ⇒ G2）。每个表情是同点数、同起点、同绕向的一组锚点。</span></li>
+      <li><span class="k">3 · hello-idle 基线</span><b>沿用模板约定</b><span><code>viewBox 0 0 200 200</code>、<code>&lt;g id="pet"&gt;</code>、<code>--breath-period</code>、<code>--blink-min-gap</code> 等变量名照旧，由引擎读取。</span></li>
+      <li><span class="k">4 · 逐动作迭代</span><b>14 个状态 × 3 种性格</b><span>状态名取自 state-map，A 循环 / B 一次性回原姿态 / C 过渡链接。同一状态，三只的节奏、幅度、反应各不相同。</span></li>
+      <li><span class="k">5 · 接入运行时</span><b>事件 → 状态</b><span>按 state-map 的 Agent 事件映射接线；宿主元素负责位移和物理，SVG 只做形变表演。</span></li>
     </ol>
   </section>
 
   <section aria-labelledby="s-play">
     <div class="sec-head"><div>
       <span class="eyebrow">Part 3 · 交互验收</span>
-      <h2 id="s-play">桌宠舞台</h2>
-      <p class="note">点它一下是 <code>react-poke</code>，1.5 秒内连点 3 下变 <code>happy</code>；按住拖起是 <code>react-drag</code>，松手会掉回地面；眼睛跟着指针走；一段时间不理它会打哈欠、打盹、睡着，睡着时点一下叫醒。</p>
+      <h2 id="s-play">三只桌宠</h2>
+      <p class="note">选一只放到舞台上。点一下是 <code>react-poke</code>，1.5 秒内连点 3 下是 <code>happy</code>；按住拖起是 <code>react-drag</code>，甩出去会按抛物线落地、压扁、回弹；不理它会打哈欠、打盹、睡着，点一下叫醒。同一个操作，三只的反应不一样。</p>
     </div></div>
+    <div class="cast" id="cast"></div>
     <div class="play">
       <div class="stage" id="stage">
         <div class="hud"><span>state <b id="hud-state">idle</b> <span id="hud-cls"></span></span><span id="hud-sleep"></span></div>
-        <div class="pet-host" id="pet-host"></div>
-        <div class="hint">拖动 · 点击 · 连点 · 静置等待</div>
+        <div class="shadow" id="shadow"></div>
+        <div class="pet-host" id="pet-host" tabindex="0" role="img" aria-label="桌宠"></div>
+        <div class="hint">拖动 · 甩出去 · 点击 · 连点 · 静置等待</div>
       </div>
       <div class="console">
         <div>
@@ -285,20 +190,41 @@ tr:last-child td { border-bottom: 0; }
           <output id="idle-ms-out" for="idle-ms">20 s</output>
         </div>
         <div class="row">
-          <label for="breath">呼吸周期</label>
-          <input type="range" id="breath" min="2" max="8" step="0.2" value="4.8">
-          <output id="breath-out" for="breath">4.8 s</output>
+          <button class="btn ghost" id="anchors" aria-pressed="false">显示锚点</button>
+          <button class="btn ghost" id="drop">从空中丢下</button>
+          <button class="btn" id="copy-svg">复制当前帧 SVG</button>
+          <span class="note" id="copy-msg"></span>
         </div>
         <div>
           <h3>状态日志</h3>
           <ul class="log" id="log" aria-live="polite"></ul>
         </div>
-        <div class="row">
-          <button class="btn" id="copy-svg">复制最终形象 SVG</button>
-          <span class="note" id="copy-msg"></span>
-        </div>
       </div>
     </div>
+  </section>
+
+  <section aria-labelledby="s-disney">
+    <div class="sec-head"><div>
+      <span class="eyebrow">附 · 动画法则</span>
+      <h2 id="s-disney">迪士尼 12 条法则在哪里</h2>
+    </div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>法则</th><th>做法</th><th>在哪里看</th></tr></thead>
+      <tbody>
+        <tr><td><b>挤压与拉伸</b></td><td>身体锚点按竖向系数 sy 形变，横向取 1/sy 保持面积（底部比顶部摊得更开）；空中按速度拉长，落地按冲击速度压扁。</td><td>甩出去落地、被戳、跳</td></tr>
+        <tr><td><b>预备动作</b></td><td>跳、醒、旋转、打哈欠之前先反向下蹲或收缩，时长随性格缩放。</td><td>连点 3 下、PermissionRequest、叫醒</td></tr>
+        <tr><td><b>演出布局</b></td><td>换角色时从空中落下亮相；舞台上只有一只；特效放在头部右上，不挡脸。</td><td>点角色卡</td></tr>
+        <tr><td><b>连续动作与关键姿势</b></td><td>状态只给关键姿势（目标锚点），中间帧由弹簧逐帧求解；拖拽和下落是逐帧物理。</td><td>打开「显示锚点」</td></tr>
+        <tr><td><b>跟随与重叠</b></td><td>五官相对身体晚半拍；体内色团反向晃荡；嫩芽、天线是阻尼摆，停下后还要再摆几下。</td><td>拖着糯糯、噼啪左右晃</td></tr>
+        <tr><td><b>缓入缓出</b></td><td>所有锚点、参数都由阻尼弹簧驱动，起止速度为 0，中途被打断也从当前姿态续接。</td><td>任意切换状态</td></tr>
+        <tr><td><b>弧线</b></td><td>视线的 x / y 弹簧刚度不同，眼睛走弧线；抛出后按抛物线飞行。</td><td>指针绕着桌宠转</td></tr>
+        <tr><td><b>次要动作</b></td><td>体内色团持续流动、呼吸、随机眨眼、腮红渐显。</td><td>静置观察</td></tr>
+        <tr><td><b>时间节奏</b></td><td>每只有自己的时间系数和弹簧参数：小橙 1.0、糯糯 1.4（慢、软、晃得久）、噼啪 0.75（快、硬、干脆）。</td><td>对同一状态切换角色</td></tr>
+        <tr><td><b>夸张</b></td><td>噼啪的夸张系数 1.3，被戳会转体跳；糯糯被戳压扁到 0.72 躲起来。</td><td>点击</td></tr>
+        <tr><td><b>扎实绘图</b></td><td>五官、高光、腮红和身体共用同一个形变场，形变时一起被压扁、倾斜，面积守恒。</td><td>被戳瞬间</td></tr>
+        <tr><td><b>吸引力</b></td><td>三种轮廓（水滴、软糕、蛋形）、三套配色互不撞色；所有曲线 G2，没有折角。</td><td>角色卡缩略图</td></tr>
+      </tbody>
+    </table></div>
   </section>
 
   <section aria-labelledby="s-map">
@@ -316,39 +242,28 @@ tr:last-child td { border-bottom: 0; }
 <script>
 (() => {
 'use strict';
-/* ================= 1. 形象几何（viewBox 0 0 200 200，数值由原图量取） ================= */
+/* =====================================================================
+   Part 1：教程复刻（忠实还原教程，含圆弧/直线拼接）
+   ===================================================================== */
 const BODY = 'M86 30H137A9 9 0 0 1 146 39V90A60 60 0 0 1 86 150A60 60 0 0 1 26 90A60 60 0 0 1 86 30Z';
-const FLAT = '#ff764f';                       // 第 1、2 步纯色（原图取色 255,118,79）
-const G0 = '#ff413b', G1 = '#fcd685';         // 第 3 步渐变两端
-const GLOW = '#fde3a7';                       // 第 5 步内发光颜色（滤色 60% · 100px · 边缘）
-const SHADOW = '#ff785a';                     // 第 7 步投影色
-
+const FLAT = '#ff764f', G0 = '#ff413b', G1 = '#fcd685', GLOW = '#fde3a7', SHADOW = '#ff785a';
 function defs(p) {
   return `<defs>
-    <linearGradient id="${p}-grad" x1=".12" y1=".08" x2=".88" y2=".92">
-      <stop offset=".04" stop-color="${G0}"/><stop offset=".86" stop-color="${G1}"/>
-    </linearGradient>
+    <linearGradient id="${p}-grad" x1=".12" y1=".08" x2=".88" y2=".92"><stop offset=".04" stop-color="${G0}"/><stop offset=".86" stop-color="${G1}"/></linearGradient>
     <filter id="${p}-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
-      <feFlood flood-color="#fff" result="w"/>
-      <feComposite in="w" in2="SourceAlpha" operator="out" result="outside"/>
-      <feGaussianBlur in="outside" stdDeviation="13" result="soft"/>
-      <feComposite in="soft" in2="SourceAlpha" operator="in" result="edge"/>
-      <feFlood flood-color="${GLOW}" flood-opacity=".9"/>
-      <feComposite in2="edge" operator="in" result="glow"/>
+      <feFlood flood-color="#fff" result="w"/><feComposite in="w" in2="SourceAlpha" operator="out" result="outside"/>
+      <feGaussianBlur in="outside" stdDeviation="13" result="soft"/><feComposite in="soft" in2="SourceAlpha" operator="in" result="edge"/>
+      <feFlood flood-color="${GLOW}" flood-opacity=".9"/><feComposite in2="edge" operator="in" result="glow"/>
       <feBlend in="glow" in2="SourceGraphic" mode="screen"/>
     </filter>
     <filter id="${p}-hblur" x="-150%" y="-100%" width="400%" height="300%"><feGaussianBlur stdDeviation="3.6"/></filter>
     <filter id="${p}-sblur" x="-60%" y="-80%" width="220%" height="260%"><feGaussianBlur stdDeviation="12"/></filter>
   </defs>`;
 }
-const highlight = (p, blur) =>
-  `<ellipse class="highlight" cx="59" cy="62" rx="8.5" ry="15" transform="rotate(35 59 62)" fill="#fff"${blur ? ` filter="url(#${p}-hblur)" opacity=".92"` : ''}/>`;
-const shadow = (p, blur) =>
-  `<ellipse cx="107" cy="124" rx="64" ry="31" transform="rotate(-14 107 124)" fill="${SHADOW}"${blur ? ` filter="url(#${p}-sblur)" opacity=".55"` : ''}/>`;
-const EYES = `<rect class="eye" x="48" y="68" width="13.4" height="22.6" rx="6.7" fill="#fff"/><rect class="eye" x="74.2" y="68" width="13.4" height="22.6" rx="6.7" fill="#fff"/>`;
+const highlight = (p, blur) => `<ellipse cx="59" cy="62" rx="8.5" ry="15" transform="rotate(35 59 62)" fill="#fff"${blur ? ` filter="url(#${p}-hblur)" opacity=".92"` : ''}/>`;
+const shadow = (p, blur) => `<ellipse cx="107" cy="124" rx="64" ry="31" transform="rotate(-14 107 124)" fill="${SHADOW}"${blur ? ` filter="url(#${p}-sblur)" opacity=".55"` : ''}/>`;
+const EYES = `<rect x="48" y="68" width="13.4" height="22.6" rx="6.7" fill="#fff"/><rect x="74.2" y="68" width="13.4" height="22.6" rx="6.7" fill="#fff"/>`;
 const MOUTH_W = `<path d="M58 102.5V108A5.5 5.5 0 0 0 69 108V104.5V108A5.75 5.75 0 0 0 80.5 108V102.5" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
-
-/* 每一步在上一步基础上加一层，与教程顺序一一对应 */
 function stepSVG(p, n) {
   let s = defs(p);
   if (n >= 7) s += shadow(p, n >= 8);
@@ -359,7 +274,6 @@ function stepSVG(p, n) {
   if (n >= 7) s += EYES + MOUTH_W;
   return s;
 }
-
 const STEPS = [
   ['画一个方', '矩形 100×100 · 纯色 #FF764F'],
   ['拖动圆角为水滴形状', '三个角 r = 60（半边长），右上角 r = 9'],
@@ -370,283 +284,761 @@ const STEPS = [
   ['绘制眼睛与投影', '圆角矩形眼 13.4×22.6；ω 嘴描边 5；投影椭圆 #FF785A 右下偏移'],
   ['投影添加高斯模糊 · GET', '投影 stdDeviation 12 · 不透明度 55%（对照原图调出）'],
 ];
-// 卡片视窗与原图裁切框对齐，方便逐像素对照
-const CARD_VB = '-0.4 9.2 173.4 156';
 const strip = document.getElementById('strip');
 strip.innerHTML = STEPS.map(([t, param, grad], i) => `
-  <figure class="card" tabindex="0" style="margin:0">
+  <figure class="card" tabindex="0">
     <div class="art">
-      <svg viewBox="${CARD_VB}" role="img" aria-label="第 ${i + 1} 步：${t}">${stepSVG('s' + (i + 1), i + 1)}</svg>
-      <img src="ref/step${i + 1}.jpg" alt="原教程第 ${i + 1} 步" loading="lazy">
-      <span class="tag">原图</span>
+      <svg viewBox="-0.4 9.2 173.4 156" role="img" aria-label="第 ${i + 1} 步：${t}">${stepSVG('s' + (i + 1), i + 1)}</svg>
+      <img src="ref/step${i + 1}.jpg" alt="原教程第 ${i + 1} 步" loading="lazy"><span class="tag">原图</span>
     </div>
     <figcaption class="cap"><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="ttl">${t}</span></figcaption>
     ${grad ? '<div class="grad-bar" aria-hidden="true"></div>' : ''}
     <div class="param">${param}</div>
   </figure>`).join('');
 document.getElementById('hdr-mini').innerHTML = stepSVG('hdr', 8);
-
 const vMine = document.getElementById('view-mine'), vRef = document.getElementById('view-ref');
 function setView(v) { strip.dataset.view = v; vMine.setAttribute('aria-pressed', v === 'mine'); vRef.setAttribute('aria-pressed', v === 'ref'); }
 vMine.onclick = () => setView('mine'); vRef.onclick = () => setView('ref');
 
-/* ================= 2. 宠物 rig ================= */
-const P = 'pet';
-const petSVG = `<svg class="pet-svg" id="pet-svg" viewBox="0 0 200 200" role="img" aria-label="暖橙水滴桌宠" data-state="idle" data-eyes="open" data-mouth="w">
-  ${defs(P)}
-  <g class="shadow">${shadow(P, true)}</g>
-  <g id="lift">
-    <g id="pet">
-      <g class="body-tone">
-        <path id="body" d="${BODY}" fill="url(#${P}-grad)" filter="url(#${P}-glow)"/>
-        ${highlight(P, true)}
-      </g>
-      <g class="blush"><ellipse cx="46" cy="98" rx="7" ry="4" fill="#ff5a6a" opacity=".45"/><ellipse cx="90" cy="98" rx="7" ry="4" fill="#ff5a6a" opacity=".45"/></g>
-      <g class="gaze" id="gaze"><g class="look">
-        <g class="eyes" data-v="eyes-open" id="eyes-open">${EYES}</g>
-        <g data-v="eyes-happy" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round"><path d="M48.5 82Q54.7 70 60.9 82"/><path d="M74.7 82Q80.9 70 87.1 82"/></g>
-        <g data-v="eyes-closed" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round"><path d="M48.5 80Q54.7 86 60.9 80"/><path d="M74.7 80Q80.9 86 87.1 80"/></g>
-        <g data-v="eyes-x" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M50 73L59.4 85M59.4 73L50 85"/><path d="M76.2 73L85.6 85M85.6 73L76.2 85"/></g>
-        <g data-v="eyes-squint" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"><path d="M49 73L60 79L49 85"/><path d="M87 73L76 79L87 85"/></g>
-      </g></g>
-      <g class="mouth">
-        <g data-v="mouth-w">${MOUTH_W}</g>
-        <ellipse data-v="mouth-o" cx="69" cy="108" rx="5.5" ry="6.5" fill="#fff"/>
-        <path data-v="mouth-small" d="M64 107Q69 111 74 107" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-        <path data-v="mouth-open" d="M58 103H80Q80 116 69 116Q58 116 58 103Z" fill="#fff"/>
-        <path data-v="mouth-wavy" d="M57 108Q60.5 104 64 108T71 108T78 108" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round"/>
-      </g>
-    </g>
-    <g class="fx" font-family="var(--f-display)" fill="#f0533a">
-      <g class="fx-zzz"><text x="140" y="40" font-size="20">Z</text><text x="156" y="22" font-size="13">z</text></g>
-      <g class="fx-dots"><circle cx="150" cy="26" r="4"/><circle cx="162" cy="26" r="4"/><circle cx="174" cy="26" r="4"/></g>
-      <g class="fx-bang"><circle cx="150" cy="30" r="15" fill="#ff413b"/><text x="150" y="37.5" font-size="22" fill="#fff" text-anchor="middle" font-family="var(--f-body)" font-weight="700">!</text></g>
-      <g class="fx-sweat"><path d="M140 44Q146 52 146 57A6 6 0 0 1 134 57Q134 52 140 44Z" fill="#8fd3ff"/></g>
-      <g class="fx-keys" fill="#e8b48a"><rect x="40" y="156" width="14" height="6" rx="1.5"/><rect x="58" y="156" width="14" height="6" rx="1.5"/><rect x="76" y="156" width="14" height="6" rx="1.5"/><rect x="94" y="156" width="14" height="6" rx="1.5"/><rect x="112" y="156" width="14" height="6" rx="1.5"/></g>
-    </g>
-  </g>
-</svg>`;
-const host = document.getElementById('pet-host');
-host.innerHTML = petSVG;
-const svg = document.getElementById('pet-svg');
-const gaze = document.getElementById('gaze');
-const lift = document.getElementById('lift');
-const eyesOpen = document.getElementById('eyes-open');
+/* =====================================================================
+   Part 3：桌宠引擎
+   - 所有轮廓 = 闭合均匀三次 B 样条（C2 连续 ⇒ G2）
+   - 所有表情/形变 = 锚点数组 + 阻尼弹簧（同点数、同起点、同绕向）
+   ===================================================================== */
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const r2 = v => Math.round(v * 100) / 100;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const AMP = REDUCED ? 0.4 : 1;   // 减少动态：压低幅度，而不是去掉动画
 
-/* ================= 3. 状态机（state-map：A 循环 / B 一次性回原姿态 / C 过渡链接下一状态） ================= */
-const S = {
-  'idle':           { c: 'A', eyes: 'open',   mouth: 'w',     d: '呼吸 + 随机眨眼，眼睛跟随指针', t: '默认 / 无活动' },
-  'idle-look':      { c: 'B', eyes: 'open',   mouth: 'w',     d: '左右张望一次', t: 'idle 中随机', ms: 1800 },
-  'idle-yawn':      { c: 'B', eyes: 'closed', mouth: 'o',     d: '伸展打哈欠', t: '无事件计时到点', ms: 2200, then: 'idle-dozing' },
-  'idle-dozing':    { c: 'A', eyes: 'half',   mouth: 'small', d: '半眯眼点头', t: 'idle-yawn 之后', after: [4000, 'collapse-sleep'] },
-  'collapse-sleep': { c: 'C', eyes: 'closed', mouth: 'small', d: '软塌下去', t: 'idle-dozing 4s 后', ms: 1200, next: 'sleeping' },
-  'sleeping':       { c: 'A', eyes: 'closed', mouth: 'small', d: '扁平慢呼吸 + Zzz', t: 'collapse-sleep 结束' },
-  'wake':           { c: 'C', eyes: 'wide',   mouth: 'o',     d: '弹起回正', t: '睡着时点击 / 有事件', ms: 900, next: 'idle' },
-  'thinking':       { c: 'A', eyes: 'open',   mouth: 'small', d: '摇摆 + 思考气泡，眼睛向上', t: 'UserPromptSubmit', gaze: [2, -4] },
-  'working-typing': { c: 'A', eyes: 'open',   mouth: 'w',     d: '快速点头敲键盘', t: 'PreToolUse / PostToolUse', gaze: [0, 4] },
-  'error':          { c: 'A', eyes: 'x',      mouth: 'wavy',  d: '褪色、发抖、冒汗', t: 'PostToolUseFailure' },
-  'notification':   { c: 'B', eyes: 'wide',   mouth: 'o',     d: '跳起 + 感叹号', t: 'PermissionRequest', ms: 1800 },
-  'happy':          { c: 'B', eyes: 'happy',  mouth: 'open',  d: '连跳两下 + 腮红', t: 'Stop / 连点 3 下', ms: 1600, blush: 1 },
-  'react-poke':     { c: 'B', eyes: 'squint', mouth: 'w',     d: '被戳挤扁回弹', t: '点击', ms: 700 },
-  'react-drag':     { c: 'A', eyes: 'wide',   mouth: 'o',     d: '拉长晃荡，影子缩小', t: '按住拖动' },
-};
-const EVENTS = [
-  ['UserPromptSubmit', 'thinking'],
-  ['PreToolUse', 'working-typing'],
-  ['PostToolUseFailure', 'error'],
-  ['PermissionRequest', 'notification'],
-  ['Stop', 'happy'],
-];
+function bspline(P) {                               // P: [[x,y],...] 控制点
+  const n = P.length; let d = '';
+  for (let i = 0; i < n; i++) {
+    const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n];
+    if (i === 0) d += `M${r2((a[0] + 4 * b[0] + c[0]) / 6)} ${r2((a[1] + 4 * b[1] + c[1]) / 6)}`;
+    d += `C${r2((2 * b[0] + c[0]) / 3)} ${r2((2 * b[1] + c[1]) / 3)} ${r2((b[0] + 2 * c[0]) / 3)} ${r2((b[1] + 2 * c[1]) / 3)} ${r2((b[0] + 4 * c[0] + e[0]) / 6)} ${r2((b[1] + 4 * c[1] + e[1]) / 6)}`;
+  }
+  return d + 'Z';
+}
+function bsplineSegs(P) {                           // 供 G2 自检
+  const n = P.length, S = [];
+  for (let i = 0; i < n; i++) {
+    const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n];
+    S.push([[(a[0] + 4 * b[0] + c[0]) / 6, (a[1] + 4 * b[1] + c[1]) / 6], [(2 * b[0] + c[0]) / 3, (2 * b[1] + c[1]) / 3],
+            [(b[0] + 2 * c[0]) / 3, (b[1] + 2 * c[1]) / 3], [(b[0] + 4 * c[0] + e[0]) / 6, (b[1] + 4 * c[1] + e[1]) / 6]]);
+  }
+  return S;
+}
+function circlePts(cx, cy, rx, ry, n = 10, rot = 0) {
+  const P = [], c = Math.cos(rot), s = Math.sin(rot);
+  for (let i = 0; i < n; i++) { const t = i / n * Math.PI * 2, x = Math.cos(t) * rx, y = Math.sin(t) * ry; P.push([cx + x * c - y * s, cy + x * s + y * c]); }
+  return P;
+}
+// 「描边特征」：中心线 + 上/下偏移 → 闭合轮廓控制点
+function strokeOutline(xs, ys, up, dn, M, ox = 0, oy = 0, sc = 1) {
+  const top = [], bot = [];
+  for (let i = 0; i < M; i++) {
+    const i0 = Math.max(0, i - 1), i1 = Math.min(M - 1, i + 1);
+    const tx = xs[i1] - xs[i0], ty = ys[i1] - ys[i0], L = Math.hypot(tx, ty) || 1;
+    const nx = ty / L, ny = -tx / L;
+    const x = ox + xs[i] * sc, y = oy + ys[i] * sc;
+    top.push([x + nx * up[i] * sc, y + ny * up[i] * sc]);
+    bot.push([x - nx * dn[i] * sc, y - ny * dn[i] * sc]);
+  }
+  return top.concat(bot.reverse());
+}
+// 按弧长（可加权）对任意 SVG 路径重采样，得到身体静止锚点
+function samplePath(d, N, weight) {
+  const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d);
+  const tmp = document.createElementNS(NS, 'svg'); tmp.style.cssText = 'position:absolute;width:0;height:0'; tmp.append(p); document.body.append(tmp);
+  const L = p.getTotalLength(), K = 900, pts = [], cum = [0];
+  for (let j = 0; j <= K; j++) { const q = p.getPointAtLength(L * j / K); pts.push([q.x, q.y]); }
+  for (let j = 1; j <= K; j++) cum.push(cum[j - 1] + (weight ? weight(pts[j]) : 1));
+  const out = []; let j = 0;
+  for (let i = 0; i < N; i++) { const tgt = cum[K] * i / N; while (cum[j + 1] < tgt) j++; out.push(pts[j]); }
+  tmp.remove(); return out;
+}
+function polyD(fn, K = 360) { let d = ''; for (let i = 0; i < K; i++) { const [x, y] = fn(i / K * Math.PI * 2); d += (i ? 'L' : 'M') + r2(x) + ' ' + r2(y); } return d + 'Z'; }
 
-let state = 'idle', base = 'idle', timer = 0, lastInput = performance.now();
-const hudState = document.getElementById('hud-state'), hudCls = document.getElementById('hud-cls');
-const logEl = document.getElementById('log');
-function log(msg) {
-  const li = document.createElement('li');
-  const t = new Date().toTimeString().slice(0, 8);
-  li.innerHTML = `${t}  ${msg}`;
-  logEl.prepend(li);
-  while (logEl.children.length > 40) logEl.lastChild.remove();
+class Spring {
+  constructor(x, k, c) { this.x = x; this.v = 0; this.t = x; this.k = k; this.c = c; }
+  step(dt, km = 1) { const a = this.k * km * (this.t - this.x) - this.c * Math.sqrt(km) * this.v; this.v += a * dt; this.x += this.v * dt; }
+}
+// 锚点特征：M 个中心线点 × (x, y, up, dn)，每个分量一根弹簧
+class Feature {
+  constructor(M) { this.M = M; this.x = new Float64Array(4 * M); this.v = new Float64Array(4 * M); this.t = new Float64Array(4 * M); this.ready = false; }
+  set(spec) {
+    const M = this.M;
+    if (spec.length !== M) throw new Error('表情锚点数不一致');
+    for (let i = 0; i < M; i++) { const s = spec[i]; this.t[i] = s[0]; this.t[M + i] = s[1]; this.t[2 * M + i] = Math.max(.6, s[2]); this.t[3 * M + i] = Math.max(.6, s[3]); }
+    if (!this.ready) { this.x.set(this.t); this.ready = true; }
+  }
+  step(dt, k, c) { const x = this.x, v = this.v, t = this.t; for (let j = 0; j < x.length; j++) { v[j] += (k * (t[j] - x[j]) - c * v[j]) * dt; x[j] += v[j] * dt; } }
+  outline(ox, oy, sc = 1) {
+    const M = this.M, x = this.x;
+    return strokeOutline(x.subarray(0, M), x.subarray(M, 2 * M), x.subarray(2 * M, 3 * M), x.subarray(3 * M), M, ox, oy, sc);
+  }
+  openness() { const M = this.M; let s = 0; for (let i = 0; i < M; i++) s += this.x[2 * M + i] + this.x[3 * M + i]; return s / M; }
+}
+const gen = (M, fn) => Array.from({ length: M }, (_, i) => fn(-1 + 2 * i / (M - 1)));
+const cap = (u, T) => T * Math.pow(Math.max(0, 1 - Math.pow(Math.abs(u), 8)), .5) + .3;
+
+/* ---------- 表情库（眼 11 点、嘴 13 点；全部左→右起笔，同绕向） ---------- */
+const EYE_M = 11, MOUTH_M = 13;
+function eyeSpec(e, name, side) {
+  const { w, h } = e;
+  return gen(EYE_M, u => {
+    const s = Math.sqrt(Math.max(0, 1 - u * u)), ext = Math.max(0, (h - w) / 2) + Math.min(w, h) / 2 * s;
+    const q = side < 0 ? u : -u;                     // 靠鼻梁一侧为 +1
+    switch (name) {
+      case 'wide':   return [u * w * .56, -h * .03, ext * 1.14, ext * 1.14];
+      case 'blink':  return [u * w * .56, h * .12, .8, .8];
+      case 'half':   return [u * w * .52, h * .1, Math.min(ext, h * .1) + .5, ext * .92];
+      case 'closed': return [u * w * .58, 3.2 * (1 - u * u) - 1, cap(u, 1.9), cap(u, 1.9)];
+      case 'happy':  return [u * w * .58, -3.8 * (1 - u * u) + 1.8, cap(u, 2.2), cap(u, 2.2)];
+      case 'wince':  return [u * w * .6, -side * u * h * .14 - 1.5 * (1 - u * u), cap(u, 2.1), cap(u, 2.1)];
+      case 'sad':    return [u * w / 2, 0, Math.min(ext, h / 2 * (.42 + .42 * q)), ext];
+      case 'angry':  return [u * w / 2, 0, Math.min(ext, h / 2 * (.5 - .42 * q)), ext];
+      default:       return [u * w / 2, 0, ext, ext];      // open
+    }
+  });
+}
+function mouthSpec(W, name) {
+  return gen(MOUTH_M, u => {
+    const e = Math.sqrt(Math.max(0, 1 - u * u)), b = 1 - u * u;
+    switch (name) {
+      case 'w':     return [u * W / 2, 4.6 * Math.pow(Math.sin(Math.PI * u), 2) + 1.2 * b - 1, cap(u, 2.5), cap(u, 2.5)];
+      case 'small': return [u * W * .26, 2.2 * b, cap(u, 1.9), cap(u, 1.9)];
+      case 'smile': return [u * W * .36, 3 * b, cap(u, 1.9), cap(u, 1.9)];
+      case 'grin':  return [u * W * .46, 2.4 * b + 1.6 * u, cap(u, 1.4), 1.4 + 4.2 * b * (1 + .35 * u)];
+      case 'o':     return [u * W * .2, 0, W * .22 * e + .3, W * .22 * e + .3];
+      case 'yawn':  return [u * W * .27, 1, W * .34 * e + .3, W * .4 * e + .3];
+      case 'open':  return [u * W * .46, -1.2, .9, W * .46 * Math.pow(e, .9) + .3];
+      case 'wavy':  return [u * W * .48, 1.7 * Math.sin(3 * Math.PI * u), cap(u, 1.7), cap(u, 1.7)];
+      case 'pout':  return [u * W * .2, -1.8 * b + .5, cap(u, 2.1), cap(u, 2.1)];
+      default:      return [u * W * .3, 0, cap(u, 1.8), cap(u, 1.8)];  // flat
+    }
+  });
+}
+// 特效字形：Z（中心线折线，粗细由 B 样条圆滑）
+const Z_M = 9;
+function zSpec() {
+  const poly = [[-5, -5], [5, -5], [-5, 5], [5, 5]], segL = [10, Math.hypot(10, 10), 10], tot = segL.reduce((a, b) => a + b);
+  return gen(Z_M, u => {
+    let s = (u + 1) / 2 * tot, k = 0; while (k < 2 && s > segL[k]) { s -= segL[k]; k++; }
+    const a = poly[k], b = poly[k + 1], f = Math.min(1, s / segL[k]);
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, 1.5, 1.5];
+  });
+}
+const Z_SPEC = zSpec();
+function specOutline(spec, ox, oy, sc) {
+  const M = spec.length;
+  return strokeOutline(spec.map(s => s[0]), spec.map(s => s[1]), spec.map(s => s[2]), spec.map(s => s[3]), M, ox, oy, sc);
 }
 
+/* ---------- 三只角色 ---------- */
+const GROUND = 160;          // 三只脚底都落在 y = 160
+const BODY_N = 36;
+const CHARS = {
+  orange: {
+    name: '小橙', tag: '元气 · 好奇', palette: ['#ff413b', '#fcd685', '#ff2d55'],
+    blurb: '教程原型。反应直接、节奏居中，被戳会挤扁再弹回来，开心就连蹦两下。',
+    outline: () => samplePath('M100 40H151A9 9 0 0 1 160 49V100A60 60 0 0 1 100 160A60 60 0 0 1 40 100A60 60 0 0 1 100 40Z', BODY_N,
+                 p => 1 + 7 * Math.exp(-Math.pow(Math.hypot(p[0] - 156, p[1] - 44) / 13, 2))),
+    grad: [[54, 50], [146, 150], '#ff413b', '#fcd685'], glow: ['#fde3a7', 13, .9],
+    blobs: [['#ff1f4b', 70, 70, 50, .55], ['#ffe9a6', 128, 136, 46, .7]],
+    hl: [73, 72, 9, 15.5, 35], eye: { w: 13.4, h: 22.6, color: '#ffffff', glint: false },
+    eyes: [[68.7, 89.3], [94.9, 89.3]], mouth: [83.3, 118], mouthW: 24, idleMouth: 'w',
+    blushAt: [[58, 108], [106, 108]], blushColor: '#ff3b6b', blushBase: 0,
+    shadow: ['#ff6a4a', .62], accent: '#f0533a', app: null,
+    T: 1, exag: 1, body: [190, 13], morph: [300, 28], sleepS: 20,
+    breath: 4.8, blink: [3000, 7000, 150],
+  },
+  mochi: {
+    name: '糯糯', tag: '慢热 · 害羞', palette: ['#c9f7e4', '#3dbfae', '#7ad7ff'],
+    blurb: '薄荷软糕，头顶一根嫩芽。动作慢半拍、身体软得发颤，被戳会缩成一团躲起来，被拎起来会闭眼发抖，最容易犯困。',
+    outline: () => samplePath(polyD(t => {
+      const c = Math.cos(t), s = Math.sin(t), n = s < 0 ? 2.5 : 3.6, by = s < 0 ? 52 : 34;
+      return [100 + 74 * Math.sign(c) * Math.pow(Math.abs(c), 2 / n), 126 + by * Math.sign(s) * Math.pow(Math.abs(s), 2 / n)];
+    }), BODY_N),
+    grad: [[44, 80], [160, 162], '#d4fbe9', '#36b5a6'], glow: ['#effff8', 10, .85],
+    blobs: [['#ffffff', 82, 100, 44, .55], ['#5fd0ff', 136, 146, 40, .45]],
+    hl: [76, 92, 11, 6.5, -18], eye: { w: 8.6, h: 11.5, color: '#1f3d38', glint: true },
+    eyes: [[84, 121], [116, 121]], mouth: [100, 133], mouthW: 16, idleMouth: 'smile',
+    blushAt: [[70, 132], [130, 132]], blushColor: '#ff8fa3', blushBase: .45,
+    shadow: ['#2f9e8f', .82], accent: '#2f9e8f', app: 'sprout',
+    T: 1.4, exag: .9, body: [105, 6.5], morph: [150, 20], sleepS: 12,
+    breath: 6.2, blink: [3500, 8000, 260],
+  },
+  berry: {
+    name: '噼啪', tag: '调皮 · 急性子', palette: ['#a86bff', '#ff7fb0', '#5b8cff'],
+    blurb: '紫莓蛋形，头顶带灯泡天线。动作快、弹簧硬、幅度夸张，被戳会转体跳反击，被拎起来反而很开心，最不爱睡觉。',
+    outline: () => samplePath(polyD(t => {
+      const y = 104 + 56 * Math.sin(t); return [100 + 47 * Math.cos(t) * (1 + .13 * Math.sin(t)) + .07 * (160 - y), y];
+    }), BODY_N),
+    grad: [[60, 50], [150, 160], '#a86bff', '#ff7fb0'], glow: ['#ffd9f7', 9, .8],
+    blobs: [['#5b8cff', 80, 120, 42, .55], ['#ffd1f0', 124, 70, 34, .6]],
+    hl: [86, 66, 7, 12, 30], eye: { w: 13, h: 18, color: '#2a1747', glint: true },
+    eyes: [[92, 99], [119, 97]], mouth: [106, 122], mouthW: 20, idleMouth: 'grin',
+    blushAt: [[80, 114], [133, 112]], blushColor: '#ff4fa0', blushBase: 0,
+    shadow: ['#8c4cf0', .56], accent: '#7a3df0', app: 'antenna',
+    T: .75, exag: 1.3, body: [330, 17], morph: [460, 34], sleepS: 35,
+    breath: 3.6, blink: [2200, 5000, 120],
+  },
+};
+for (const ch of Object.values(CHARS)) {          // 预计算静止形状参数
+  ch.rest = ch.outline();
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, top = null;
+  for (const p of ch.rest) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); if (p[1] < y0) { y0 = p[1]; top = p; } }
+  ch.cx = (x0 + x1) / 2; ch.H = GROUND - y0; ch.cy = GROUND - ch.H / 2; ch.top = top; ch.W = x1 - x0;
+}
+
+/* ---------- 一只角色的 SVG rig ---------- */
+function createRig(host, ch, uid, isMain) {
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 200 200');
+  svg.classList.add('pet-svg');
+  svg.style.setProperty('--breath-period', ch.breath + 's');
+  svg.style.setProperty('--blink-min-gap', ch.blink[0]); svg.style.setProperty('--blink-max-gap', ch.blink[1]); svg.style.setProperty('--blink-duration', ch.blink[2]);
+  svg.innerHTML = `<defs>
+      <linearGradient id="${uid}-g" gradientUnits="userSpaceOnUse"><stop offset="0"/><stop offset="1"/></linearGradient>
+      <radialGradient id="${uid}-b0"><stop offset="0" stop-color="${ch.blobs[0][0]}" stop-opacity="${ch.blobs[0][4]}"/><stop offset="1" stop-color="${ch.blobs[0][0]}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${uid}-b1"><stop offset="0" stop-color="${ch.blobs[1][0]}" stop-opacity="${ch.blobs[1][4]}"/><stop offset="1" stop-color="${ch.blobs[1][0]}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${uid}-hl"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".55" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${uid}-bl"><stop offset="0" stop-color="${ch.blushColor}" stop-opacity=".75"/><stop offset="1" stop-color="${ch.blushColor}" stop-opacity="0"/></radialGradient>
+      <clipPath id="${uid}-clip"><path/></clipPath>
+      <filter id="${uid}-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+        <feFlood flood-color="#fff" result="w"/><feComposite in="w" in2="SourceAlpha" operator="out" result="o"/>
+        <feGaussianBlur in="o" stdDeviation="${ch.glow[1]}" result="s"/><feComposite in="s" in2="SourceAlpha" operator="in" result="e"/>
+        <feFlood flood-color="${ch.glow[0]}" flood-opacity="${ch.glow[2]}"/><feComposite in2="e" operator="in" result="gl"/>
+        <feBlend in="gl" in2="SourceGraphic" mode="screen"/>
+      </filter>
+    </defs>
+    <g ${isMain ? 'id="pet"' : ''} class="rig">
+      <g class="app"></g>
+      <g filter="url(#${uid}-glow)"><g clip-path="url(#${uid}-clip)">
+        <rect x="-60" y="-60" width="320" height="320" fill="url(#${uid}-g)"/>
+        <ellipse class="b0" fill="url(#${uid}-b0)"/><ellipse class="b1" fill="url(#${uid}-b1)"/>
+      </g></g>
+      <path class="hl" fill="url(#${uid}-hl)"/>
+      <path class="bl0" fill="url(#${uid}-bl)"/><path class="bl1" fill="url(#${uid}-bl)"/>
+      <path class="eye0" fill="${ch.eye.color}"/><path class="eye1" fill="${ch.eye.color}"/>
+      <path class="gl0" fill="#fff"/><path class="gl1" fill="#fff"/>
+      <path class="mouth" fill="${ch.eye.color}"/>
+      <g class="fx"></g>
+      <g class="anchors" fill="none"></g>
+    </g>`;
+  host.replaceChildren(svg);
+  const q = s => svg.querySelector(s);
+  return {
+    svg, clip: q('clipPath path'), grad: q('linearGradient'), stops: svg.querySelectorAll('linearGradient stop'),
+    b0: q('.b0'), b1: q('.b1'), hl: q('.hl'), bl: [q('.bl0'), q('.bl1')], eyes: [q('.eye0'), q('.eye1')], gl: [q('.gl0'), q('.gl1')],
+    mouth: q('.mouth'), fx: q('.fx'), app: q('.app'), anchors: q('.anchors'),
+  };
+}
+
+/* ---------- 颜色工具 ---------- */
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => { const A = hex(a), B = hex(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
+const grey = h => { const [r, g, b] = hex(h); const y = Math.round(.3 * r + .59 * g + .11 * b * 1.1); return '#' + [y, y, Math.min(255, y + 8)].map(v => v.toString(16).padStart(2, '0')).join(''); };
+
+/* ---------- 一只活着的桌宠 ---------- */
+class Pet {
+  constructor(host, ch, uid, isMain) {
+    this.ch = ch; this.rig = createRig(host, ch, uid, isMain);
+    const [k, c] = ch.body;
+    this.sy = new Spring(1, k, c); this.shear = new Spring(0, k * .8, c * .9); this.tilt = new Spring(0, k * .7, c);
+    this.wob = new Spring(0, k * 1.6, c * .35);
+    this.gx = new Spring(0, 70 / ch.T, 11 / Math.sqrt(ch.T)); this.gy = new Spring(0, 40 / ch.T, 8.5 / Math.sqrt(ch.T));   // x/y 刚度不同 → 视线走弧线
+    this.fx = new Spring(0, 90, 11); this.fy = new Spring(0, 90, 11);                                              // 五官滞后
+    this.blush = new Spring(ch.blushBase, 40, 12); this.mood = new Spring(0, 20, 9);
+    this.pend = new Spring(0, 55, 2.6);                                                                              // 附属物摆锤
+    this.fxLv = { zzz: new Spring(0, 120, 14), dots: new Spring(0, 120, 14), bang: new Spring(0, 260, 13), sweat: new Spring(0, 120, 14), keys: new Spring(0, 160, 16) };
+    this.eyeF = [new Feature(EYE_M), new Feature(EYE_M)]; this.mouthF = new Feature(MOUTH_M);
+    this.face = { eyes: 'open', mouth: ch.idleMouth }; this.blinkUntil = 0;
+    this.setFace('open', ch.idleMouth);
+    this.t = 0; this.showAnchors = false; this.last = null;
+  }
+  setFace(eyes, mouth) {
+    const ch = this.ch;
+    if (eyes) this.face.eyes = eyes; if (mouth) this.face.mouth = mouth;
+    const blinking = this.t < this.blinkUntil && ['open', 'wide', 'half', 'sad', 'angry'].includes(this.face.eyes);
+    const e = blinking ? 'blink' : this.face.eyes;
+    this.eyeF[0].set(eyeSpec(ch.eye, e, -1)); this.eyeF[1].set(eyeSpec(ch.eye, e, 1));
+    this.mouthF.set(mouthSpec(ch.mouthW, this.face.mouth));
+  }
+  blink(now, dur) { this.blinkUntil = now + dur; this.setFace(); }
+  // 形变场：静止坐标 → 当前坐标（扎实绘图：身体与五官共用）
+  deform(x, y) {
+    const ch = this.ch, sy = this.sy.x, H = ch.H;
+    const ang = Math.atan2(y - ch.cy, x - ch.cx), rr = 1 + this.wob.x * Math.sin(3 * ang + this.t * .009) * .01;
+    x = ch.cx + (x - ch.cx) * rr; y = ch.cy + (y - ch.cy) * rr;
+    const h = GROUND - y, hn = clamp(h / H, 0, 1.4);
+    const sx = 1 + (1 / Math.max(.4, sy) - 1) * (1.2 - .4 * hn);
+    let nx = (x - ch.cx) * sx + this.shear.x * h * sy, ny = -h * sy;
+    const a = this.tilt.x * Math.PI / 180, pcy = -H * sy / 2;
+    const dx = nx, dy = ny - pcy, ca = Math.cos(a), sa = Math.sin(a);
+    nx = dx * ca - dy * sa; ny = dx * sa + dy * ca + pcy;
+    return [ch.cx + nx, GROUND + ny];
+  }
+  step(dt, now, ax) {
+    this.t = now;
+    const km = (this.t < this.blinkUntil + 60) ? 2.6 : 1;
+    if (this.blinkUntil && this.t > this.blinkUntil && this._blinking) { this._blinking = false; this.setFace(); }
+    if (this.t < this.blinkUntil) this._blinking = true;
+    for (const s of [this.sy, this.shear, this.tilt, this.wob, this.gx, this.gy, this.fx, this.fy, this.blush, this.mood]) s.step(dt);
+    for (const k in this.fxLv) this.fxLv[k].step(dt);
+    this.pend.v += (-ax * .0007 - this.shear.v * 1.4 - this.tilt.v * .012) * dt * 60;
+    this.pend.step(dt); this.pend.x = clamp(this.pend.x, -1.3, 1.3);
+    const [mk, mc] = this.ch.morph;
+    for (const f of this.eyeF) f.step(dt, mk * km, mc * Math.sqrt(km));
+    this.mouthF.step(dt, mk, mc);
+  }
+  pts(list) { return list.map(p => this.deform(p[0], p[1])); }
+  render() {
+    const ch = this.ch, R = this.rig, t = this.t / 1000;
+    const body = this.pts(ch.rest); this.lastBody = body;
+    R.clip.setAttribute('d', bspline(body));
+    // 渐变端点随形变走，配色随 mood 褪色，色带缓慢流动（次要动作）
+    const [A, B] = [this.deform(...ch.grad[0]), this.deform(...ch.grad[1])];
+    R.grad.setAttribute('x1', r2(A[0])); R.grad.setAttribute('y1', r2(A[1])); R.grad.setAttribute('x2', r2(B[0])); R.grad.setAttribute('y2', r2(B[1]));
+    const m = clamp(this.mood.x, 0, 1);
+    R.stops[0].setAttribute('stop-color', mix(ch.grad[2], grey(ch.grad[2]), m * .75)); R.stops[1].setAttribute('stop-color', mix(ch.grad[3], grey(ch.grad[3]), m * .75));
+    R.stops[0].setAttribute('offset', r2(.04 + .05 * Math.sin(t * .7))); R.stops[1].setAttribute('offset', r2(.88 + .05 * Math.sin(t * .53 + 1)));
+    // 体内色团：慢速轨道漂移 + 反向晃荡
+    ch.blobs.forEach((b, i) => {
+      const el = i ? R.b1 : R.b0, ph = i * 2.1;
+      const p = this.deform(b[1] + 9 * Math.sin(t * .9 + ph) - this.fx.x * 2.2, b[2] + 7 * Math.sin(t * 1.17 + ph) - this.fy.x * 2.2);
+      el.setAttribute('cx', r2(p[0])); el.setAttribute('cy', r2(p[1]));
+      el.setAttribute('rx', r2(b[3] * (1 + .08 * Math.sin(t * 1.3 + ph)) / Math.sqrt(this.sy.x))); el.setAttribute('ry', r2(b[3] * (1 + .08 * Math.cos(t * 1.1 + ph)) * Math.sqrt(this.sy.x)));
+    });
+    // 高光：滞后跟随
+    const [hx, hy, hrx, hry, hrot] = ch.hl;
+    R.hl.setAttribute('d', bspline(this.pts(circlePts(hx - this.fx.x * .6, hy - this.fy.x * .6, hrx, hry, 10, hrot * Math.PI / 180))));
+    // 腮红
+    const bo = clamp(this.blush.x, 0, 1);
+    ch.blushAt.forEach((p, i) => { R.bl[i].setAttribute('d', bspline(this.pts(circlePts(p[0] + this.gx.x * .4 + this.fx.x * .5, p[1] + this.fy.x * .5, 8.5, 4.6, 10)))); R.bl[i].setAttribute('opacity', r2(bo)); });
+    // 眼 / 嘴：锚点轮廓 → 形变场
+    const gx = this.gx.x, gy = this.gy.x;
+    const anchorsDraw = [];
+    ch.eyes.forEach((c, i) => {
+      const o = this.eyeF[i].outline(c[0] + gx + this.fx.x, c[1] + gy + this.fy.x);
+      const P = this.pts(o); R.eyes[i].setAttribute('d', bspline(P)); anchorsDraw.push(P);
+      if (ch.eye.glint) {
+        const op = clamp((this.eyeF[i].openness() - 2) / (ch.eye.h * .7), 0, 1);
+        const gr = ch.eye.w * .16 * op + .01;
+        R.gl[i].setAttribute('d', op > .05 ? bspline(this.pts(circlePts(c[0] + gx * 1.3 + this.fx.x - ch.eye.w * .18, c[1] + gy * 1.2 + this.fy.x - ch.eye.h * .2, gr, gr, 8))) : '');
+      }
+    });
+    const mo = this.mouthF.outline(ch.mouth[0] + gx * .45 + this.fx.x * 1.2, ch.mouth[1] + gy * .3 + this.fy.x * 1.2);
+    const MP = this.pts(mo); R.mouth.setAttribute('d', bspline(MP)); anchorsDraw.push(MP);
+    this.renderApp(); this.renderFx();
+    if (this.showAnchors) {
+      const all = [body, ...anchorsDraw];
+      R.anchors.innerHTML = all.map(P => `<path d="M${P.map(p => r2(p[0]) + ' ' + r2(p[1])).join('L')}Z" stroke="#1a73e8" stroke-width=".35" opacity=".7"/>` +
+        P.map(p => `<circle cx="${r2(p[0])}" cy="${r2(p[1])}" r=".9" fill="#1a73e8"/>`).join('')).join('');
+    } else if (R.anchors.firstChild) R.anchors.innerHTML = '';
+    this.lastFace = anchorsDraw;
+  }
+  renderApp() {
+    const ch = this.ch; if (!ch.app) return;
+    const base = this.deform(ch.top[0], ch.top[1] + 4), up = this.deform(ch.top[0], ch.top[1] - 10);
+    const a0 = Math.atan2(up[1] - base[1], up[0] - base[0]);
+    const L = ch.app === 'sprout' ? 20 : 30, K = 7, xs = [], ys = [];
+    let x = base[0], y = base[1];
+    for (let i = 0; i < K; i++) {
+      const s = i / (K - 1), a = a0 + this.pend.x * Math.pow(s, 1.4) + (ch.app === 'antenna' ? .25 * s : 0);
+      if (i) { x += Math.cos(a) * L / (K - 1); y += Math.sin(a) * L / (K - 1); }
+      xs.push(x); ys.push(y);
+    }
+    const stemT = ch.app === 'sprout' ? 1.7 : 1.4;
+    const up2 = xs.map(() => stemT), dn2 = xs.map(() => stemT);
+    let html = `<path d="${bspline(strokeOutline(xs, ys, up2, dn2, K))}" fill="${ch.app === 'sprout' ? '#3f9c55' : '#5a3a8c'}"/>`;
+    const tip = [xs[K - 1], ys[K - 1]], aEnd = a0 + this.pend.x;
+    if (ch.app === 'sprout') {
+      for (const sgn of [-1, 1]) {
+        const a = aEnd + sgn * 1.05 + this.pend.x * .5, LM = 9, lx = [], ly = [], lu = [], ld = [];
+        for (let i = 0; i < LM; i++) { const s = i / (LM - 1); lx.push(tip[0] + Math.cos(a) * 15 * s); ly.push(tip[1] + Math.sin(a) * 15 * s); const w = 4.6 * Math.sin(Math.PI * Math.pow(s, .8)) + .3; lu.push(w); ld.push(w); }
+        html += `<path d="${bspline(strokeOutline(lx, ly, lu, ld, LM))}" fill="${sgn < 0 ? '#5cc46a' : '#77d684'}"/>`;
+      }
+    } else {
+      html += `<path d="${bspline(circlePts(tip[0], tip[1], 6.8, 6.8, 10))}" fill="#ffd34d"/>`;
+      html += `<path d="${bspline(circlePts(tip[0] - 2, tip[1] - 2.2, 1.9, 1.9, 8))}" fill="#fff8d6"/>`;
+    }
+    this.rig.app.innerHTML = html;
+  }
+  renderFx() {
+    const ch = this.ch, t = this.t, col = ch.accent; let html = '';
+    const ox = ch.cx + ch.W * .42, oy = GROUND - ch.H - 6;
+    const z = this.fxLv.zzz.x;
+    if (z > .02) for (let k = 0; k < 3; k++) {
+      const s = ((t / (2600 * ch.T)) + k / 3) % 1, env = Math.sin(Math.PI * s) * z;
+      if (env > .03) html += `<path d="${bspline(specOutline(Z_SPEC, ox + s * 20 + 4 * Math.sin(s * 6), oy + 10 - s * 34, .5 + .55 * env))}" fill="${col}"/>`;
+    }
+    const d = this.fxLv.dots.x;
+    if (d > .02) for (let k = 0; k < 3; k++) { const r = (2.6 + 1.1 * Math.sin(t / 180 - k * 1.2)) * d; html += `<path d="${bspline(circlePts(ox + k * 11, oy + 4 - 3 * Math.max(0, Math.sin(t / 180 - k * 1.2)) * d, r, r, 8))}" fill="${col}"/>`; }
+    const b = this.fxLv.bang.x;
+    if (b > .02) {
+      const s = Math.max(.01, b), bx = ox + 6, by = oy;
+      html += `<path d="${bspline(circlePts(bx, by, 14 * s, 14 * s, 12))}" fill="${col}"/>`;
+      html += `<path d="${bspline(specOutline(gen(7, u => [0, u * 4.5, 1.9 - u * .4, 1.9 - u * .4]), bx, by - 3.5 * s, s))}" fill="#fff"/>`;
+      html += `<path d="${bspline(circlePts(bx, by + 6.5 * s, 1.9 * s, 1.9 * s, 8))}" fill="#fff"/>`;
+    }
+    const w = this.fxLv.sweat.x;
+    if (w > .02) {
+      const s = (t % 1800) / 1800, e = Math.sin(Math.PI * Math.min(1, s * 1.2)) * w, sx = ch.cx + ch.W * .36, sy = GROUND - ch.H * .72 + s * 16;
+      if (e > .03) html += `<path d="${bspline(gen(10, u => { const a = (u + 1) * Math.PI; const r = 4.2 * e; return [sx + Math.sin(a) * r * (1 - .55 * Math.max(0, -Math.cos(a))), sy + (-Math.cos(a)) * r * 1.35]; }))}" fill="#8fd3ff"/>`;
+    }
+    const kk = this.fxLv.keys.x;
+    if (kk > .02) for (let k = 0; k < 5; k++) {
+      const press = Math.max(0, Math.sin(t / 95 + k * 2.2)), x = ch.cx - 44 + k * 22, hgt = (5 - 2.4 * press) * kk;
+      html += `<path d="${bspline(gen(12, u => { const a = (u + 1) * Math.PI * (11 / 12); const c = Math.cos(a), s = Math.sin(a); return [x + 8 * Math.sign(c) * Math.pow(Math.abs(c), .4) * kk, GROUND + 8 - hgt / 2 + hgt / 2 * Math.sign(s) * Math.pow(Math.abs(s), .4)]; }))}" fill="${mix(col, '#ffffff', .45)}"/>`;
+    }
+    this.rig.fx.innerHTML = html;
+  }
+  area() { let a = 0; const P = this.lastBody; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; a += p[0] * q[1] - q[0] * p[1]; } return Math.abs(a) / 2; }
+}
+
+/* =====================================================================
+   状态机（state-map：A 循环 / B 一次性回原姿态 / C 过渡链接下一状态）
+   状态只设「目标」和「冲量」，绝不直接写姿态 → 任意打断都平滑续接
+   ===================================================================== */
+const S = {
+  'idle':           { c: 'A', d: '呼吸 + 随机眨眼，视线沿弧线跟随指针', tr: '默认 / 无活动' },
+  'idle-look':      { c: 'B', ms: 1900, d: '左右张望，身体跟着视线侧倾', tr: 'idle 中随机' },
+  'idle-yawn':      { c: 'B', ms: 2300, then: 'idle-dozing', d: '先缩再伸展，嘴张成椭圆', tr: '无事件计时到点' },
+  'idle-dozing':    { c: 'A', after: [4000, 'collapse-sleep'], d: '半眯眼，慢慢点头', tr: 'idle-yawn 之后' },
+  'collapse-sleep': { c: 'C', ms: 1300, next: 'sleeping', d: '先微微上提，再软塌下去', tr: 'idle-dozing 超时' },
+  'sleeping':       { c: 'A', d: '扁平慢呼吸，Z 字沿弧线飘起', tr: 'collapse-sleep 结束' },
+  'wake':           { c: 'C', ms: 950, next: 'idle', d: '先压更扁（预备），再弹起拉长回正', tr: '睡着时点击 / 有事件' },
+  'thinking':       { c: 'A', d: '左右摇摆，视线向上，思考点', tr: 'UserPromptSubmit' },
+  'working-typing': { c: 'A', d: '快速点头，视线向下，键盘起伏', tr: 'PreToolUse / PostToolUse' },
+  'error':          { c: 'A', d: '配色褪灰、阵发性发抖、冒汗', tr: 'PostToolUseFailure' },
+  'notification':   { c: 'B', ms: 1800, d: '预备下蹲后跳起，感叹号弹出', tr: 'PermissionRequest' },
+  'happy':          { c: 'B', ms: 1900, d: '小橙连跳两下；糯糯原地摇摆；噼啪连跳三下带转体', tr: 'Stop / 连点 3 下' },
+  'react-poke':     { c: 'B', ms: 900, d: '小橙挤扁回弹；糯糯缩成一团再偷看；噼啪生气转体跳', tr: '点击' },
+  'react-drag':     { c: 'A', d: '按速度拉伸摇摆，附属物甩动；松手后抛物线落地回弹', tr: '按住拖动' },
+};
+const EVENTS = [['UserPromptSubmit', 'thinking'], ['PreToolUse', 'working-typing'], ['PostToolUseFailure', 'error'], ['PermissionRequest', 'notification'], ['Stop', 'happy']];
+
+/* 每个状态每帧给出目标；ctx 提供冲量工具。函数里 t 为进入状态后的毫秒数，T 为性格时间系数 */
+const FACE = {
+  'idle': ch => ['open', ch.idleMouth], 'idle-look': ch => ['open', ch.idleMouth], 'idle-dozing': () => ['half', 'small'],
+  'collapse-sleep': () => ['closed', 'small'], 'sleeping': () => ['closed', 'small'], 'wake': () => ['wide', 'o'],
+  'thinking': () => ['open', 'small'], 'working-typing': ch => ['open', ch.idleMouth], 'error': () => ['sad', 'wavy'],
+  'notification': () => ['wide', 'o'], 'happy': () => ['happy', 'open'],
+  'react-poke': ch => ch === CHARS.mochi ? ['wince', 'wavy'] : ch === CHARS.berry ? ['angry', 'pout'] : ['wince', 'w'],
+  'react-drag': ch => ch === CHARS.mochi ? ['wince', 'wavy'] : ch === CHARS.berry ? ['happy', 'open'] : ['wide', 'o'],
+  'idle-yawn': () => ['closed', 'yawn'],
+};
+function behave(P, st, t, ctx) {
+  const ch = P.ch, T = ch.T, X = ch.exag * AMP, sin = Math.sin, PI2 = Math.PI * 2;
+  let sy = 1, sh = 0, gaze = null, mood = 0, blush = ch.blushBase;
+  const fx = { zzz: 0, dots: 0, bang: 0, sweat: 0, keys: 0 };
+  const breath = .022 * AMP * sin(PI2 * t / (ch.breath * 1000));
+  switch (st) {
+    case 'idle':
+      sy = 1 + breath;
+      if (ch === CHARS.berry && ctx.near) sh = clamp(ctx.pointerDX * .0006, -.08, .08);       // 噼啪：好奇地凑过去
+      if (ch === CHARS.mochi && ctx.near) { blush = .95; gaze = [-Math.sign(ctx.pointerDX || 1) * 4, 2]; }   // 糯糯：害羞别过脸
+      break;
+    case 'idle-look': {
+      const f = t / (S['idle-look'].ms * T);
+      const gxv = f < .12 ? 0 : f < .45 ? -6 : f < .78 ? 6 : 0;
+      gaze = [gxv, f < .12 || f > .78 ? 0 : -1.5]; sh = gxv * .008 * X; sy = 1 + breath; break;
+    }
+    case 'idle-yawn': {
+      const a = 300 * T, b = 1500 * T;
+      if (t < a) { sy = .93; P.setFaceOnce('half', 'small'); } else if (t < b) { sy = 1 + .09 * X; P.setFaceOnce('closed', 'yawn'); } else { sy = 1; P.setFaceOnce('half', 'small'); }
+      break;
+    }
+    case 'idle-dozing': sy = .97 + breath * .7; sh = -.05 * X * (.5 + .5 * sin(PI2 * t / (3200 * T))); break;
+    case 'collapse-sleep': sy = t < 260 * T ? 1.05 : .8; sh = t < 260 * T ? 0 : -.04; fx.zzz = t > 700 * T ? 1 : 0; break;
+    case 'sleeping': sy = .8 + .022 * AMP * sin(PI2 * t / (5600 * T)); sh = -.04; fx.zzz = 1; break;
+    case 'wake':
+      if (t < 160 * T) sy = .74; else { sy = 1; ctx.once('wake-kick', () => { P.sy.v += 5 * X; ctx.kickPend(1); }); }
+      break;
+    case 'thinking': sh = .07 * X * sin(PI2 * t / (2400 * T)); gaze = [3, -6]; fx.dots = 1; sy = 1 + breath; break;
+    case 'working-typing': sy = 1 + .035 * X * sin(PI2 * t / (330 * T)); gaze = [0, 4]; fx.keys = 1; break;
+    case 'error': {
+      mood = 1; fx.sweat = 1; const ph = t % (2100 * T);
+      sh = ph < 480 * T ? .07 * X * sin(t / (16 * T)) : 0; sy = .97 + breath; break;
+    }
+    case 'notification':
+      fx.bang = t > 140 * T ? 1 : 0;
+      if (t < 140 * T) sy = .84; else ctx.once('n-hop', () => ctx.hop(380));
+      break;
+    case 'happy':
+      blush = 1;
+      if (ch === CHARS.mochi) { sh = .1 * X * sin(PI2 * t / (900 * T)); sy = 1 + .05 * X * Math.abs(sin(PI2 * t / (900 * T))); }
+      else {
+        const hops = ch === CHARS.berry ? [0, 560, 1120] : [0, 820];
+        hops.forEach((h0, i) => {
+          if (t > h0 * T && t < h0 * T + 140 * T) sy = .82;
+          if (t >= h0 * T + 140 * T) ctx.once('h' + i, () => { ctx.hop(ch === CHARS.berry ? 470 + i * 60 : 520); if (ch === CHARS.berry && i === hops.length - 1) ctx.spin(1); });
+        });
+      }
+      break;
+    case 'react-poke':
+      if (ch === CHARS.mochi) {
+        blush = 1;
+        if (t < 900 * T) sy = .72; else { sy = .96; P.setFaceOnce('half', 'small'); gaze = [ctx.pointerDX > 0 ? 4 : -4, 1]; }
+      } else if (ch === CHARS.berry) {
+        if (t < 120 * T) sy = .8; else ctx.once('p-hop', () => { ctx.hop(430); ctx.spin(ctx.pointerDX > 0 ? -1 : 1); });
+      } else {
+        ctx.once('p-kick', () => { P.sy.v -= 6.5 * X; P.wob.v += 60 * X; });
+        sy = 1 + breath;
+      }
+      break;
+    case 'react-drag': sy = 1.07; break;
+  }
+  return { sy, sh, gaze, mood, blush, fx };
+}
+Pet.prototype.setFaceOnce = function (e, m) { if (this.face.eyes !== e || this.face.mouth !== m) this.setFace(e, m); };
+
+/* =====================================================================
+   舞台：物理（拖拽、抛出、重力、落地压扁、回弹、静止）
+   ===================================================================== */
+const stage = document.getElementById('stage'), host = document.getElementById('pet-host'), shadowEl = document.getElementById('shadow');
+const G = 2600;          // px/s²
+let SZ = 230;            // 宿主尺寸（px）= 200 个 SVG 单位
+const phys = { x: 0, y: 0, vx: 0, vy: 0, ax: 0, drag: false, tx: 0, ty: 0, grounded: true, lastImpact: 0 };
+let pet = null, curKey = 'orange';
+let state = 'idle', base = 'idle', stT = 0, gen_ = 0, onceSet = new Set(), timers = [], lastInput = performance.now(), queued = null;
+const pointer = { x: 0, y: 0, inside: false };
+const floorY = () => stage.clientHeight * .8;
+const u2p = () => SZ / 200;
+
+const ctx = {
+  get near() { return pointer.inside && Math.hypot(pointer.x - phys.x, pointer.y - (floorY() - phys.y - SZ * .25)) < SZ * .75; },
+  get pointerDX() { return pointer.inside ? pointer.x - phys.x : 0; },
+  once(key, fn) { if (!onceSet.has(key)) { onceSet.add(key); fn(); } },
+  hop(v) { if (phys.drag) return; phys.vy = v * Math.sqrt(pet.ch.exag) * (REDUCED ? .55 : 1); phys.grounded = false; pet.sy.v += 2.5 * AMP; },
+  spin(dir) { pet.tilt.t += 360 * dir; },
+  kickPend(s) { pet.pend.v += (Math.random() < .5 ? -1 : 1) * 3 * s; },
+};
+
+function log(msg) {
+  const li = document.createElement('li'); li.innerHTML = `${new Date().toTimeString().slice(0, 8)}  ${msg}`;
+  const logEl = document.getElementById('log'); logEl.prepend(li); while (logEl.children.length > 40) logEl.lastChild.remove();
+}
 function setState(next, why) {
-  const def = S[next]; if (!def) return;
-  clearTimeout(timer);
+  const def = S[next]; if (!def || !pet) return;
+  const T = pet.ch.T; gen_++; onceSet = new Set(); timers = [];
   const prev = state;
-  if (def.c === 'A') base = next;
-  else if (def.c === 'C') base = def.next;
-  state = next;
-  // 重新触发 CSS 动画：先清掉再写回
-  svg.dataset.state = '';
-  void svg.getBoundingClientRect();
-  svg.dataset.state = next;
-  svg.dataset.eyes = def.eyes;
-  svg.dataset.mouth = def.mouth;
-  svg.dataset.blush = def.blush ? '1' : '0';
-  setGaze(def.gaze ? def.gaze[0] : 0, def.gaze ? def.gaze[1] : 0, true);
-  hudState.textContent = next;
-  hudCls.innerHTML = `<span class="cls cls-${def.c}">${def.c}</span>`;
+  if (def.c === 'A') base = next; else if (def.c === 'C') base = def.next;
+  state = next; stT = performance.now();
+  const [e, m] = FACE[next](pet.ch); pet.setFace(e, m);
+  document.getElementById('hud-state').textContent = next;
+  document.getElementById('hud-cls').innerHTML = `<span class="cls cls-${def.c}">${def.c}</span>`;
   document.querySelectorAll('#state-btns .chip').forEach(b => b.setAttribute('aria-current', b.dataset.s === next));
   log(`<b>${prev}</b> → <b>${next}</b> <span class="cls cls-${def.c}">${def.c}</span>${why ? ' · ' + why : ''}`);
-  if (def.c === 'B') timer = setTimeout(() => setState(def.then || base, def.then ? '链到 ' + def.then : '回到 ' + base), def.ms);
-  else if (def.c === 'C') timer = setTimeout(() => setState(def.next, 'C 过渡结束'), def.ms);
-  else if (def.after) timer = setTimeout(() => setState(def.after[1], '打盹超时'), def.after[0]);
+  const g = gen_;
+  const later = (ms, fn) => timers.push({ at: stT + ms, g, fn });
+  const ms = next === 'react-poke' && pet.ch === CHARS.mochi ? 1750 : def.ms;
+  if (def.c === 'B') later(ms * T, () => setState(def.then || base, def.then ? '链到 ' + def.then : '回到 ' + base));
+  else if (def.c === 'C') later(def.ms * T, () => {
+    if (next === 'wake' && queued) { const q = queued; queued = null; setState(q, '唤醒后处理事件'); } else setState(def.next, 'C 过渡结束');
+  });
+  else if (def.after) later(def.after[0] * T, () => setState(def.after[1], '打盹超时'));
 }
 
-/* 状态按钮 / 事件按钮 / 状态表 */
-document.getElementById('state-btns').innerHTML = Object.entries(S).map(([k, v]) =>
-  `<button class="chip" data-s="${k}" aria-current="${k === 'idle'}">${k}<span class="cls cls-${v.c}">${v.c}</span></button>`).join('');
-document.getElementById('state-btns').addEventListener('click', e => {
-  const b = e.target.closest('.chip'); if (!b) return; touch(); setState(b.dataset.s, '手动');
-});
-document.getElementById('event-btns').innerHTML = EVENTS.map(([ev, st]) =>
-  `<button class="chip" data-ev="${ev}" data-s="${st}">${ev}</button><span>→ ${st}</span>`).join('');
-document.getElementById('event-btns').addEventListener('click', e => {
-  const b = e.target.closest('.chip'); if (!b) return;
-  touch();
-  const target = b.dataset.s;
-  if (b.dataset.ev === 'Stop') base = 'idle';           // Stop 结束工作：happy 播完回 idle
-  if (state === 'sleeping' || state === 'idle-dozing') { setState('wake', b.dataset.ev); S.wake._then = target; }
-  else setState(target, b.dataset.ev);
-});
-// wake 结束后若有排队事件，接着进入
-const _set = setState;
-setState = function (next, why) {
-  if (state === 'wake' && next === 'idle' && S.wake._then) { const t = S.wake._then; S.wake._then = null; return _set(t, '唤醒后处理事件'); }
-  return _set(next, why);
-};
-document.getElementById('state-table').innerHTML = Object.entries(S).map(([k, v]) =>
-  `<tr><td><code>${k}</code></td><td><span class="cls cls-${v.c}">${v.c}</span></td><td>${v.d}</td><td>${v.t}</td></tr>`).join('');
-
-/* ================= 4. 眨眼（hello-idle 模板的随机眨眼调度） ================= */
-function cssNum(name) { return parseFloat(getComputedStyle(svg).getPropertyValue(name)); }
-(function scheduleBlink() {
-  const min = cssNum('--blink-min-gap') || 3000, max = cssNum('--blink-max-gap') || 7000;
-  setTimeout(() => {
-    if (svg.dataset.eyes === 'open') {
-      eyesOpen.classList.add('blink');
-      setTimeout(() => eyesOpen.classList.remove('blink'), cssNum('--blink-duration') || 150);
-    }
-    scheduleBlink();
-  }, min + Math.random() * (max - min));
-})();
-
-/* ================= 5. 视线跟随 ================= */
-let gx = 0, gy = 0;
-function setGaze(x, y, force) {
-  gx = x; gy = y;
-  gaze.style.transform = `translate(${x}px, ${y}px)`;
+function mountPet(key, dropIn) {
+  curKey = key; const ch = CHARS[key];
+  pet = new Pet(host, ch, 'main-' + key, true);
+  shadowEl.style.background = `radial-gradient(closest-side, ${ch.shadow[0]}88, ${ch.shadow[0]}00)`;
+  host.setAttribute('aria-label', '桌宠 ' + ch.name);
+  const out = document.getElementById('idle-ms'); out.value = ch.sleepS; document.getElementById('idle-ms-out').textContent = ch.sleepS + ' s';
+  document.querySelectorAll('.who').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
+  base = 'idle'; state = 'idle'; setState('idle', '换角色：' + ch.name);
+  if (dropIn) { phys.y = stage.clientHeight * .75; phys.vy = 0; phys.vx = 0; phys.grounded = false; pet.sy.x = 1.1; }
+  lastInput = performance.now();
 }
-const stage = document.getElementById('stage');
-stage.addEventListener('pointermove', e => {
-  if (dragging) return;
-  const def = S[state];
-  if (def.gaze || !['open', 'wide', 'half'].includes(def.eyes)) return;
-  const r = host.getBoundingClientRect();
-  const cx = r.left + r.width * 0.34, cy = r.top + r.height * 0.4;
-  const dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy) || 1;
-  const k = Math.min(1, d / 160);
-  setGaze(dx / d * 5 * k, dy / d * 4 * k);
-});
-stage.addEventListener('pointerleave', () => { if (!S[state].gaze) setGaze(0, 0); });
 
-/* ================= 6. 点击 / 连点 / 拖动（宿主负责移动，SVG 只负责表演） ================= */
-let dragging = false, down = null, pokes = [], lastX = 0;
-const GROUND = () => stage.clientHeight * 0.78 - 186;
-function placeX(px) {
-  const w = stage.clientWidth, half = host.offsetWidth / 2;
-  const x = Math.max(half - 40, Math.min(w - half + 20, px));
-  host.style.left = x + 'px';
-}
+/* ---------- 指针：点 / 连点 / 拖 / 甩 ---------- */
+let down = null, pokes = [];
+function localXY(e) { const r = stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+stage.addEventListener('pointermove', e => { const [x, y] = localXY(e); pointer.x = x; pointer.y = y; pointer.inside = true; touch(); });
+stage.addEventListener('pointerleave', () => { pointer.inside = false; });
 host.addEventListener('pointerdown', e => {
-  e.preventDefault();
-  host.setPointerCapture(e.pointerId);
-  const r = host.getBoundingClientRect();
-  down = { x: e.clientX, y: e.clientY, ox: e.clientX - r.left - r.width / 2, oy: e.clientY - r.top, t: performance.now() };
-  lastX = e.clientX;
+  e.preventDefault(); host.setPointerCapture(e.pointerId);
+  const [x, y] = localXY(e);
+  down = { x, y, gox: x - phys.x, goy: (floorY() - phys.y) - y };
   touch();
 });
 host.addEventListener('pointermove', e => {
   if (!down) return;
-  if (!dragging && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) {
-    dragging = true; host.classList.add('dragging'); host.classList.remove('falling');
-    if (state === 'sleeping' || state === 'idle-dozing') log('<b>sleeping</b> 被拎起来');
+  const [x, y] = localXY(e);
+  if (!phys.drag && Math.hypot(x - down.x, y - down.y) > 5) {
+    phys.drag = true; host.classList.add('dragging'); phys.grounded = false;
+    if (state === 'sleeping' || state === 'idle-dozing') log('<b>' + state + '</b> 被拎起来');
     setState('react-drag', '拖动开始');
   }
-  if (!dragging) return;
-  const sr = stage.getBoundingClientRect();
-  placeX(e.clientX - sr.left - down.ox);
-  const top = Math.max(-40, Math.min(GROUND(), e.clientY - sr.top - down.oy));
-  host.style.top = top + 'px';
-  const h = Math.max(0, GROUND() - top);
-  // 影子留在地面：反向抵消抬升高度，并按离地高度缩小
-  const sh = svg.querySelector('.shadow');
-  const scale = h * 200 / host.offsetHeight;
-  sh.style.transform = `translateY(${scale + Math.min(22, h / 3)}px) scale(${Math.max(.45, 1 - h / 260)})`;
-  sh.style.opacity = Math.max(.35, 1 - h / 300);
-  const vx = e.clientX - lastX; lastX = e.clientX;
-  host.style.transform = `rotate(${Math.max(-18, Math.min(18, vx * 1.6))}deg)`;
-  touch();
+  if (phys.drag) { phys.tx = x - down.gox; phys.ty = Math.max(0, floorY() - (y + down.goy)); }
 });
-function release(e) {
+function release() {
   if (!down) return;
-  const wasDrag = dragging;
-  down = null; dragging = false; host.classList.remove('dragging');
-  host.style.transform = '';
+  const wasDrag = phys.drag; down = null; phys.drag = false; host.classList.remove('dragging');
   if (wasDrag) {
-    host.classList.add('falling');
-    host.style.top = GROUND() + 'px';
-    const sh = svg.querySelector('.shadow');
-    sh.style.transition = 'transform .55s cubic-bezier(.3,1.6,.5,1), opacity .4s';
-    sh.style.transform = ''; sh.style.opacity = '';
-    setTimeout(() => { sh.style.transition = ''; }, 600);
-    base = 'idle';
-    setState('react-poke', '落地');
-    return;
+    const sp = Math.hypot(phys.vx, phys.vy), cap = 1800; if (sp > cap) { phys.vx *= cap / sp; phys.vy *= cap / sp; }
+    base = 'idle'; log(`松手 · 抛出速度 ${Math.round(Math.hypot(phys.vx, phys.vy))} px/s`);
+    return;   // 落地时由物理触发回 idle
   }
-  // 点击
-  if (state === 'sleeping' || state === 'idle-dozing' || state === 'collapse-sleep') { setState('wake', '点击叫醒'); return; }
-  if (state === 'happy') return;           // 开心动画不被点击打断
-  const now = performance.now();
-  pokes = pokes.filter(t => now - t < 1500); pokes.push(now);
-  if (pokes.length >= 3) { pokes = []; setState('happy', '连点 3 下'); }
-  else setState('react-poke', '点击');
+  if (['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) { setState('wake', '点击叫醒'); return; }
+  if (state === 'happy') return;
+  const now = performance.now(); pokes = pokes.filter(t => now - t < 1500); pokes.push(now);
+  if (pokes.length >= 3) { pokes = []; setState('happy', '连点 3 下'); } else setState('react-poke', '点击');
 }
-host.addEventListener('pointerup', release);
-host.addEventListener('pointercancel', release);
+host.addEventListener('pointerup', release); host.addEventListener('pointercancel', release);
 host.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); touch(); setState('react-poke', '键盘'); } });
-host.tabIndex = 0;
-window.addEventListener('resize', () => { if (!dragging) host.style.top = GROUND() + 'px'; });
-host.style.top = GROUND() + 'px';
-
-/* ================= 7. 无事件入睡 + idle 小动作 ================= */
-const idleIn = document.getElementById('idle-ms'), idleOut = document.getElementById('idle-ms-out');
-let IDLE_MS = 20000;
-idleIn.addEventListener('input', () => { IDLE_MS = idleIn.value * 1000; idleOut.textContent = idleIn.value + ' s'; });
-const br = document.getElementById('breath'), brOut = document.getElementById('breath-out');
-br.addEventListener('input', () => { svg.style.setProperty('--breath-period', br.value + 's'); brOut.textContent = br.value + ' s'; });
 function touch() { lastInput = performance.now(); }
-stage.addEventListener('pointermove', touch);
-const hudSleep = document.getElementById('hud-sleep');
-let nextLook = performance.now() + 7000;
-setInterval(() => {
-  const now = performance.now();
-  if (state === 'idle') {
-    const left = Math.max(0, IDLE_MS - (now - lastInput));
-    hudSleep.textContent = `入睡倒计时 ${Math.ceil(left / 1000)} s`;
-    if (left <= 0) { setState('idle-yawn', `${IDLE_MS / 1000}s 无事件`); return; }
-    if (now > nextLook) { nextLook = now + 6000 + Math.random() * 6000; if (Math.random() < .5) setState('idle-look', '随机'); }
-  } else hudSleep.textContent = state === 'sleeping' ? '睡着了 · 点一下叫醒' : '';
-}, 250);
 
-/* ================= 8. 复制最终形象 SVG ================= */
+/* ---------- 主循环：只驱动当前角色，离屏/隐藏时暂停 ---------- */
+let visible = true, lastF = performance.now(), nextIdleAct = performance.now() + 6000, nextBlink = performance.now() + 2500;
+new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(stage);
+function physicsStep(dt) {
+  const fy = floorY(), W = stage.clientWidth, half = SZ * .32;
+  const vx0 = phys.vx;
+  if (phys.drag) {
+    const k = 380, c = 28;                         // 宿主跟随指针有弹性滞后
+    phys.vx += (k * (phys.tx - phys.x) - c * phys.vx) * dt; phys.vy += (k * (phys.ty - phys.y) - c * phys.vy) * dt;
+    phys.x += phys.vx * dt; phys.y = Math.max(0, phys.y + phys.vy * dt);
+  } else {
+    if (!phys.grounded || phys.y > 0 || phys.vy > 0) {
+      phys.vy -= G * dt; phys.y += phys.vy * dt; phys.x += phys.vx * dt;
+      if (phys.y <= 0) {
+        phys.y = 0;
+        const imp = -phys.vy;
+        if (imp > 140) {                                       // 落地：按冲击速度压扁 + 抖动 + 回弹
+          phys.vy = imp * .34; phys.vx *= .7;
+          pet.sy.v -= imp * .0062 * pet.ch.exag * AMP; pet.wob.v += imp * .05 * AMP; ctx.kickPend(imp / 600);
+          phys.lastImpact = performance.now(); phys.impacts = (phys.impacts || 0) + 1;
+        } else { phys.vy = 0; phys.grounded = true; if (state === 'react-drag') setState('idle', '落地站稳'); }
+      }
+    } else { phys.vx *= Math.exp(-7 * dt); phys.x += phys.vx * dt; }
+  }
+  if (phys.x < half) { phys.x = half; phys.vx = Math.abs(phys.vx) * .5; pet.wob.v += 20; }
+  if (phys.x > W - half) { phys.x = W - half; phys.vx = -Math.abs(phys.vx) * .5; pet.wob.v += 20; }
+  phys.y = Math.min(phys.y, fy + SZ * .2);
+  phys.ax = phys.ax * .7 + ((phys.vx - vx0) / Math.max(dt, 1e-3)) * .3;
+}
+function frame(now) {
+  requestAnimationFrame(frame);
+  let dt = Math.min(.033, (now - lastF) / 1000); lastF = now;
+  if (!visible || !pet) return;
+  // 定时器
+  for (const tm of timers.splice(0)) { if (tm.g !== gen_) continue; if (now >= tm.at) tm.fn(); else timers.push(tm); }
+  const tIn = now - stT;
+  const tg = behave(pet, state, tIn, ctx);
+  // 空中：按速度拉伸（挤压拉伸）；拖拽：按速度摆动
+  const air = !phys.grounded || phys.y > .5;
+  let sy = tg.sy, tilt = 0, sh = tg.sh;
+  if (phys.drag) { tilt = clamp(phys.vx * .022, -22, 22); sy = 1.07 + clamp(Math.abs(phys.vy) * .00012, 0, .12); sh += clamp(-phys.vx * .00008, -.08, .08); }
+  else if (air) sy = Math.max(sy, 1 + clamp(Math.abs(phys.vy) * .00016 * pet.ch.exag * AMP, 0, .2));
+  pet.sy.t = sy; pet.shear.t = sh; pet.mood.t = tg.mood; pet.blush.t = tg.blush;
+  // 旋转跳：转满后把目标与当前值一起减去整圈（看不出跳变）
+  if (Math.abs(pet.tilt.t) >= 360 && Math.abs(pet.tilt.x - pet.tilt.t) < 4 && !air) { const k = 360 * Math.sign(pet.tilt.t); pet.tilt.t -= k; pet.tilt.x -= k; }
+  if (Math.abs(pet.tilt.t) < 360) pet.tilt.t = tilt;
+  for (const k in tg.fx) pet.fxLv[k].t = tg.fx[k];
+  // 视线：状态指定 > 跟随指针 > 回中
+  if (tg.gaze) { pet.gx.t = tg.gaze[0]; pet.gy.t = tg.gaze[1]; }
+  else if (pointer.inside && ['open', 'wide', 'half'].includes(pet.face.eyes)) {
+    const cx = phys.x, cy = floorY() - phys.y - SZ * .35, dx = pointer.x - cx, dy = pointer.y - cy, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 160);
+    pet.gx.t = dx / d * 5.5 * k; pet.gy.t = dy / d * 4 * k;
+  } else { pet.gx.t = 0; pet.gy.t = 0; }
+  // 五官滞后（重叠动作）
+  pet.fx.t = clamp(-phys.vx * .006, -5, 5); pet.fy.t = clamp(phys.vy * .004, -5, 5);
+  // 眨眼
+  if (now > nextBlink) {
+    const [mn, mx, du] = pet.ch.blink;
+    nextBlink = now + mn + Math.random() * (mx - mn);
+    if (['open', 'wide', 'half', 'sad', 'angry'].includes(pet.face.eyes)) { pet.blink(now, du); if (pet.ch === CHARS.berry && Math.random() < .3) setTimeout(() => pet.blink(performance.now(), du), du + 140); }
+  }
+  // 物理（子步进）
+  const sub = dt > .017 ? 2 : 1;
+  for (let i = 0; i < sub; i++) { physicsStep(dt / sub); pet.step(dt / sub, now, phys.ax); }
+  pet.render();
+  // 宿主位移
+  const s = u2p();
+  host.style.transform = `translate3d(${(phys.x - SZ / 2).toFixed(2)}px, ${(floorY() - phys.y - GROUND * s).toFixed(2)}px, 0)`;
+  const shW = SZ * pet.ch.shadow[1] * (1 - clamp(phys.y / 420, 0, .6)) * (1 + (1 - pet.sy.x) * .6);
+  shadowEl.style.width = shW.toFixed(1) + 'px';
+  shadowEl.style.transform = `translate3d(${(phys.x - shW / 2 + 6 * s).toFixed(2)}px, ${(floorY() - 13).toFixed(2)}px, 0)`;
+  shadowEl.style.opacity = (1 - clamp(phys.y / 500, 0, .65)).toFixed(3);
+  // 无事件入睡 + idle 小动作（各角色不同）
+  const hudSleep = document.getElementById('hud-sleep');
+  if (state === 'idle' && !phys.drag && phys.grounded) {
+    const IDLE = +document.getElementById('idle-ms').value * 1000, left = Math.max(0, IDLE - (now - lastInput));
+    hudSleep.textContent = `入睡倒计时 ${Math.ceil(left / 1000)} s`;
+    if (left <= 0) setState('idle-yawn', `${IDLE / 1000}s 无事件`);
+    else if (now > nextIdleAct) {
+      nextIdleAct = now + (5000 + Math.random() * 5000) * pet.ch.T;
+      if (pet.ch === CHARS.berry && Math.random() < .55) { pet.sy.v -= 2.5; setTimeout(() => ctx.hop(300), 110); log('<b>idle</b> · 噼啪坐不住，原地蹦一下'); }
+      else if (Math.random() < .6) setState('idle-look', '随机');
+    }
+  } else hudSleep.textContent = state === 'sleeping' ? '睡着了 · 点一下叫醒' : '';
+  window.__pet.t = now;
+}
+
+/* ---------- 角色卡（缩略图用同一引擎渲染静止姿态） ---------- */
+const cast = document.getElementById('cast');
+cast.innerHTML = Object.entries(CHARS).map(([k, ch]) => `
+  <button class="who" data-k="${k}" aria-pressed="${k === curKey}">
+    <span class="thumb" data-k="${k}"></span>
+    <span><b>${ch.name}</b><small>${ch.tag}</small><small>${ch.blurb}</small>
+      <span class="sw">${ch.palette.map(c => `<i style="background:${c}"></i>`).join('')}</span></span>
+  </button>`).join('');
+cast.querySelectorAll('.thumb').forEach(el => {
+  const k = el.dataset.k, p = new Pet(el, CHARS[k], 'th-' + k, false);
+  p.rig.svg.setAttribute('viewBox', '20 20 160 160'); p.t = 0; p.render();
+});
+cast.addEventListener('click', e => { const b = e.target.closest('.who'); if (b && b.dataset.k !== curKey) mountPet(b.dataset.k, true); });
+
+/* ---------- 控制台 ---------- */
+document.getElementById('state-btns').innerHTML = Object.entries(S).map(([k, v]) => `<button class="chip" data-s="${k}" aria-current="${k === 'idle'}">${k}<span class="cls cls-${v.c}">${v.c}</span></button>`).join('');
+document.getElementById('state-btns').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { touch(); setState(b.dataset.s, '手动'); } });
+document.getElementById('event-btns').innerHTML = EVENTS.map(([ev, st]) => `<button class="chip" data-ev="${ev}" data-s="${st}">${ev}</button><span>→ ${st}</span>`).join('');
+document.getElementById('event-btns').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return; touch();
+  if (b.dataset.ev === 'Stop') base = 'idle';
+  if (['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) { queued = b.dataset.s; setState('wake', b.dataset.ev); }
+  else setState(b.dataset.s, b.dataset.ev);
+});
+document.getElementById('state-table').innerHTML = Object.entries(S).map(([k, v]) => `<tr><td><code>${k}</code></td><td><span class="cls cls-${v.c}">${v.c}</span></td><td>${v.d}</td><td>${v.tr}</td></tr>`).join('');
+document.getElementById('idle-ms').addEventListener('input', e => { document.getElementById('idle-ms-out').textContent = e.target.value + ' s'; });
+const anchorsBtn = document.getElementById('anchors');
+anchorsBtn.addEventListener('click', () => { pet.showAnchors = !pet.showAnchors; anchorsBtn.setAttribute('aria-pressed', pet.showAnchors); anchorsBtn.textContent = pet.showAnchors ? '隐藏锚点' : '显示锚点'; });
+document.getElementById('drop').addEventListener('click', () => { touch(); phys.y = stage.clientHeight * .7; phys.vy = 0; phys.vx = (Math.random() - .5) * 500; phys.grounded = false; if (state !== 'idle') setState('idle', '丢下'); });
 document.getElementById('copy-svg').addEventListener('click', async () => {
-  const code = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">${stepSVG('ip', 8)}</svg>`;
-  const msg = document.getElementById('copy-msg');
-  try { await navigator.clipboard.writeText(code); msg.textContent = '已复制到剪贴板'; }
+  const s = pet.rig.svg.cloneNode(true); s.setAttribute('xmlns', NS); s.querySelector('.anchors').remove();
+  const code = s.outerHTML, msg = document.getElementById('copy-msg');
+  try { await navigator.clipboard.writeText(code); msg.textContent = '已复制'; }
   catch { const ta = document.createElement('textarea'); ta.value = code; document.body.append(ta); ta.select(); msg.textContent = '已选中，按 Ctrl/Cmd+C 复制'; setTimeout(() => ta.remove(), 8000); }
 });
+function layout() {
+  SZ = stage.clientWidth < 520 ? 190 : 230; host.style.width = host.style.height = SZ + 'px';
+  if (!phys.x) phys.x = stage.clientWidth / 2;
+}
+window.addEventListener('resize', layout);
 
-window.__pet = { get state() { return state; }, setState: (s) => setState(s, 'test'), S };
+/* ---------- 自检接口（QA 用） ---------- */
+window.__pet = {
+  get state() { return state; }, get phys() { return phys; }, get pet() { return pet; }, setState: s => setState(s, 'test'), mount: k => mountPet(k, false),
+  g2(P) {        // 返回各拼接点切向角差与曲率差的最大值
+    const segs = bsplineSegs(P); let dA = 0, dK = 0;
+    const kap = (d1, d2) => (d1[0] * d2[1] - d1[1] * d2[0]) / Math.pow(Math.hypot(...d1), 3);
+    for (let i = 0; i < segs.length; i++) {
+      const A = segs[i], B = segs[(i + 1) % segs.length];
+      const d1a = [3 * (A[3][0] - A[2][0]), 3 * (A[3][1] - A[2][1])], d2a = [6 * (A[3][0] - 2 * A[2][0] + A[1][0]), 6 * (A[3][1] - 2 * A[2][1] + A[1][1])];
+      const d1b = [3 * (B[1][0] - B[0][0]), 3 * (B[1][1] - B[0][1])], d2b = [6 * (B[2][0] - 2 * B[1][0] + B[0][0]), 6 * (B[2][1] - 2 * B[1][1] + B[0][1])];
+      let da = Math.abs(Math.atan2(d1a[1], d1a[0]) - Math.atan2(d1b[1], d1b[0])); if (da > Math.PI) da = 2 * Math.PI - da;
+      dA = Math.max(dA, da); dK = Math.max(dK, Math.abs(kap(d1a, d2a) - kap(d1b, d2b)));
+    }
+    return { maxAngle: dA, maxCurvDiff: dK };
+  },
+};
+layout(); phys.y = 0;
+mountPet('orange', true);
+requestAnimationFrame(frame);
 })();
 </script>

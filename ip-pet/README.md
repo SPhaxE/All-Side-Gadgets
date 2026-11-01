@@ -1,39 +1,45 @@
-# 暖橙水滴 IP · 复刻 + 可交互桌宠
+# 暖橙水滴和它的两个朋友
 
-打开 `index.html` 即可验收（纯静态，无构建、无外部脚本；字体走 Google Fonts，离线时回退系统字体）。
+打开 `index.html` 即可验收（纯静态、无构建、无外部脚本；字体走 Google Fonts，离线时回退系统字体）。
 
 ## Part 1 · 8 步复刻（对照 `ref/step*.jpg`）
+
+忠实还原教程本身（教程的圆角水滴是圆弧 + 直线拼接，只有 G1）。桌宠形态在 Part 3 中改为 G2 曲线。
 
 | 步 | 教程 | SVG 实现 |
 |---|---|---|
 | 1 | 画一个方 | `rect` 100×100，`#FF764F`（原图取色） |
-| 2 | 拖动圆角为水滴 | 三角 r=60，右上角 r=9 的路径 |
-| 3 | 渐变 | `linearGradient` 左上→右下 `#FF413B → #FCD685` |
+| 2 | 拖动圆角为水滴 | 三角 r=60，右上角 r=9 |
+| 3 | 渐变 | 左上→右下 `#FF413B → #FCD685` |
 | 4 | 高光形状 | 白色椭圆 rx 8.5 / ry 15，旋转 35° |
-| 5 | 内发光 | 教程参数：滤色 · `#FDE3A7` · 60% · 100px · 边缘 → 反相 alpha 模糊后 `in` 原形，`feBlend mode=screen`（SVG 与 AI 的内发光算法不同，内发光 stdDeviation 13、不透明度 0.9 都是对照原图调出的等效值，不是换算值） |
-| 6 | 高光高斯模糊 | 教程半径 129.1px；原画板尺寸未知，SVG 用对照原图调出的等效值 `stdDeviation 3.6` |
+| 5 | 内发光 | 教程：滤色 · `#FDE3A7` · 60% · 100px · 边缘。SVG 等效值对照原图调出：不透明度 0.9、stdDeviation 13 |
+| 6 | 高光高斯模糊 | 教程半径 129.1px；原画板尺寸未知，SVG 用对照原图调出的 `stdDeviation 3.6` |
 | 7 | 眼睛与投影 | 圆角矩形眼、ω 嘴描边、`#FF785A` 投影椭圆 |
 | 8 | 投影高斯模糊 | `stdDeviation 12`，不透明度 55%（对照原图调出） |
 
-几何数值从原图量取（水滴外接框 692px ↔ 120 单位）。每张卡片的 viewBox 与原图裁切框对齐，切到「原图」可直接对照。
+## Part 3 · 三只桌宠
 
-## Part 2 · 按 pet-forge SVG 路线落地
+| | 小橙 | 糯糯 | 噼啪 |
+|---|---|---|---|
+| 性格 | 元气、好奇 | 慢热、害羞、爱困 | 调皮、急性子 |
+| 形态 | 水滴（右上收尖） | 宽软糕 + 嫩芽 | 前倾蛋形 + 灯泡天线 |
+| 配色 | 红 → 奶黄 | 薄荷 → 青绿 | 紫 → 莓粉 |
+| 时间系数 T / 夸张 | 1.0 / 1.0 | 1.4 / 0.9 | 0.75 / 1.3 |
+| 被戳 | 挤扁回弹 | 缩成一团、脸红，再偷看 | 生气，转体跳 |
+| 被拎起 | 睁大眼 | 闭眼发抖 | 开心 |
+| 开心 | 连跳两下 | 原地摇摆 | 连跳三下带转体 |
+| 入睡 | 20 s | 12 s | 35 s |
 
-参考 [rullerzhou-afk/pet-forge](https://github.com/rullerzhou-afk/pet-forge)：
+### 引擎要点
 
-0. **拓扑清点**：身体、双眼、嘴、高光、投影；无四肢 → 不做肢体 rig。
-1. **基础形象**：教程 8 步即设计稿。源图本身是矢量教程，SVG 手写复刻，**没有**跑 `png2svg`/vtracer 描摹。
-2. **可编辑 SVG**：分层命名；滤镜/渐变 id 按实例加前缀（页面上 10 份 SVG 不会互相串 id）。
-3. **hello-idle 基线**：`viewBox 0 0 200 200`、`<g id="pet">`、`--breath-period / --breath-min / --breath-max / --blink-min-gap / --blink-max-gap / --blink-duration`。
-4. **逐动作迭代**：14 个状态，名称取自 `shared/state-map.md`，按 A/B/C 三类实现：
-   - **A 循环**：`idle` `idle-dozing` `sleeping` `thinking` `working-typing` `error` `react-drag`
-   - **B 一次性、回到原姿态**：`idle-look` `idle-yawn`（链到 `idle-dozing`）`happy` `notification` `react-poke`
-   - **C 过渡、首≠尾**：`collapse-sleep → sleeping`，`wake → idle`
-5. **接入运行时**：Agent 事件映射 `UserPromptSubmit→thinking`、`PreToolUse→working-typing`、`PostToolUseFailure→error`、`PermissionRequest→notification`、`Stop→happy`；无事件计时入睡（pet-forge 默认 60s，页面默认 20s 便于验收（`idle-yawn` 播完链到 `idle-dozing`，不回原姿态），可调 8–60s）。拖动时由宿主元素移动、SVG 只做表演，符合 pet-forge「宿主负责位移」的约定。
+- **G2 曲线**：身体、眼、嘴、高光、腮红、嫩芽、天线，以及 Z / ! / 汗滴 / 键帽等特效，全部是闭合均匀三次 B 样条（C2 ⇒ G2）。水滴的尖角靠局部加密采样点实现，不叠点。`window.__pet.g2(points)` 可检查每个拼接点的切向角差和曲率差。
+- **锚点变换**：每个表情是同点数（眼 11 个、嘴 13 个中心线点 × 上/下偏移）、同起点、同绕向的一组锚点；切换时每个分量由阻尼弹簧过渡，眨眼也是锚点收拢。最小厚度 0.6，闭眼时锚点不会重合。
+- **形变场**：身体与五官共用同一个形变函数（竖向 sy、横向约 1/sy、剪切倾斜、旋转、三瓣抖动），面积基本守恒。
+- **填色动效**：线性渐变端点随形变移动，色带缓慢流动；两团径向色块在体内绕轨道漂移，并随加速度反向晃荡；`error` 时配色经弹簧褪灰。
+- **物理**：拖拽时宿主用弹簧跟随指针；松手后按抛出速度走抛物线，落地按冲击速度压扁并回弹（恢复系数 0.34），直到站稳。
+- **状态机**：沿用 pet-forge state-map 的 14 个状态名和 A/B/C 语义；状态只设目标和冲量，不直接写姿态，所以任意打断都平滑续接。
+- **减少动态**：`prefers-reduced-motion` 下只压低幅度，不去掉动画。
 
-## 交互
+### pet-forge 对应
 
-- 单击 → `react-poke`；1.5s 内连点 3 下 → `happy`
-- 按住拖起 → `react-drag`（随速度摆动、影子留地面并缩小），松手回弹落地
-- 眼睛跟随指针；随机眨眼、随机张望
-- 静置 → `idle-yawn → idle-dozing → collapse-sleep → sleeping`；睡着点一下 → `wake → idle`
+0. 拓扑清点 → 1. 基础形象（教程即小橙设计稿，手写 SVG，没有跑 png2svg / vtracer）→ 2. 可编辑矢量（B 样条 + 锚点）→ 3. hello-idle 约定（`viewBox 0 0 200 200`、`<g id="pet">`、`--breath-period`、`--blink-min-gap` 等变量名）→ 4. 逐动作迭代 → 5. 按 Agent 事件映射接入运行时（`UserPromptSubmit→thinking`、`PreToolUse→working-typing`、`PostToolUseFailure→error`、`PermissionRequest→notification`、`Stop→happy`）。
