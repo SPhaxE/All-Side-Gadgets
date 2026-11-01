@@ -1,6 +1,10 @@
 # 暖橙水滴和它的两个朋友
 
-打开 `index.html` 即可验收（纯静态、无构建、无外部脚本；字体走 Google Fonts，离线时回退系统字体）。
+- `index.html`：完整验收页（复刻对照、流程、舞台 + 控制台、法则表、状态表）。
+- `share.html`：分享页，手机优先、整屏舞台、只有角色缩略图切换，不放文字。由 `python3 .claude/skills/ip-to-desktop-pet/scripts/build_share.py ip-pet/index.html` 生成，改引擎后重新生成即可。
+- 整个流程（IP 复刻 → 动态桌宠）已归档为技能：`.claude/skills/ip-to-desktop-pet/`。
+
+纯静态、无构建、无外部脚本；字体走 Google Fonts，离线时回退系统字体。
 
 ## Part 1 · 8 步复刻（对照 `ref/step*.jpg`）
 
