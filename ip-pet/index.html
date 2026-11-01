@@ -431,15 +431,15 @@ const GROUND = 160;
 // 水滴：6 段（左下弧、左上弧、上边、右上小圆角、右边、右下弧），段比例固定取静止形长度
 const DROP_SEG = [94.25, 94.25, 51, 14.14, 51, 94.25], DROP_TOT = DROP_SEG.reduce((a, b) => a + b);
 function dropGen(p, k) {
-  const { l, r, top, c, my } = k, cx = (l + r) / 2;
+  const { l, r, top, c, my } = k, cx = (l + r) / 2, tx = k.tx || 0;
   let s = p * DROP_TOT, i = 0; while (i < 5 && s > DROP_SEG[i]) { s -= DROP_SEG[i]; i++; }
   const f = Math.min(1, s / DROP_SEG[i]), q = f * Math.PI / 2;
   switch (i) {
     case 0: return [cx - (cx - l) * Math.sin(q), my + (GROUND - my) * Math.cos(q)];
-    case 1: return [l + (cx - l) * (1 - Math.cos(q)), my - (my - top) * Math.sin(q)];
-    case 2: return [cx + (r - c - cx) * f, top];
-    case 3: return [r - c + c * Math.sin(q), top + c - c * Math.cos(q)];
-    case 4: return [r, top + c + (my - top - c) * f];
+    case 1: return [l + (cx + tx - l) * (1 - Math.cos(q)), my - (my - top) * Math.sin(q)];
+    case 2: return [cx + tx + (r - c - cx) * f, top];
+    case 3: return [r - c + tx + c * Math.sin(q), top + c - c * Math.cos(q)];
+    case 4: return [r + tx * (1 - f), top + c + (my - top - c) * f];
     default: return [cx + (r - cx) * Math.cos(q), my + (GROUND - my) * Math.sin(q)];
   }
 }
@@ -451,7 +451,8 @@ function cloudGen(p, k) {
   let lo = 0, hi = 260; for (let i = 0; i < 40; i++) { const t = (lo + hi) / 2, x = dx * t / k.a, y = (oy - by + dy * t) / k.hb; if (x ** 4 + y ** 4 < 1) lo = t; else hi = t; }
   best = lo;
   const top = by - k.hb;
-  for (const [cx, cy, R] of [[100 - k.sp, top - k.ly, k.lr], [100, top - k.ly - k.dm, k.mr], [100 + k.sp, top - k.ly, k.lr]]) {
+  const tl = k.tl || 0, sg = Math.sign(tl), g = Math.abs(tl) * .2;
+  for (const [cx, cy, R] of [[100 - k.sp + tl * .55, top - k.ly, k.lr - sg * g], [100 + tl, top - k.ly - k.dm, k.mr], [100 + k.sp + tl * .55, top - k.ly, k.lr + sg * g]]) {
     const ux = cx - ox, uy = cy - oy, pr = dx * ux + dy * uy, disc = R * R - (ux * ux + uy * uy) + pr * pr;
     if (disc >= 0) best = Math.max(best, pr + Math.sqrt(disc));
   }
@@ -459,41 +460,41 @@ function cloudGen(p, k) {
 }
 // 软五角星：r(θ) = 1 + k·cos 5(θ+90°)，尖角朝上，两条「腿」着地
 function starGen(p, k) {
-  const th = Math.PI / 2 + p * TAU, rr = 1 + k.k * Math.cos(5 * (th + Math.PI / 2));
+  const th0 = Math.PI / 2 + p * TAU, rr = 1 + k.k * Math.cos(5 * (th0 + Math.PI / 2));
+  const th = th0 + (k.tw || 0) * ((1 - Math.sin(th0)) / 2) ** 1.5;
   return [100 + k.rx * rr * Math.cos(th), 100 + k.ry * rr * Math.sin(th)];
 }
-const shearKey = (gen, k, a) => (p => { const q = gen(p, k); return [q[0] + a * (GROUND - q[1]), q[1]]; });
 
 const CHARS = {
   orange: {
     name: '小橙', tag: '元气 · 好奇', palette: ['#ff413b', '#fcd685', '#ff2d55'],
     blurb: '教程原型。水滴剪影，反应直接、节奏居中：被戳挤扁再弹回来，开心就连蹦两下。',
-    K: 14, gen: dropGen,
+    K: 14, gen: dropGen, lean: s => ({ tx: 24 * s }),
     keys: { rest: { l: 40, r: 160, top: 40, c: 9, my: 100 }, squash: { l: 28, r: 170, top: 62, c: 10, my: 120 }, stretch: { l: 50, r: 153, top: 18, c: 8, my: 84 },
             melt: { l: 18, r: 180, top: 86, c: 12, my: 134 }, puff: { l: 34, r: 166, top: 30, c: 10, my: 96 } },
     weight: p => 1 + Math.exp(-(((Math.hypot(p[0] - 156, p[1] - 44)) / 6) ** 2)),
     grad: [[54, 50], [146, 150]], colors: ['#ff413b', '#fcd685'], glow: ['#fde3a7', 13, .9],
     blobs: [['#ff1f4b', 70, 72, 48, .55], ['#ffe9a6', 128, 136, 44, .7]], light: '#fff3d6',
-    hl: [73, 72, 9, 15.5, 35], warm: '#ffb347', cool: '#c06a8a',
+    hl: [73, 73, 11, 19, 35], warm: '#ffb347', cool: '#c06a8a',
     eye: { w: 15, h: 25.2 }, eyes: [[69.2, 101.6], [95.4, 101.6]], mouth: [83.2, 119.3], mouthW: 27, idleMouth: 'w',
     shadow: ['#ff6a4a', .62], accent: '#f0533a', T: 1, exag: 1, body: [190, 13], morph: [300, 28], sleepS: 20, breath: 4.8, blink: [3000, 7000, 150],
   },
   mochi: {
     name: '糯糯', tag: '慢热 · 害羞', palette: ['#6fdcbf', '#14988e', '#2bb5e0'],
     blurb: '云朵软糕，宽、矮、平底，顶上三个鼓包。动作慢半拍、身体软：被戳会化成一滩，被拎起会被拉得老长，最容易犯困。',
-    K: 16, gen: cloudGen,
+    K: 16, gen: cloudGen, lean: s => ({ tl: 15 * s }),
     keys: { rest: { a: 50, hb: 17, sp: 38, lr: 24, mr: 30, ly: -4, dm: 10 }, squash: { a: 58, hb: 15, sp: 45, lr: 22, mr: 26, ly: -6, dm: 6 }, stretch: { a: 44, hb: 19, sp: 31, lr: 24, mr: 29, ly: 4, dm: 16 },
             melt: { a: 64, hb: 16, sp: 47, lr: 23, mr: 26, ly: -5, dm: 4 }, puff: { a: 54, hb: 18, sp: 42, lr: 28, mr: 34, ly: -3, dm: 12 } },
     grad: [[40, 76], [166, 160]], colors: ['#7fe6c8', '#11928a'], glow: ['#d9fff1', 10, .55],
     blobs: [['#e6fff5', 80, 112, 42, .5], ['#21a8de', 134, 148, 40, .5]], light: '#f2fff9',
-    hl: [72, 98, 11, 6.5, -18], warm: '#ffd36e', cool: '#2d6f8a',
+    hl: [86, 93, 10, 6, -22], warm: '#ffd36e', cool: '#2d6f8a',
     eye: { w: 17, h: 17 }, eyes: [[79, 128], [121, 128]], mouth: [100, 139.5], mouthW: 25, idleMouth: 'smile',
     shadow: ['#178f84', .82], accent: '#14988e', T: 1.4, exag: .9, body: [105, 6.5], morph: [150, 20], sleepS: 12, breath: 6.2, blink: [3500, 8000, 260],
   },
   berry: {
     name: '噼啪', tag: '调皮 · 急性子', palette: ['#a86bff', '#ff7fb0', '#5b8cff'],
     blurb: '软五角星，两条腿着地。动作快、弹簧硬、幅度夸张：被戳会把五个角鼓出来再跳，被拎起来反而开心，最不爱睡觉。',
-    K: 15, gen: starGen, uniform: true,
+    K: 15, gen: starGen, uniform: true, lean: s => ({ tw: .34 * s }),
     keys: { rest: { rx: 60, ry: 58, k: .2 }, squash: { rx: 70, ry: 46, k: .17 }, stretch: { rx: 51, ry: 70, k: .22 },
             melt: { rx: 78, ry: 36, k: .1 }, puff: { rx: 62, ry: 60, k: .3 } },
     grad: [[60, 40], [150, 160]], colors: ['#a86bff', '#ff7fb0'], glow: ['#ffd9f7', 9, .7],
@@ -510,7 +511,7 @@ for (const ch of Object.values(CHARS)) {
   const restS = ps.map(p => ch.gen(p, ch.keys.rest));
   const us = ch.uniform ? ps.map(p => p * K) : ch.weight ? arcU(restS, K, ch.weight) : curvU(restS, K, ch.curv || 2);
   const gens = { ...Object.fromEntries(Object.entries(ch.keys).map(([n, k]) => [n, p => ch.gen(p, k)])),
-                 leanL: shearKey(ch.gen, ch.keys.rest, -.2), leanR: shearKey(ch.gen, ch.keys.rest, .2) };
+                 leanL: p => ch.gen(p, { ...ch.keys.rest, ...ch.lean(-1) }), leanR: p => ch.gen(p, { ...ch.keys.rest, ...ch.lean(1) }) };   // 倾斜也在生成器里画：底部不动、上部弯过去
   ch.fit = {}; let restA = 0;
   for (const name of KEY_NAMES) {
     const S = ps.map(gens[name]);
@@ -646,7 +647,7 @@ class Pet {
         <linearGradient id="${u}-g" gradientUnits="userSpaceOnUse"><stop offset="0"/><stop offset="1"/></linearGradient>
         ${rg('b0', ch.blobs[0][0], ch.blobs[0][4])}${rg('b1', ch.blobs[1][0], ch.blobs[1][4])}${rg('li', ch.light, 1, `<stop offset=".4" stop-color="${ch.light}" stop-opacity=".75"/>`)}
         <radialGradient id="${u}-rp"><stop offset=".55" stop-color="${ch.light}" stop-opacity="0"/><stop offset=".82" stop-color="${ch.light}" stop-opacity=".75"/><stop offset="1" stop-color="${ch.light}" stop-opacity="0"/></radialGradient>
-        ${rg('hl', '#ffffff', .95, '<stop offset=".55" stop-color="#fff" stop-opacity=".7"/>')}
+        ${rg('hl', '#ffffff', .9, '<stop offset=".45" stop-color="#fff" stop-opacity=".5"/>')}
         <mask id="${u}-m" maskUnits="userSpaceOnUse" x="-120" y="-120" width="440" height="440"><path fill="#fff"/></mask>
         <filter id="${u}-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
           <feFlood flood-color="#fff" result="w"/><feComposite in="w" in2="SourceAlpha" operator="out" result="o"/>
@@ -661,8 +662,8 @@ class Pet {
           <ellipse class="b0" fill="url(#${u}-b0)"/><ellipse class="b1" fill="url(#${u}-b1)"/>
           <circle class="li" r="56" fill="url(#${u}-li)" opacity="0"/>
           <g class="rp"></g>
+          <path class="hl" fill="url(#${u}-hl)"/>
         </g></g>
-        <path class="hl" fill="url(#${u}-hl)"/>
         <g class="face" fill="#fff"><path class="e0"/><path class="e1"/><path class="mo"/></g>
         <g class="anchors"></g>
       </g>`;
