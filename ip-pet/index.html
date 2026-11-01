@@ -114,6 +114,11 @@ button:focus-visible, .pet-host:focus-visible { outline: 2px solid var(--accent)
 .btn.ghost { background: transparent; color: var(--ink); }
 
 .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+#agent-now code { margin-right: 6px; }
+.steps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; font: 11px var(--f-mono); }
+.steps li { padding: 2px 7px; border-radius: 999px; background: var(--chip); color: var(--muted); transition: background .2s, color .2s; }
+.steps li.done { color: var(--ink); }
+.steps li.on { background: var(--accent); color: #fff; }
 table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { font: 600 11px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
@@ -189,6 +194,8 @@ td b { white-space: nowrap; }
         <div>
           <h3>模拟 Agent 事件 <small>state-map 映射</small></h3>
           <div class="ev" id="event-btns"></div>
+          <div class="row" style="margin-top:8px"><button class="btn" id="agent-run" aria-pressed="false">▶ 跑一次会话</button><span class="note" id="agent-now">提问 → 调工具 → 出错 → 重试 → 要权限 → 完成</span></div>
+          <ol class="steps" id="agent-steps"></ol>
         </div>
         <div class="row">
           <label for="idle-ms">无事件入睡</label>
@@ -308,7 +315,9 @@ function convexGuard(P, passes = 8) {
     let ok = true;
     for (let i = 0; i < n; i++) {
       const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], cr = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
-      if (cr * o < .02) { ok = false; const mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2, tx = c[0] - a[0], ty = c[1] - a[1], L = Math.hypot(tx, ty) || 1; b[0] = mx + o * ty / L * .15; b[1] = my - o * tx / L * .15; }
+      const L2 = (c[0] - a[0]) ** 2 + (c[1] - a[1]) ** 2 || 1, thr = .04 * L2, v = thr - cr * o;      // 违例量（随形状连续变化）
+      if (v > 0) { ok = false; const w = clamp(v / thr, 0, 1) * .5, mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2, L = Math.sqrt(L2), tx = (c[0] - a[0]) / L, ty = (c[1] - a[1]) / L;
+        const gx = mx + o * ty * .04 * L, gy = my - o * tx * .04 * L; b[0] += (gx - b[0]) * w; b[1] += (gy - b[1]) * w; }
     }
     if (ok) break;
   }
@@ -322,21 +331,21 @@ function bsR(a, b, c, e, t) {
   const d2x = (a[0] - 2 * b[0] + c[0]) + t * (-a[0] + 3 * b[0] - 3 * c[0] + e[0]), d2y = (a[1] - 2 * b[1] + c[1]) + t * (-a[1] + 3 * b[1] - 3 * c[1] + e[1]);
   const cr = Math.abs(d1x * d2y - d1y * d2x); return cr < 1e-9 ? Infinity : Math.hypot(d1x, d1y) ** 3 / cr;
 }
-function roundGuard(P, rmin, passes = 14) {
+function roundGuard(P, rmin, passes = 14, soft = false) {
+  // hard：五官 / 特效 / 设计期——过紧就按比例松弛，迭代到满足（静态目标形，很少触发）。
+  // soft：每帧的身体——固定遍数、强度从「下限 × 1.25」处的 0 平滑升起；固定的连续运算组合仍是连续的 ⇒ 不会在阈值附近来回跳（不抖）。
   const n = P.length; P = P.map(p => [p[0], p[1]]);
   const relax = (i, f) => { const a = P[(i - 1 + n) % n], c = P[(i + 1) % n], b = P[i]; b[0] += ((a[0] + c[0]) / 2 - b[0]) * f; b[1] += ((a[1] + c[1]) / 2 - b[1]) * f; };
-  for (let k = 0; k < passes; k++) {
+  const str = soft ? (r => { const x = clamp((rmin * 1.25 - r) / (rmin * .5), 0, 1); return .35 * x * x * (3 - 2 * x); })
+                   : (r => (r < rmin ? clamp(1 - r / rmin, .15, .6) : 0));
+  for (let k = 0; k < (soft ? 4 : passes); k++) {
     let ok = true;
     for (let i = 0; i < n; i++) {
       const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n];
-      const r0 = bsR(a, b, c, e, 0);
-      if (r0 < rmin) { ok = false; relax(i, clamp(1 - r0 / rmin, .15, .6)); }
-      for (const t of [.25, .5, .75]) {
-        const r = bsR(a, b, c, e, t);
-        if (r < rmin) { ok = false; const f = clamp(1 - r / rmin, .15, .6); relax(i, f * (1 - t)); relax((i + 1) % n, f * t); }
-      }
+      const f0 = str(bsR(a, b, c, e, 0)); if (f0 > 0) { ok = false; relax(i, f0); }
+      for (const t of [.25, .5, .75]) { const f = str(bsR(a, b, c, e, t)); if (f > 0) { ok = false; relax(i, f * (1 - t)); relax((i + 1) % n, f * t); } }
     }
-    if (ok) break;
+    if (ok && !soft) break;
   }
   return P;
 }
@@ -538,7 +547,7 @@ const CHARS = {
   berry: {
     name: '噼啪', tag: '调皮 · 急性子', palette: ['#a86bff', '#ff7fb0', '#5b8cff'],
     blurb: '软五角星，五个角就是它的手脚：一个个升起来登场，打字时轮流敲，生气时全部变尖，开心就整只转圈；拎起来时角会甩在后面。',
-    K: 15, genAll: starAll, params: { sq: 0, rot: 0, sharp: 1, core: .78, ext: [1, 1, 1, 1, 1], bend: [0, 0, 0, 0, 0] }, rmin: 4.5,
+    K: 15, genAll: starAll, params: { sq: 0, rot: 0, sharp: 1, core: .78, ext: [1, 1, 1, 1, 1], bend: [0, 0, 0, 0, 0] }, rmin: 3,
     grad: [[60, 40], [150, 160]], colors: ['#a86bff', '#ff7fb0'], glow: ['#ffd9f7', 9, .7],
     blobs: [['#5b8cff', 82, 118, 40, .6], ['#ffd1f0', 122, 74, 32, .6]], light: '#fff0ff',
     hl: [80, 74, 7, 12, 30], warm: '#ffb86b', cool: '#4b3f8f',
@@ -556,7 +565,12 @@ function fitOperator(us, K, lambda) {
   return Array.from({ length: K }, (_, k) => Array.from({ length: N }, (_, j) => A[j].reduce((s, a, m) => s + inv[m][k] * a, 0)));
 }
 function applyFit(M, S) { return M.map(row => { let x = 0, y = 0; for (let j = 0; j < row.length; j++) { x += row[j] * S[j][0]; y += row[j] * S[j][1]; } return [x, y]; }); }
-function groundSnap(P) { const maxY = Math.max(...curvePts(P, 6).map(q => q[1])), dy = GROUND - maxY; return [P.map(q => [q[0], q[1] + dy]), dy]; }
+function groundSnap(P) {                  // 最低点贴地：密采样 + 抛物线插值求极值，随形状连续变化
+  const C = curvePts(P, 10), n = C.length; let j = 0; for (let i = 1; i < n; i++) if (C[i][1] > C[j][1]) j = i;
+  const y0 = C[(j - 1 + n) % n][1], y1 = C[j][1], y2 = C[(j + 1) % n][1], den = y0 - 2 * y1 + y2;
+  const maxY = den < -1e-9 ? y1 - (y2 - y0) ** 2 / (8 * den) : y1, dy = GROUND - maxY;
+  return [P.map(q => [q[0], q[1] + dy]), dy];
+}
 for (const ch of Object.values(CHARS)) {
   const restS = ch.genAll(ch.params);
   ch.us = curvU(restS, ch.K, ch.curvC ?? 2);
@@ -742,7 +756,7 @@ class Pet {
     if (P.sq) P.sq.x = clamp(P.sq.x, -1.6, 1.6);
     if (P.bend) P.bend.forEach(b => { b.x = clamp(b.x, -.34, .34); });                 // θ(p) 保持单调
     if (P.ext) P.ext.forEach(e => { e.x = clamp(e.x, -.05, 1.6); });
-    if (P.sharp) P.sharp.x = clamp(P.sharp.x, .7, 1.75);
+    if (P.sharp) P.sharp.x = clamp(P.sharp.x, .7, 1.55);
     if (P.m) { P.m.x = clamp(P.m.x, 0, 1.25); P.rc.x = clamp(P.rc.x, 6, 20); P.d.x = clamp(P.d.x, -.4, .4); }
     // 转满一圈后把目标和当前值一起减掉整圈（形状、脸都与 0° 一致，看不出跳变）
     const R = P.rot; if (this.spin && Math.abs(R.x - R.t) < 2 && Math.abs(R.v) < 20) { R.t -= this.spin; R.x -= this.spin; this.spin = 0; }
@@ -760,9 +774,12 @@ class Pet {
     const ch = this.ch, v = this.vals(), S = ch.genAll(v);
     const [w2, w3] = this.wob.map(w => w.x);
     let B = applyFit(ch.M, S).map(([x, y]) => { const a = Math.atan2(y - 100, x - 100), dr = w2 * Math.cos(2 * a + .4) + w3 * Math.cos(3 * a); return [x + dr * Math.cos(a), y + dr * Math.sin(a)]; });
-    B = roundGuard(B, Math.min(this.rFloor.x, ch.rmin));
+    B = roundGuard(B, Math.min(this.rFloor.x, ch.rmin), 4, true);
     if (ch.convex) B = convexGuard(B);
-    const [G, dy] = groundSnap(B);
+    const [, dyT] = groundSnap(B);
+    if (this.dyS === undefined) this.dyS = new Spring(dyT, 1600, 80); this.dyS.t = dyT; this.dyS.step(1 / 60);
+    const dy = Math.abs(this.dyS.x - dyT) > 3 ? (this.dyS.x = dyT) : this.dyS.x;              // 大跳（换角色等）直接对齐
+    const G = B.map(q => [q[0], q[1] + dy]);
     const sx = Math.exp(.15 * v.sq);
     this.frame = { dy, sx, sy: 1 / sx, rot: v.rot * DEG };
     return G;
@@ -837,7 +854,16 @@ const S = {
 };
 const MOOD = { intro: '登场', idle: '发呆中', 'idle-look': '东张西望', 'idle-yawn': '打哈欠', 'idle-dozing': '犯困', 'collapse-sleep': '快睡着了', sleeping: '睡着了', wake: '醒啦',
   thinking: '在想事情', 'working-typing': '干活中', error: '出错了', notification: '有事找你', happy: '开心', 'react-poke': '被戳了', 'react-drag': '被拎起来' };
-const EVENTS = [['UserPromptSubmit', 'thinking'], ['PreToolUse', 'working-typing'], ['PostToolUseFailure', 'error'], ['PermissionRequest', 'notification'], ['Stop', 'happy']];
+// 模拟 Agent：事件 → 状态（state-map 映射），以及一段脚本化的会话
+const AGENT = [
+  { ev: 'UserPromptSubmit', label: '提问', st: 'thinking' },
+  { ev: 'PreToolUse', label: '调用工具', st: 'working-typing' },
+  { ev: 'PostToolUseFailure', label: '工具出错', st: 'error' },
+  { ev: 'PermissionRequest', label: '请求权限', st: 'notification' },
+  { ev: 'Stop', label: '回答完毕', st: 'happy' },
+  { ev: 'Idle', label: '长时间没动静', st: 'idle-yawn' },
+];
+const SESSION = [[0, 'UserPromptSubmit'], [2600, 'PreToolUse'], [5000, 'PostToolUseFailure'], [7000, 'PreToolUse'], [9200, 'PermissionRequest'], [11200, 'PreToolUse'], [13400, 'Stop']];
 const FACE = {
   'intro': () => ['wide', 'o'], 'idle': ch => ['open', ch.idleMouth], 'idle-look': ch => ['open', ch.idleMouth], 'idle-dozing': () => ['half', 'small'], 'idle-yawn': () => ['half', 'small'],
   'collapse-sleep': () => ['closed', 'small'], 'sleeping': () => ['closed', 'small'], 'wake': () => ['wide', 'o'],
@@ -911,11 +937,11 @@ function behave(P, st, t, ctx) {
     }
     case 'working-typing':
       p.sq = .28 * X * sin(TAU * t / (330 * T)); g.gaze = [0, 2]; g.fx.keys = true;
-      if (star) p.ext = TIP_ANG.map((_, i) => 1 + .32 * Math.max(0, sin(TAU * t / (380 * T) - i * 1.26)));
+      if (star) p.ext = TIP_ANG.map((_, i) => (i === 2 || i === 3) ? 1 : 1 + .32 * Math.max(0, sin(TAU * t / (380 * T) - i * 1.26)) ** 2);   // 腿踩稳，上面三个角轮流敲
       else { p.cdir = 9 * sin(TAU * t / (170 * T)); p.d = .15 * sin(TAU * t / (340 * T)); }
       break;
     case 'error': {
-      g.grey = 1; g.fx.sweat = true; const burst = t % (2100 * T) < 480 * T, sh = burst ? Math.sign(sin(t / (35 * T))) : 0;
+      g.grey = 1; g.fx.sweat = true; const ph = (t % (2100 * T)) / (520 * T), env = ph < 1 ? sin(Math.PI * ph) ** 2 : 0, sh = env * sin(t / (22 * T));
       if (star) { p.bend = droop(.28).map((b, i) => b + .05 * sh * (i % 2 ? 1 : -1)); p.ext = [.8, .8, .8, .8, .8]; p.sharp = .8; p.rot = 3 * sh; }
       else { p.d = .4; p.cdir = 14; p.m = .75; p.rc = 16; p.rot = 3 * sh; }
       p.sq = .18; break;
@@ -937,7 +963,7 @@ function behave(P, st, t, ctx) {
     }
     case 'react-poke':
       if (star) {                                         // 生气：角伸长变尖，最小曲率半径降到 3（仍是圆角），预备后跳起转一圈
-        p.sharp = 1.7; p.ext = [1.3, 1.3, 1.3, 1.3, 1.3]; p.core = .74; g.rFloor = 3;
+        p.sharp = 1.55; p.ext = [1.3, 1.3, 1.3, 1.3, 1.3]; p.core = .74; g.rFloor = 2.6;
         if (t < 120 * T) p.sq = .8; else ctx.once('p', () => { ctx.hop(430); ctx.spin(ctx.pointerDX > 0 ? -1 : 1); });
       } else {
         p.m = 1.1; p.rc = 7.5; p.sq = breath;
@@ -1162,11 +1188,38 @@ cast.addEventListener('click', e => { const b = e.target.closest('.who'); if (b 
 /* ---------- 控制台 ---------- */
 $('state-btns').innerHTML = Object.entries(S).map(([k, v]) => `<button class="chip" data-s="${k}" aria-current="${k === 'idle'}">${k}<span class="cls cls-${v.c}">${v.c}</span></button>`).join('');
 $('state-btns').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { touch(); setState(b.dataset.s, '手动'); } });
-$('event-btns').innerHTML = EVENTS.map(([ev, st]) => `<button class="chip" data-ev="${ev}" data-s="${st}">${ev}</button><span>→ ${st}</span>`).join('');
-$('event-btns').addEventListener('click', e => {
-  const b = e.target.closest('.chip'); if (!b) return; touch();
-  if (b.dataset.ev === 'Stop') base = 'idle';
-  if (['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) { queued = b.dataset.s; setState('wake', b.dataset.ev); } else setState(b.dataset.s, b.dataset.ev);
+/* ---------- 模拟 Agent ---------- */
+$('event-btns').innerHTML = AGENT.map(a => `<button class="chip" data-agent-ev="${a.ev}">${a.ev}</button><span>${a.label} → ${a.st}</span>`).join('');
+$('agent-btns').innerHTML = AGENT.map(a => `<button class="ag" data-agent-ev="${a.ev}">${a.label}</button>`).join('');
+$('agent-steps').innerHTML = SESSION.map(([, ev], i) => `<li data-i="${i}">${AGENT.find(a => a.ev === ev).label}</li>`).join('');
+function agentEvent(ev, src) {
+  const a = AGENT.find(x => x.ev === ev); if (!a || !pet) return;
+  touch();
+  $('agent-now').innerHTML = `<code>${ev}</code><span>→ ${MOOD[a.st]}</span>`;
+  document.querySelectorAll('[data-agent-ev]').forEach(b => b.setAttribute('aria-current', b.dataset.agentEv === ev));
+  const why = ev + (src ? ' · ' + src : '');
+  if (ev === 'Stop') base = 'idle';
+  if (ev === 'Idle') { if (!['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) setState('idle-yawn', why); return; }
+  if (['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) { queued = a.st; setState('wake', why); } else setState(a.st, why);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-agent-ev]'); if (b) agentEvent(b.dataset.agentEv); });
+let sessionTimers = [];
+function stopSession(msg) {
+  sessionTimers.forEach(clearTimeout); sessionTimers = [];
+  $('agent-run').textContent = '▶ 跑一次会话'; $('agent-run').setAttribute('aria-pressed', 'false');
+  document.querySelectorAll('#agent-steps li').forEach(li => li.classList.remove('on'));
+  if (msg) $('agent-now').innerHTML = `<span>${msg}</span>`;
+}
+$('agent-run').addEventListener('click', () => {
+  if (sessionTimers.length) { stopSession('已停止'); return; }
+  $('agent-run').textContent = '■ 停止'; $('agent-run').setAttribute('aria-pressed', 'true');
+  const steps = document.querySelectorAll('#agent-steps li');
+  steps.forEach(li => li.classList.remove('on', 'done'));
+  SESSION.forEach(([at, ev], i) => sessionTimers.push(setTimeout(() => {
+    steps.forEach((li, k) => { li.classList.toggle('on', k === i); li.classList.toggle('done', k < i); });
+    agentEvent(ev, '会话 ' + (i + 1) + '/' + SESSION.length);
+  }, at)));
+  sessionTimers.push(setTimeout(() => { steps.forEach(li => { li.classList.remove('on'); li.classList.add('done'); }); stopSession(); $('agent-now').innerHTML = '<span>会话结束</span>'; }, SESSION.at(-1)[0] + 2400));
 });
 $('state-table').innerHTML = Object.entries(S).map(([k, v]) => `<tr><td><code>${k}</code></td><td><span class="cls cls-${v.c}">${v.c}</span></td><td>${v.d}</td><td>${v.tr}</td></tr>`).join('');
 $('idle-ms').addEventListener('input', e => { $('idle-ms-out').textContent = e.target.value + ' s'; });
