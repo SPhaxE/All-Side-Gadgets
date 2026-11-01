@@ -1,0 +1,652 @@
+<title>暖橙水滴 IP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: 一条深灰「画板胶片」放 8 步复刻 → pet-forge 流程表 → 交互舞台 + 状态控制台 */
+:root {
+  --bg: #f4f2f3;
+  --surface: #ffffff;
+  --ink: #2a2426;
+  --muted: #6f6467;
+  --line: #e2dcde;
+  --strip: #444043;          /* 参考图里的深灰底 */
+  --artboard: #ffffff;       /* 画板始终是白纸，和原教程一致 */
+  --artboard-ink: #222;
+  --accent: #f0533a;
+  --accent-soft: #ffe3d6;
+  --warm: #fcd685;
+  --chip: #f7eef0;
+  --stage-top: #fff8f3;
+  --stage-floor: #f5e6df;
+  --ok: #2f8f5b; --warn: #c27a00; --bad: #c8372d;
+  --f-display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --f-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1d1a1c; --surface: #272325; --ink: #f2ecee; --muted: #b0a4a8; --line: #3a3437;
+  --strip: #121011; --accent: #ff7a5e; --accent-soft: #4a2b25; --chip: #332d30;
+  --stage-top: #2b2426; --stage-floor: #3a2e2c; --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1d1a1c; --surface: #272325; --ink: #f2ecee; --muted: #b0a4a8; --line: #3a3437;
+  --strip: #121011; --accent: #ff7a5e; --accent-soft: #4a2b25; --chip: #332d30;
+  --stage-top: #2b2426; --stage-floor: #3a2e2c; --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 48px; }
+h1, h2 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: .02em; }
+h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.15; }
+h2 { font-size: 26px; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 62ch; }
+header { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
+header .mini { width: 92px; height: 92px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; }
+.sec-head > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+/* ---------- 8 步复刻 ---------- */
+.strip { background: var(--strip); border-radius: 6px; padding: 14px; display: grid; gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 860px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; gap: 10px; } }
+.card { background: var(--artboard); color: var(--artboard-ink); display: flex; flex-direction: column; padding: 10px 10px 14px; gap: 8px; }
+.card .art { position: relative; aspect-ratio: 400 / 360; max-width: 100%; }
+.card .art > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.card .art img { object-fit: cover; opacity: 0; transition: opacity .25s; }
+.card .art .tag { position: absolute; inset: auto auto 4px 4px; width: auto; height: auto; font: 600 10px/1 var(--f-mono);
+  letter-spacing: .08em; padding: 4px 6px; border-radius: 3px; background: #222; color: #fff; opacity: 0; transition: opacity .25s; }
+.strip[data-view="ref"] .art img, .strip[data-view="ref"] .art .tag { opacity: 1; }
+.card:hover .art img, .card:focus-within .art img { opacity: 1; }
+.card:hover .art .tag { opacity: 1; }
+.card .cap { display: flex; gap: 8px; align-items: baseline; }
+.card .num { font: 600 12px/1 var(--f-mono); color: #c0392b; }
+.card .ttl { font-weight: 700; font-size: 15px; }
+.card .param { font: 11px/1.5 var(--f-mono); color: #6a5f62; min-height: 3em; }
+.card .grad-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #ff413b, #fcd685); margin-top: 2px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.seg button { border: 0; background: transparent; color: var(--muted); font: 500 13px var(--f-body); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible, .btn:focus-visible, .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.note { font-size: 13px; color: var(--muted); }
+
+/* ---------- pet-forge 流程 ---------- */
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px;
+  background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.flow li { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.flow b { font-size: 14px; }
+.flow .k { font: 600 11px var(--f-mono); color: var(--accent); letter-spacing: .08em; }
+.flow span { font-size: 13px; color: var(--muted); }
+.flow code, .note code, td code { font-family: var(--f-mono); font-size: .9em; background: var(--chip); padding: 0 4px; border-radius: 3px; }
+
+/* ---------- 交互舞台 ---------- */
+.play { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 900px) { .play { grid-template-columns: minmax(0, 1fr); } }
+.stage { position: relative; height: 420px; border-radius: 6px; overflow: hidden; touch-action: none; user-select: none;
+  background: linear-gradient(var(--stage-top) 0 78%, var(--stage-floor) 78% 100%); border: 1px solid var(--line); }
+.stage .hud { position: absolute; left: 12px; top: 10px; right: 12px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none;
+  font: 12px var(--f-mono); color: var(--muted); }
+.stage .hud b { color: var(--ink); font-weight: 600; }
+.pet-host { position: absolute; width: 230px; height: 230px; left: 50%; top: calc(78% - 186px); margin-left: -115px; cursor: grab; touch-action: none; }
+.pet-host.dragging { cursor: grabbing; }
+.pet-host.falling { transition: top .55s cubic-bezier(.3, 1.6, .5, 1); }
+.pet-host svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.hint { position: absolute; left: 12px; bottom: 10px; right: 12px; font-size: 12px; color: var(--muted); pointer-events: none; }
+
+.console { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.console h3 { margin: 0; font-size: 13px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; }
+.console h3 small { font: 11px var(--f-mono); color: var(--muted); font-weight: 400; }
+.grid-btn { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 4px; padding: 5px 8px; cursor: pointer;
+  font: 12px var(--f-mono); display: inline-flex; gap: 6px; align-items: center; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-current="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.cls { font-size: 10px; font-weight: 600; padding: 0 4px; border-radius: 3px; border: 1px solid currentColor; opacity: .8; }
+.cls-A { color: var(--ok); } .cls-B { color: var(--warn); } .cls-C { color: var(--bad); }
+.chip[aria-current="true"] .cls { color: inherit; }
+.ev { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; }
+.ev .chip { justify-content: flex-start; }
+.ev span { font: 11px var(--f-mono); color: var(--muted); }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.row label { color: var(--muted); }
+.row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--accent); }
+.row output { font: 12px var(--f-mono); min-width: 4.5em; text-align: right; font-variant-numeric: tabular-nums; }
+.log { font: 12px/1.6 var(--f-mono); background: var(--bg); border-radius: 4px; padding: 8px 10px; height: 138px; overflow: auto; margin: 0; list-style: none; }
+.log li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.log li b { color: var(--ink); font-weight: 600; }
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 4px; padding: 7px 12px; cursor: pointer; font: 500 13px var(--f-body); }
+.btn.ghost { background: transparent; color: var(--ink); }
+
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 11px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+tr:last-child td { border-bottom: 0; }
+
+/* ---------- 宠物 rig（pet-forge hello-idle 约定：viewBox 0 0 200 200，<g id="pet">，CSS 变量） ---------- */
+.pet-svg {
+  --breath-period: 4.8s; --breath-min: 0.97; --breath-max: 1.02;
+  --blink-min-gap: 3000; --blink-max-gap: 7000; --blink-duration: 150;
+}
+.pet-svg #lift { transition: transform .12s linear; }
+.pet-svg #pet, .pet-svg .eyes, .pet-svg .mouth, .pet-svg .shadow, .pet-svg .eye, .pet-svg .fx > * { transform-box: view-box; }
+.pet-svg #pet { transform-origin: 86px 150px; }
+.pet-svg .shadow { transform-origin: 100px 140px; }
+.pet-svg .eye { transform-box: fill-box; transform-origin: center; transition: transform .07s; }
+.pet-svg .eyes.blink .eye { transform: scaleY(.08); }
+.pet-svg .gaze { transition: transform .18s ease-out; }
+.pet-svg [data-v] { display: none; }
+.pet-svg[data-eyes="open"] [data-v="eyes-open"],
+.pet-svg[data-eyes="half"] [data-v="eyes-open"],
+.pet-svg[data-eyes="wide"] [data-v="eyes-open"],
+.pet-svg[data-eyes="happy"] [data-v="eyes-happy"],
+.pet-svg[data-eyes="closed"] [data-v="eyes-closed"],
+.pet-svg[data-eyes="x"] [data-v="eyes-x"],
+.pet-svg[data-eyes="squint"] [data-v="eyes-squint"],
+.pet-svg[data-mouth="w"] [data-v="mouth-w"],
+.pet-svg[data-mouth="o"] [data-v="mouth-o"],
+.pet-svg[data-mouth="small"] [data-v="mouth-small"],
+.pet-svg[data-mouth="open"] [data-v="mouth-open"],
+.pet-svg[data-mouth="wavy"] [data-v="mouth-wavy"] { display: inline; }
+.pet-svg[data-eyes="half"] .eye { transform: scaleY(.42) translateY(14px); }
+.pet-svg[data-eyes="wide"] .eye { transform: scale(1.12); }
+.pet-svg .blush { opacity: 0; transition: opacity .3s; }
+.pet-svg[data-blush="1"] .blush { opacity: .85; }
+.pet-svg .body-tone { transition: filter .3s; }
+.pet-svg[data-state="error"] .body-tone { filter: saturate(.35) brightness(1.08); }
+.pet-svg .fx > * { opacity: 0; }
+
+/* A 循环 */
+.pet-svg[data-state="idle"] #pet, .pet-svg[data-state="idle-look"] #pet, .pet-svg[data-state="react-poke"] #pet { animation: breathe var(--breath-period) ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { transform: scale(1, var(--breath-min)); } 50% { transform: scale(.99, var(--breath-max)); } }
+.pet-svg[data-state="idle-dozing"] #pet { animation: doze 3.2s ease-in-out infinite; }
+@keyframes doze { 0%, 100% { transform: rotate(0) scale(1, .98); } 45% { transform: rotate(-4deg) scale(1.01, .96); } 55% { transform: rotate(-4deg) scale(1.01, .96); } }
+.pet-svg[data-state="sleeping"] #pet { animation: sleepy 5.6s ease-in-out infinite; }
+@keyframes sleepy { 0%, 100% { transform: rotate(-6deg) scale(1.1, .82); } 50% { transform: rotate(-6deg) scale(1.12, .79); } }
+.pet-svg[data-state="sleeping"] .fx-zzz { animation: zzz 2.8s ease-out infinite; }
+@keyframes zzz { 0% { opacity: 0; transform: translate(0, 6px) scale(.7); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(14px, -22px) scale(1.15); } }
+.pet-svg[data-state="thinking"] #pet { animation: sway 2.4s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+.pet-svg[data-state="thinking"] .fx-dots { opacity: 1; }
+.pet-svg[data-state="thinking"] .fx-dots circle { animation: dot 1.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.pet-svg .fx-dots circle:nth-child(2) { animation-delay: .2s !important; }
+.pet-svg .fx-dots circle:nth-child(3) { animation-delay: .4s !important; }
+@keyframes dot { 0%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-5px); opacity: 1; } }
+.pet-svg[data-state="working-typing"] #pet { animation: type .32s ease-in-out infinite; }
+@keyframes type { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-3px) scale(.99, 1.02); } }
+.pet-svg[data-state="working-typing"] .fx-keys { opacity: 1; }
+.pet-svg .fx-keys rect { animation: key .64s steps(1) infinite; }
+.pet-svg .fx-keys rect:nth-child(2n) { animation-delay: .32s; }
+@keyframes key { 0% { opacity: 1; } 50% { opacity: .35; } }
+.pet-svg[data-state="error"] #pet { animation: shake 2s ease-in-out infinite; }
+@keyframes shake { 0%, 30%, 100% { transform: translateX(0); } 5%, 15%, 25% { transform: translateX(-4px) rotate(-2deg); } 10%, 20% { transform: translateX(4px) rotate(2deg); } }
+.pet-svg[data-state="error"] .fx-sweat { animation: sweat 2s ease-in infinite; }
+@keyframes sweat { 0% { opacity: 0; transform: translateY(-4px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+.pet-svg[data-state="react-drag"] #pet { animation: dangle .9s ease-in-out infinite; }
+@keyframes dangle { 0%, 100% { transform: scale(.94, 1.08) rotate(-3deg); } 50% { transform: scale(.95, 1.07) rotate(3deg); } }
+/* B 一次性，首尾同姿态 */
+.pet-svg[data-state="react-poke"] #pet { animation: poke .7s cubic-bezier(.3, 1.5, .5, 1) 1; }
+@keyframes poke { 0% { transform: scale(1, 1); } 18% { transform: scale(1.14, .84); } 45% { transform: scale(.95, 1.07); } 70% { transform: scale(1.03, .98); } 100% { transform: scale(1, 1); } }
+.pet-svg[data-state="happy"] #pet { animation: hop .8s ease-in-out 2; }
+.pet-svg[data-state="happy"] .shadow { animation: hopShadow .8s ease-in-out 2; }
+@keyframes hop { 0%, 100% { transform: translateY(0) scale(1.08, .9); } 15% { transform: translateY(0) scale(.94, 1.08); } 50% { transform: translateY(-30px) scale(.98, 1.03); } 85% { transform: translateY(0) scale(1.06, .92); } }
+@keyframes hopShadow { 0%, 15%, 85%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.72); opacity: .55; } }
+.pet-svg[data-state="notification"] #pet { animation: ping .9s ease-in-out 2; }
+@keyframes ping { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-14px) rotate(3deg); } 60% { transform: translateY(0) scale(1.04, .96); } }
+.pet-svg[data-state="notification"] .fx-bang { animation: pop 1.8s ease-out 1 forwards; }
+@keyframes pop { 0% { opacity: 0; transform: scale(.3); } 20% { opacity: 1; transform: scale(1.15); } 30%, 85% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1); } }
+.pet-svg .fx-bang { transform-origin: 150px 30px; }
+.pet-svg[data-state="idle-look"] .look { animation: look 1.8s ease-in-out 1; }
+@keyframes look { 0%, 100% { transform: translateX(0); } 20%, 40% { transform: translateX(-6px); } 60%, 80% { transform: translateX(6px) translateY(-1px); } }
+.pet-svg[data-state="idle-yawn"] #pet { animation: yawn 2.2s ease-in-out 1; }
+@keyframes yawn { 0%, 100% { transform: scale(1, 1); } 35%, 60% { transform: scale(.95, 1.08); } 80% { transform: scale(1.03, .96); } }
+/* C 过渡，首 ≠ 尾 */
+.pet-svg[data-state="collapse-sleep"] #pet { animation: collapse 1.2s cubic-bezier(.5, 0, .3, 1) 1 forwards; }
+@keyframes collapse { 0% { transform: rotate(0) scale(1, 1); } 30% { transform: rotate(-2deg) scale(.97, 1.04); } 100% { transform: rotate(-6deg) scale(1.1, .82); } }
+.pet-svg[data-state="wake"] #pet { animation: wake .9s cubic-bezier(.3, 1.6, .5, 1) 1 forwards; }
+@keyframes wake { 0% { transform: rotate(-6deg) scale(1.1, .82); } 45% { transform: rotate(2deg) scale(.93, 1.1); } 100% { transform: rotate(0) scale(1, 1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pet-svg *, .pet-svg #pet { animation-duration: .01s !important; animation-iteration-count: 1 !important; }
+  .pet-host.falling { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <svg class="mini" viewBox="10 14 160 150" aria-hidden="true" id="hdr-mini"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+      <span class="eyebrow">IP 复刻 · pet-forge SVG 路线</span>
+      <h1>暖橙水滴：从一个方块到会动的桌宠</h1>
+      <p class="lede">先按原教程 8 步把形象用 SVG 一层层复刻出来，参数取自教程截图；再按 pet-forge 的 SVG 路线给它装上骨骼、状态机和交互，做成可以拖、可以戳、会犯困的小家伙。</p>
+    </div>
+  </header>
+
+  <section aria-labelledby="s-steps">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Part 1 · 逐步复刻</span>
+        <h2 id="s-steps">8 步绘制</h2>
+        <p class="note">每张画板都是代码实时画出的 SVG。鼠标悬停单张可看原图，或切到「原图」整排对照。</p>
+      </div>
+      <div class="seg" role="group" aria-label="对照方式">
+        <button id="view-mine" aria-pressed="true">复刻</button>
+        <button id="view-ref" aria-pressed="false">原图</button>
+      </div>
+    </div>
+    <div class="strip" id="strip" data-view="mine"></div>
+  </section>
+
+  <section aria-labelledby="s-flow">
+    <div class="sec-head"><div>
+      <span class="eyebrow">Part 2 · pet-forge 流程</span>
+      <h2 id="s-flow">按 SVG 路线逐项落地</h2>
+    </div></div>
+    <ol class="flow">
+      <li><span class="k">0 · 拓扑清点</span><b>只给它有的部件做 rig</b><span>身体（水滴）、双眼、ω 嘴、高光、投影。没有四肢、耳朵、尾巴，所以不做肢体骨骼，动作全靠身体挤压拉伸和表情。</span></li>
+      <li><span class="k">1 · 基础形象</span><b>教程 8 步 = 设计稿</b><span>源图本身是矢量教程，直接手写 SVG 复刻，没有跑 png2svg / vtracer 描摹。</span></li>
+      <li><span class="k">2 · 可编辑 SVG</span><b>分层命名</b><span><code>shadow</code> / <code>body</code> / <code>highlight</code> / <code>eyes</code> / <code>mouth</code> 各自独立，滤镜 id 按实例加前缀，避免冲突。</span></li>
+      <li><span class="k">3 · hello-idle 基线</span><b>沿用模板约定</b><span><code>viewBox 0 0 200 200</code>、<code>&lt;g id="pet"&gt;</code>、<code>--breath-period</code>、<code>--blink-min-gap</code> 等变量名，呼吸 + 随机眨眼。</span></li>
+      <li><span class="k">4 · 逐动作迭代</span><b>14 个状态</b><span>取自 state-map 模板库，按 A 循环 / B 一次性回原姿态 / C 过渡链接三类实现。</span></li>
+      <li><span class="k">5 · 接入运行时</span><b>事件 → 状态</b><span>按 state-map 的 Agent 事件映射接线；拖、戳、长时间无事件入睡都在下方舞台可试。</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-play">
+    <div class="sec-head"><div>
+      <span class="eyebrow">Part 3 · 交互验收</span>
+      <h2 id="s-play">桌宠舞台</h2>
+      <p class="note">点它一下是 <code>react-poke</code>，1.5 秒内连点 3 下变 <code>happy</code>；按住拖起是 <code>react-drag</code>，松手会掉回地面；眼睛跟着指针走；一段时间不理它会打哈欠、打盹、睡着，睡着时点一下叫醒。</p>
+    </div></div>
+    <div class="play">
+      <div class="stage" id="stage">
+        <div class="hud"><span>state <b id="hud-state">idle</b> <span id="hud-cls"></span></span><span id="hud-sleep"></span></div>
+        <div class="pet-host" id="pet-host"></div>
+        <div class="hint">拖动 · 点击 · 连点 · 静置等待</div>
+      </div>
+      <div class="console">
+        <div>
+          <h3>直接切状态 <small>A 循环 · B 一次性 · C 过渡</small></h3>
+          <div class="grid-btn" id="state-btns"></div>
+        </div>
+        <div>
+          <h3>模拟 Agent 事件 <small>state-map 映射</small></h3>
+          <div class="ev" id="event-btns"></div>
+        </div>
+        <div class="row">
+          <label for="idle-ms">无事件入睡</label>
+          <input type="range" id="idle-ms" min="8" max="60" step="1" value="20">
+          <output id="idle-ms-out" for="idle-ms">20 s</output>
+        </div>
+        <div class="row">
+          <label for="breath">呼吸周期</label>
+          <input type="range" id="breath" min="2" max="8" step="0.2" value="4.8">
+          <output id="breath-out" for="breath">4.8 s</output>
+        </div>
+        <div>
+          <h3>状态日志</h3>
+          <ul class="log" id="log" aria-live="polite"></ul>
+        </div>
+        <div class="row">
+          <button class="btn" id="copy-svg">复制最终形象 SVG</button>
+          <span class="note" id="copy-msg"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-map">
+    <div class="sec-head"><div>
+      <span class="eyebrow">附 · 状态表</span>
+      <h2 id="s-map">状态与触发</h2>
+    </div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>状态</th><th>类</th><th>表现</th><th>触发</th></tr></thead>
+      <tbody id="state-table"></tbody>
+    </table></div>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+/* ================= 1. 形象几何（viewBox 0 0 200 200，数值由原图量取） ================= */
+const BODY = 'M86 30H137A9 9 0 0 1 146 39V90A60 60 0 0 1 86 150A60 60 0 0 1 26 90A60 60 0 0 1 86 30Z';
+const FLAT = '#ff764f';                       // 第 1、2 步纯色（原图取色 255,118,79）
+const G0 = '#ff413b', G1 = '#fcd685';         // 第 3 步渐变两端
+const GLOW = '#fde3a7';                       // 第 5 步内发光颜色（滤色 60% · 100px · 边缘）
+const SHADOW = '#ff785a';                     // 第 7 步投影色
+
+function defs(p) {
+  return `<defs>
+    <linearGradient id="${p}-grad" x1=".12" y1=".08" x2=".88" y2=".92">
+      <stop offset=".04" stop-color="${G0}"/><stop offset=".86" stop-color="${G1}"/>
+    </linearGradient>
+    <filter id="${p}-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#fff" result="w"/>
+      <feComposite in="w" in2="SourceAlpha" operator="out" result="outside"/>
+      <feGaussianBlur in="outside" stdDeviation="13" result="soft"/>
+      <feComposite in="soft" in2="SourceAlpha" operator="in" result="edge"/>
+      <feFlood flood-color="${GLOW}" flood-opacity=".9"/>
+      <feComposite in2="edge" operator="in" result="glow"/>
+      <feBlend in="glow" in2="SourceGraphic" mode="screen"/>
+    </filter>
+    <filter id="${p}-hblur" x="-150%" y="-100%" width="400%" height="300%"><feGaussianBlur stdDeviation="3.6"/></filter>
+    <filter id="${p}-sblur" x="-60%" y="-80%" width="220%" height="260%"><feGaussianBlur stdDeviation="12"/></filter>
+  </defs>`;
+}
+const highlight = (p, blur) =>
+  `<ellipse class="highlight" cx="59" cy="62" rx="8.5" ry="15" transform="rotate(35 59 62)" fill="#fff"${blur ? ` filter="url(#${p}-hblur)" opacity=".92"` : ''}/>`;
+const shadow = (p, blur) =>
+  `<ellipse cx="107" cy="124" rx="64" ry="31" transform="rotate(-14 107 124)" fill="${SHADOW}"${blur ? ` filter="url(#${p}-sblur)" opacity=".55"` : ''}/>`;
+const EYES = `<rect class="eye" x="48" y="68" width="13.4" height="22.6" rx="6.7" fill="#fff"/><rect class="eye" x="74.2" y="68" width="13.4" height="22.6" rx="6.7" fill="#fff"/>`;
+const MOUTH_W = `<path d="M58 102.5V108A5.5 5.5 0 0 0 69 108V104.5V108A5.75 5.75 0 0 0 80.5 108V102.5" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+/* 每一步在上一步基础上加一层，与教程顺序一一对应 */
+function stepSVG(p, n) {
+  let s = defs(p);
+  if (n >= 7) s += shadow(p, n >= 8);
+  if (n === 1) s += `<rect x="36" y="40" width="100" height="100" fill="${FLAT}"/>`;
+  else if (n === 2) s += `<path d="${BODY}" fill="${FLAT}"/>`;
+  else s += `<path d="${BODY}" fill="url(#${p}-grad)"${n >= 5 ? ` filter="url(#${p}-glow)"` : ''}/>`;
+  if (n >= 4) s += highlight(p, n >= 6);
+  if (n >= 7) s += EYES + MOUTH_W;
+  return s;
+}
+
+const STEPS = [
+  ['画一个方', '矩形 100×100 · 纯色 #FF764F'],
+  ['拖动圆角为水滴形状', '三个角 r = 60（半边长），右上角 r = 9'],
+  ['来个华丽的渐变色', '线性渐变 左上 → 右下 #FF413B → #FCD685', true],
+  ['画个高光形状', '白色椭圆 rx 8.5 / ry 15，旋转 35°'],
+  ['外轮廓加内发光', '内发光 · 滤色 · #FDE3A7 · 60% · 模糊 100px · 边缘 → 反相 alpha 模糊 + feBlend screen'],
+  ['高光添加高斯模糊', '高斯模糊 半径 129.1 px → stdDeviation 3.6（按画板比例换算）'],
+  ['绘制眼睛与投影', '圆角矩形眼 13.4×22.6；ω 嘴描边 5；投影椭圆 #FF785A 右下偏移'],
+  ['投影添加高斯模糊 · GET', '投影 stdDeviation 12 · 不透明度 55%'],
+];
+// 卡片视窗与原图裁切框对齐，方便逐像素对照
+const CARD_VB = '-0.4 9.2 173.4 156';
+const strip = document.getElementById('strip');
+strip.innerHTML = STEPS.map(([t, param, grad], i) => `
+  <figure class="card" tabindex="0" style="margin:0">
+    <div class="art">
+      <svg viewBox="${CARD_VB}" role="img" aria-label="第 ${i + 1} 步：${t}">${stepSVG('s' + (i + 1), i + 1)}</svg>
+      <img src="ref/step${i + 1}.jpg" alt="原教程第 ${i + 1} 步" loading="lazy">
+      <span class="tag">原图</span>
+    </div>
+    <figcaption class="cap"><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="ttl">${t}</span></figcaption>
+    ${grad ? '<div class="grad-bar" aria-hidden="true"></div>' : ''}
+    <div class="param">${param}</div>
+  </figure>`).join('');
+document.getElementById('hdr-mini').innerHTML = stepSVG('hdr', 8);
+
+const vMine = document.getElementById('view-mine'), vRef = document.getElementById('view-ref');
+function setView(v) { strip.dataset.view = v; vMine.setAttribute('aria-pressed', v === 'mine'); vRef.setAttribute('aria-pressed', v === 'ref'); }
+vMine.onclick = () => setView('mine'); vRef.onclick = () => setView('ref');
+
+/* ================= 2. 宠物 rig ================= */
+const P = 'pet';
+const petSVG = `<svg class="pet-svg" id="pet-svg" viewBox="0 0 200 200" role="img" aria-label="暖橙水滴桌宠" data-state="idle" data-eyes="open" data-mouth="w">
+  ${defs(P)}
+  <g class="shadow">${shadow(P, true)}</g>
+  <g id="lift">
+    <g id="pet">
+      <g class="body-tone">
+        <path id="body" d="${BODY}" fill="url(#${P}-grad)" filter="url(#${P}-glow)"/>
+        ${highlight(P, true)}
+      </g>
+      <g class="blush"><ellipse cx="46" cy="98" rx="7" ry="4" fill="#ff5a6a" opacity=".45"/><ellipse cx="90" cy="98" rx="7" ry="4" fill="#ff5a6a" opacity=".45"/></g>
+      <g class="gaze" id="gaze"><g class="look">
+        <g class="eyes" data-v="eyes-open" id="eyes-open">${EYES}</g>
+        <g data-v="eyes-happy" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round"><path d="M48.5 82Q54.7 70 60.9 82"/><path d="M74.7 82Q80.9 70 87.1 82"/></g>
+        <g data-v="eyes-closed" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round"><path d="M48.5 80Q54.7 86 60.9 80"/><path d="M74.7 80Q80.9 86 87.1 80"/></g>
+        <g data-v="eyes-x" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M50 73L59.4 85M59.4 73L50 85"/><path d="M76.2 73L85.6 85M85.6 73L76.2 85"/></g>
+        <g data-v="eyes-squint" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"><path d="M49 73L60 79L49 85"/><path d="M87 73L76 79L87 85"/></g>
+      </g></g>
+      <g class="mouth">
+        <g data-v="mouth-w">${MOUTH_W}</g>
+        <ellipse data-v="mouth-o" cx="69" cy="108" rx="5.5" ry="6.5" fill="#fff"/>
+        <path data-v="mouth-small" d="M64 107Q69 111 74 107" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <path data-v="mouth-open" d="M58 103H80Q80 116 69 116Q58 116 58 103Z" fill="#fff"/>
+        <path data-v="mouth-wavy" d="M57 108Q60.5 104 64 108T71 108T78 108" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round"/>
+      </g>
+    </g>
+    <g class="fx" font-family="var(--f-display)" fill="#f0533a">
+      <g class="fx-zzz"><text x="140" y="40" font-size="20">Z</text><text x="156" y="22" font-size="13">z</text></g>
+      <g class="fx-dots"><circle cx="150" cy="26" r="4"/><circle cx="162" cy="26" r="4"/><circle cx="174" cy="26" r="4"/></g>
+      <g class="fx-bang"><circle cx="150" cy="30" r="15" fill="#ff413b"/><text x="150" y="37.5" font-size="22" fill="#fff" text-anchor="middle" font-family="var(--f-body)" font-weight="700">!</text></g>
+      <g class="fx-sweat"><path d="M140 44Q146 52 146 57A6 6 0 0 1 134 57Q134 52 140 44Z" fill="#8fd3ff"/></g>
+      <g class="fx-keys" fill="#e8b48a"><rect x="40" y="156" width="14" height="6" rx="1.5"/><rect x="58" y="156" width="14" height="6" rx="1.5"/><rect x="76" y="156" width="14" height="6" rx="1.5"/><rect x="94" y="156" width="14" height="6" rx="1.5"/><rect x="112" y="156" width="14" height="6" rx="1.5"/></g>
+    </g>
+  </g>
+</svg>`;
+const host = document.getElementById('pet-host');
+host.innerHTML = petSVG;
+const svg = document.getElementById('pet-svg');
+const gaze = document.getElementById('gaze');
+const lift = document.getElementById('lift');
+const eyesOpen = document.getElementById('eyes-open');
+
+/* ================= 3. 状态机（state-map：A 循环 / B 一次性回原姿态 / C 过渡链接下一状态） ================= */
+const S = {
+  'idle':           { c: 'A', eyes: 'open',   mouth: 'w',     d: '呼吸 + 随机眨眼，眼睛跟随指针', t: '默认 / 无活动' },
+  'idle-look':      { c: 'B', eyes: 'open',   mouth: 'w',     d: '左右张望一次', t: 'idle 中随机', ms: 1800 },
+  'idle-yawn':      { c: 'B', eyes: 'closed', mouth: 'o',     d: '伸展打哈欠', t: '无事件计时到点', ms: 2200, then: 'idle-dozing' },
+  'idle-dozing':    { c: 'A', eyes: 'half',   mouth: 'small', d: '半眯眼点头', t: 'idle-yawn 之后', after: [4000, 'collapse-sleep'] },
+  'collapse-sleep': { c: 'C', eyes: 'closed', mouth: 'small', d: '软塌下去', t: 'idle-dozing 4s 后', ms: 1200, next: 'sleeping' },
+  'sleeping':       { c: 'A', eyes: 'closed', mouth: 'small', d: '扁平慢呼吸 + Zzz', t: 'collapse-sleep 结束' },
+  'wake':           { c: 'C', eyes: 'wide',   mouth: 'o',     d: '弹起回正', t: '睡着时点击 / 有事件', ms: 900, next: 'idle' },
+  'thinking':       { c: 'A', eyes: 'open',   mouth: 'small', d: '摇摆 + 思考气泡，眼睛向上', t: 'UserPromptSubmit', gaze: [2, -4] },
+  'working-typing': { c: 'A', eyes: 'open',   mouth: 'w',     d: '快速点头敲键盘', t: 'PreToolUse / PostToolUse', gaze: [0, 4] },
+  'error':          { c: 'A', eyes: 'x',      mouth: 'wavy',  d: '褪色、发抖、冒汗', t: 'PostToolUseFailure' },
+  'notification':   { c: 'B', eyes: 'wide',   mouth: 'o',     d: '跳起 + 感叹号', t: 'PermissionRequest', ms: 1800 },
+  'happy':          { c: 'B', eyes: 'happy',  mouth: 'open',  d: '连跳两下 + 腮红', t: 'Stop / 连点 3 下', ms: 1600, blush: 1 },
+  'react-poke':     { c: 'B', eyes: 'squint', mouth: 'w',     d: '被戳挤扁回弹', t: '点击', ms: 700 },
+  'react-drag':     { c: 'A', eyes: 'wide',   mouth: 'o',     d: '拉长晃荡，影子缩小', t: '按住拖动' },
+};
+const EVENTS = [
+  ['UserPromptSubmit', 'thinking'],
+  ['PreToolUse', 'working-typing'],
+  ['PostToolUseFailure', 'error'],
+  ['PermissionRequest', 'notification'],
+  ['Stop', 'happy'],
+];
+
+let state = 'idle', base = 'idle', timer = 0, lastInput = performance.now();
+const hudState = document.getElementById('hud-state'), hudCls = document.getElementById('hud-cls');
+const logEl = document.getElementById('log');
+function log(msg) {
+  const li = document.createElement('li');
+  const t = new Date().toTimeString().slice(0, 8);
+  li.innerHTML = `${t}  ${msg}`;
+  logEl.prepend(li);
+  while (logEl.children.length > 40) logEl.lastChild.remove();
+}
+
+function setState(next, why) {
+  const def = S[next]; if (!def) return;
+  clearTimeout(timer);
+  const prev = state;
+  if (def.c === 'A') base = next;
+  else if (def.c === 'C') base = def.next;
+  state = next;
+  // 重新触发 CSS 动画：先清掉再写回
+  svg.dataset.state = '';
+  void svg.getBoundingClientRect();
+  svg.dataset.state = next;
+  svg.dataset.eyes = def.eyes;
+  svg.dataset.mouth = def.mouth;
+  svg.dataset.blush = def.blush ? '1' : '0';
+  setGaze(def.gaze ? def.gaze[0] : 0, def.gaze ? def.gaze[1] : 0, true);
+  hudState.textContent = next;
+  hudCls.innerHTML = `<span class="cls cls-${def.c}">${def.c}</span>`;
+  document.querySelectorAll('#state-btns .chip').forEach(b => b.setAttribute('aria-current', b.dataset.s === next));
+  log(`<b>${prev}</b> → <b>${next}</b> <span class="cls cls-${def.c}">${def.c}</span>${why ? ' · ' + why : ''}`);
+  if (def.c === 'B') timer = setTimeout(() => setState(def.then || base, def.then ? '链到 ' + def.then : '回到 ' + base), def.ms);
+  else if (def.c === 'C') timer = setTimeout(() => setState(def.next, 'C 过渡结束'), def.ms);
+  else if (def.after) timer = setTimeout(() => setState(def.after[1], '打盹超时'), def.after[0]);
+}
+
+/* 状态按钮 / 事件按钮 / 状态表 */
+document.getElementById('state-btns').innerHTML = Object.entries(S).map(([k, v]) =>
+  `<button class="chip" data-s="${k}" aria-current="${k === 'idle'}">${k}<span class="cls cls-${v.c}">${v.c}</span></button>`).join('');
+document.getElementById('state-btns').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return; touch(); setState(b.dataset.s, '手动');
+});
+document.getElementById('event-btns').innerHTML = EVENTS.map(([ev, st]) =>
+  `<button class="chip" data-ev="${ev}" data-s="${st}">${ev}</button><span>→ ${st}</span>`).join('');
+document.getElementById('event-btns').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  touch();
+  const target = b.dataset.s;
+  if (b.dataset.ev === 'Stop') base = 'idle';           // Stop 结束工作：happy 播完回 idle
+  if (state === 'sleeping' || state === 'idle-dozing') { setState('wake', b.dataset.ev); S.wake._then = target; }
+  else setState(target, b.dataset.ev);
+});
+// wake 结束后若有排队事件，接着进入
+const _set = setState;
+setState = function (next, why) {
+  if (state === 'wake' && next === 'idle' && S.wake._then) { const t = S.wake._then; S.wake._then = null; return _set(t, '唤醒后处理事件'); }
+  return _set(next, why);
+};
+document.getElementById('state-table').innerHTML = Object.entries(S).map(([k, v]) =>
+  `<tr><td><code>${k}</code></td><td><span class="cls cls-${v.c}">${v.c}</span></td><td>${v.d}</td><td>${v.t}</td></tr>`).join('');
+
+/* ================= 4. 眨眼（hello-idle 模板的随机眨眼调度） ================= */
+function cssNum(name) { return parseFloat(getComputedStyle(svg).getPropertyValue(name)); }
+(function scheduleBlink() {
+  const min = cssNum('--blink-min-gap') || 3000, max = cssNum('--blink-max-gap') || 7000;
+  setTimeout(() => {
+    if (svg.dataset.eyes === 'open') {
+      eyesOpen.classList.add('blink');
+      setTimeout(() => eyesOpen.classList.remove('blink'), cssNum('--blink-duration') || 150);
+    }
+    scheduleBlink();
+  }, min + Math.random() * (max - min));
+})();
+
+/* ================= 5. 视线跟随 ================= */
+let gx = 0, gy = 0;
+function setGaze(x, y, force) {
+  gx = x; gy = y;
+  gaze.style.transform = `translate(${x}px, ${y}px)`;
+}
+const stage = document.getElementById('stage');
+stage.addEventListener('pointermove', e => {
+  if (dragging) return;
+  const def = S[state];
+  if (def.gaze || !['open', 'wide', 'half'].includes(def.eyes)) return;
+  const r = host.getBoundingClientRect();
+  const cx = r.left + r.width * 0.34, cy = r.top + r.height * 0.4;
+  const dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy) || 1;
+  const k = Math.min(1, d / 160);
+  setGaze(dx / d * 5 * k, dy / d * 4 * k);
+});
+stage.addEventListener('pointerleave', () => { if (!S[state].gaze) setGaze(0, 0); });
+
+/* ================= 6. 点击 / 连点 / 拖动（宿主负责移动，SVG 只负责表演） ================= */
+let dragging = false, down = null, pokes = [], lastX = 0;
+const GROUND = () => stage.clientHeight * 0.78 - 186;
+function placeX(px) {
+  const w = stage.clientWidth, half = host.offsetWidth / 2;
+  const x = Math.max(half - 40, Math.min(w - half + 20, px));
+  host.style.left = x + 'px';
+}
+host.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  host.setPointerCapture(e.pointerId);
+  const r = host.getBoundingClientRect();
+  down = { x: e.clientX, y: e.clientY, ox: e.clientX - r.left - r.width / 2, oy: e.clientY - r.top, t: performance.now() };
+  lastX = e.clientX;
+  touch();
+});
+host.addEventListener('pointermove', e => {
+  if (!down) return;
+  if (!dragging && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 5) {
+    dragging = true; host.classList.add('dragging'); host.classList.remove('falling');
+    if (state === 'sleeping' || state === 'idle-dozing') log('<b>sleeping</b> 被拎起来');
+    setState('react-drag', '拖动开始');
+  }
+  if (!dragging) return;
+  const sr = stage.getBoundingClientRect();
+  placeX(e.clientX - sr.left - down.ox);
+  const top = Math.max(-40, Math.min(GROUND(), e.clientY - sr.top - down.oy));
+  host.style.top = top + 'px';
+  const h = Math.max(0, GROUND() - top);
+  // 影子留在地面：反向抵消抬升高度，并按离地高度缩小
+  const sh = svg.querySelector('.shadow');
+  const scale = h * 200 / host.offsetHeight;
+  sh.style.transform = `translateY(${scale + Math.min(22, h / 3)}px) scale(${Math.max(.45, 1 - h / 260)})`;
+  sh.style.opacity = Math.max(.35, 1 - h / 300);
+  const vx = e.clientX - lastX; lastX = e.clientX;
+  host.style.transform = `rotate(${Math.max(-18, Math.min(18, vx * 1.6))}deg)`;
+  touch();
+});
+function release(e) {
+  if (!down) return;
+  const wasDrag = dragging;
+  down = null; dragging = false; host.classList.remove('dragging');
+  host.style.transform = '';
+  if (wasDrag) {
+    host.classList.add('falling');
+    host.style.top = GROUND() + 'px';
+    const sh = svg.querySelector('.shadow');
+    sh.style.transition = 'transform .55s cubic-bezier(.3,1.6,.5,1), opacity .4s';
+    sh.style.transform = ''; sh.style.opacity = '';
+    setTimeout(() => { sh.style.transition = ''; }, 600);
+    base = 'idle';
+    setState('react-poke', '落地');
+    return;
+  }
+  // 点击
+  if (state === 'sleeping' || state === 'idle-dozing' || state === 'collapse-sleep') { setState('wake', '点击叫醒'); return; }
+  if (state === 'happy') return;           // 开心动画不被点击打断
+  const now = performance.now();
+  pokes = pokes.filter(t => now - t < 1500); pokes.push(now);
+  if (pokes.length >= 3) { pokes = []; setState('happy', '连点 3 下'); }
+  else setState('react-poke', '点击');
+}
+host.addEventListener('pointerup', release);
+host.addEventListener('pointercancel', release);
+host.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); touch(); setState('react-poke', '键盘'); } });
+host.tabIndex = 0;
+window.addEventListener('resize', () => { if (!dragging) host.style.top = GROUND() + 'px'; });
+host.style.top = GROUND() + 'px';
+
+/* ================= 7. 无事件入睡 + idle 小动作 ================= */
+const idleIn = document.getElementById('idle-ms'), idleOut = document.getElementById('idle-ms-out');
+let IDLE_MS = 20000;
+idleIn.addEventListener('input', () => { IDLE_MS = idleIn.value * 1000; idleOut.textContent = idleIn.value + ' s'; });
+const br = document.getElementById('breath'), brOut = document.getElementById('breath-out');
+br.addEventListener('input', () => { svg.style.setProperty('--breath-period', br.value + 's'); brOut.textContent = br.value + ' s'; });
+function touch() { lastInput = performance.now(); }
+stage.addEventListener('pointermove', touch);
+const hudSleep = document.getElementById('hud-sleep');
+let nextLook = performance.now() + 7000;
+setInterval(() => {
+  const now = performance.now();
+  if (state === 'idle') {
+    const left = Math.max(0, IDLE_MS - (now - lastInput));
+    hudSleep.textContent = `入睡倒计时 ${Math.ceil(left / 1000)} s`;
+    if (left <= 0) { setState('idle-yawn', `${IDLE_MS / 1000}s 无事件`); return; }
+    if (now > nextLook) { nextLook = now + 6000 + Math.random() * 6000; if (Math.random() < .5) setState('idle-look', '随机'); }
+  } else hudSleep.textContent = state === 'sleeping' ? '睡着了 · 点一下叫醒' : '';
+}, 250);
+
+/* ================= 8. 复制最终形象 SVG ================= */
+document.getElementById('copy-svg').addEventListener('click', async () => {
+  const code = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">${stepSVG('ip', 8)}</svg>`;
+  const msg = document.getElementById('copy-msg');
+  try { await navigator.clipboard.writeText(code); msg.textContent = '已复制到剪贴板'; }
+  catch { const ta = document.createElement('textarea'); ta.value = code; document.body.append(ta); ta.select(); msg.textContent = '已选中，按 Ctrl/Cmd+C 复制'; setTimeout(() => ta.remove(), 8000); }
+});
+
+window.__pet = { get state() { return state; }, setState: (s) => setState(s, 'test'), S };
+})();
+</script>
