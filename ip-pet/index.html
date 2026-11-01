@@ -159,7 +159,7 @@ td b { white-space: nowrap; }
     <ol class="flow">
       <li><span class="k">0 · 拓扑清点</span><b>只有身体和脸</b><span>三只都只有身体轮廓、两只眼、一张嘴。没有头顶装饰、四肢、腮红，差异全部来自外形、面部、填色和性格。</span></li>
       <li><span class="k">1 · 基础形象</span><b>教程 8 步 = 小橙设计稿</b><span>源图是矢量教程，手写 SVG 复刻，没有跑 png2svg / vtracer；ω 嘴按原图量取的几何重建再拟合。糯糯、噼啪是同一画风下的新设计。</span></li>
-      <li><span class="k">2 · 可编辑矢量</span><b>少量锚点 + G2</b><span>身体 14～16 个锚点、眼 10 个、嘴 20 个，全部是闭合均匀三次 B 样条（C2 ⇒ G2）；用遮罩做抗锯齿边缘。</span></li>
+      <li><span class="k">2 · 可编辑矢量</span><b>少量锚点 + G2 + 永无尖角</b><span>身体 14～16 个锚点、眼 12 个、嘴 20 个，全部是闭合均匀三次 B 样条（C2 ⇒ G2）。每一帧都做圆角守护：曲率半径身体不小于 6、五官不小于 1.5、特效不小于 1，过紧处锚点自动松弛。遮罩做抗锯齿边缘。</span></li>
       <li><span class="k">3 · hello-idle 基线</span><b>沿用模板约定</b><span><code>viewBox 0 0 200 200</code>、<code>&lt;g id="pet"&gt;</code>、<code>--breath-period</code>、<code>--blink-min-gap</code> 等变量名照旧，由引擎读取。</span></li>
       <li><span class="k">4 · 逐动作迭代</span><b>关键形 × 锚点弹簧</b><span>每只角色画了 7 个身体关键形（静止、压扁、拉长、左倾、右倾、融化、鼓起），状态只设各关键形的权重目标，锚点由弹簧过渡。</span></li>
       <li><span class="k">5 · 接入运行时</span><b>事件 → 状态</b><span>按 state-map 的 Agent 事件映射接线；宿主元素负责位移和物理，特效在独立图层上带滞后跟随。</span></li>
@@ -295,6 +295,33 @@ function fitClosed(S, us, K) {            // 已知每个样本的参数 u∈[0,
   const X = solve(A, bx), Y = solve(A, by);
   return X.map((x, i) => [x, Y[i]]);
 }
+const R_BODY = 6, R_FACE = 1.5, R_FX = 1;   // 最小曲率半径（单位）：身体 / 五官 / 特效
+// 圆角守护：任何时刻曲线上任意点的曲率半径都不小于 rmin。
+// 在拼接点（t=0）和段中点（t=0.5）检查，过紧处把相关锚点向邻点中点松弛，迭代至满足。
+function bsR(a, b, c, e, t) {
+  const d1x = .5 * ((c[0] - a[0]) + 2 * t * (a[0] - 2 * b[0] + c[0]) + t * t * (-a[0] + 3 * b[0] - 3 * c[0] + e[0]));
+  const d1y = .5 * ((c[1] - a[1]) + 2 * t * (a[1] - 2 * b[1] + c[1]) + t * t * (-a[1] + 3 * b[1] - 3 * c[1] + e[1]));
+  const d2x = (a[0] - 2 * b[0] + c[0]) + t * (-a[0] + 3 * b[0] - 3 * c[0] + e[0]), d2y = (a[1] - 2 * b[1] + c[1]) + t * (-a[1] + 3 * b[1] - 3 * c[1] + e[1]);
+  const cr = Math.abs(d1x * d2y - d1y * d2x); return cr < 1e-9 ? Infinity : Math.hypot(d1x, d1y) ** 3 / cr;
+}
+function roundGuard(P, rmin, passes = 14) {
+  const n = P.length; P = P.map(p => [p[0], p[1]]);
+  const relax = (i, f) => { const a = P[(i - 1 + n) % n], c = P[(i + 1) % n], b = P[i]; b[0] += ((a[0] + c[0]) / 2 - b[0]) * f; b[1] += ((a[1] + c[1]) / 2 - b[1]) * f; };
+  for (let k = 0; k < passes; k++) {
+    let ok = true;
+    for (let i = 0; i < n; i++) {
+      const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n];
+      const r0 = bsR(a, b, c, e, 0);
+      if (r0 < rmin) { ok = false; relax(i, clamp(1 - r0 / rmin, .15, .6)); }
+      for (const t of [.25, .5, .75]) {
+        const r = bsR(a, b, c, e, t);
+        if (r < rmin) { ok = false; const f = clamp(1 - r / rmin, .15, .6); relax(i, f * (1 - t)); relax((i + 1) % n, f * t); }
+      }
+    }
+    if (ok) break;
+  }
+  return P;
+}
 const area = S => { let a = 0; for (let i = 0; i < S.length; i++) { const p = S[i], q = S[(i + 1) % S.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; };
 function arcU(S, K, weight) {             // 按（加权）弧长分配参数
   const n = S.length, cum = [0];
@@ -323,7 +350,15 @@ function curvU(R, K, c = 2) {
   const tot = cum[n - 1] + seg[n - 1] * (1 + c * sm[n - 1]);
   return cum.map(v => K * v / tot);
 }
-function fitShape(S, K, start, c = 2) { const R = resample(normLoop(S, start), 600); return fitClosed(R, curvU(R, K, c), K); }
+function smoothLoop(R, sigma) {          // 闭合曲线沿弧长的高斯平滑（R 已等弧长重采样）
+  const n = R.length, L = R.reduce((a, p, i) => a + Math.hypot(R[(i + 1) % n][0] - p[0], R[(i + 1) % n][1] - p[1]), 0), ds = L / n;
+  const h = Math.max(1, Math.round(3 * sigma / ds)), w = Array.from({ length: 2 * h + 1 }, (_, k) => Math.exp(-(((k - h) * ds / sigma) ** 2) / 2)), ws = w.reduce((a, b) => a + b);
+  return R.map((_, i) => { let x = 0, y = 0; for (let k = -h; k <= h; k++) { const q = R[(i + k + n) % n]; x += q[0] * w[k + h]; y += q[1] * w[k + h]; } return [x / ws, y / ws]; });
+}
+function fitShape(S, K, start, c = 2, sigma = .8, rmin = R_FACE) {
+  const R = smoothLoop(resample(normLoop(S, start), 600), sigma);
+  return roundGuard(fitClosed(R, curvU(R, K, c), K), rmin, 60);
+}
 function strokeLoop(cfn, T, n = 60) {     // 圆头粗线 → 闭合轮廓（稠密）
   const C = [], top = [], bot = [];
   for (let i = 0; i <= n; i++) C.push(cfn(-1 + 2 * i / n));
@@ -345,7 +380,7 @@ function capsuleLoop(w, h, n = 96) {      // 竖向胶囊，底边在 y = 0
 
 /* =====================================================================
    1. 参考 ω 嘴：按原图量取的几何（描边宽 5.3、三臂中心、U 半径、中缝为两外弧交点）构造，
-      再用曲率加权的最少锚点拟合（20 个，最大误差约 0.3 单位）
+      再用曲率加权的最少锚点拟合（20 个；中缝尖角按圆角规则倒圆，最大偏差约 0.5 单位）
    ===================================================================== */
 function omegaLoop(sw = 5.3, xl = 72.3, xm = 83.15, xr = 94.15, yt = 115.15, yc = 117.3, hy = 4.9) {
   const r = sw / 2, R1 = (xm - xl) / 2, R2 = (xr - xm) / 2, c1 = (xl + xm) / 2, c2 = (xm + xr) / 2, out = [];
@@ -362,9 +397,9 @@ function omegaLoop(sw = 5.3, xl = 72.3, xm = 83.15, xr = 94.15, yt = 115.15, yc 
 const OMEGA = omegaLoop();
 const OMEGA_C = [83.2, 119.3];
 const OMEGA_REL = OMEGA.map(p => [p[0] - OMEGA_C[0], p[1] - OMEGA_C[1]]);
-const MOUTH_K = 20, EYE_K = 10;
+const MOUTH_K = 20, EYE_K = 12;
 const leftmost = p => p[0] * 1000 + p[1];
-const OMEGA_FIT = fitShape(OMEGA_REL, MOUTH_K, leftmost);
+const OMEGA_FIT = fitShape(OMEGA_REL, MOUTH_K, leftmost);   // 中缝原本是两弧交出的尖角，按圆角规则倒圆（误差约 0.5 单位全部来自这里）
 
 /* =====================================================================
    Part 1：教程复刻
@@ -405,7 +440,7 @@ const STEPS = [
   ['画个高光形状', '白色椭圆 rx 8.5 / ry 15，旋转 35°'],
   ['外轮廓加内发光', '教程：滤色 · #FDE3A7 · 60% · 模糊 100px · 边缘。SVG 等效值（对照原图调出）：不透明度 0.9 · stdDeviation 13 · feBlend screen'],
   ['高光添加高斯模糊', '教程：半径 129.1 px。SVG 等效值（对照原图调出，原画板尺寸未知）：stdDeviation 3.6'],
-  ['绘制眼睛与投影', '胶囊眼 15×25.2（原图半强度阈值量取）；ω 嘴按原图量取几何构造，20 锚点拟合；投影 #FF785A 右下偏移'],
+  ['绘制眼睛与投影', '胶囊眼 15×25.2（原图半强度阈值量取）；ω 嘴按原图量取几何构造，20 锚点拟合，中缝倒圆；投影 #FF785A 右下偏移'],
   ['投影添加高斯模糊 · GET', '投影 stdDeviation 12 · 不透明度 55%（对照原图调出）'],
 ];
 const strip = document.getElementById('strip');
@@ -523,6 +558,7 @@ for (const ch of Object.values(CHARS)) {
     P = P.map(p => [cx + (p[0] - cx) * sc, GROUND + (p[1] - GROUND) * sc]);
     const maxY = Math.max(...curvePts(P).map(p => p[1]));
     P = P.map(p => [p[0], p[1] + GROUND - maxY]);
+    P = roundGuard(P, R_BODY + .5, 80);
     ch.fit[name] = P;
     if (name === 'rest') ch.fitErr = Math.max(...S.map(q => Math.min(...curvePts(P, 24).map(c => Math.hypot(c[0] - q[0], c[1] - q[1])))));
   }
@@ -536,7 +572,7 @@ for (const ch of Object.values(CHARS)) {
    ===================================================================== */
 const bottomCenter = p => Math.abs(p[0]) * 2 - p[1] * 3;
 function eyeTarget(e, name, side) {
-  const { w, h } = e, T = Math.max(1.7, w * .13);
+  const { w, h } = e, T = Math.max(2.3, w * .16);
   const capT = (lim) => capsuleLoop(w, h).map(p => [p[0], Math.max(p[1], lim(p[0]))]);
   switch (name) {
     case 'wide':   return capsuleLoop(w * 1.08, h * 1.1);
@@ -560,7 +596,7 @@ function mouthTarget(ch, name) {
     case 'yawn':  return ellipseLoop(0, 1, W * .2, W * .3);
     case 'open':  { const out = []; for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; out.push([Math.cos(a) * W * .4, -W * .12 + Math.sin(a) * W * .36]); } for (let i = 1; i < 12; i++) out.push([-W * .4 + W * .8 * i / 12, -W * .12 - .3]); return out; }
     case 'grin':  { const out = []; for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; out.push([Math.cos(a) * W * .46, -W * .06 + Math.sin(a) * W * .26 + Math.cos(a) * 1.2]); } for (let i = 1; i < 12; i++) { const x = -W * .46 + W * .92 * i / 12; out.push([x, -W * .06 - 1.6 * (1 - (x / (W * .46)) ** 2) + 1.2 * x / (W * .46)]); } return out; }
-    case 'wavy':  return strokeLoop(u => [u * W * .44, 1.6 * Math.sin(3 * Math.PI * u)], T * .85);
+    case 'wavy':  return strokeLoop(u => [u * W * .44, 1.5 * Math.sin(2 * Math.PI * u)], T * .8);     // 波长够长，内侧不折叠
     case 'pout':  return strokeLoop(u => [u * W * .2, -2 * (1 - u * u) + 1], T * .9);
     default:      return strokeLoop(u => [u * W * .32, 0], T * .85);   // flat
   }
@@ -713,7 +749,7 @@ class Pet {
   }
   render() {
     const ch = this.ch, R = this.r, t = this.t / 1000;
-    this.body = this.blend();
+    this.body = roundGuard(this.blend(), R_BODY);
     const bodyD = bspline(this.body); R.mask.setAttribute('d', bodyD);
     // 填色：端点跟身体走 + 按速度旋转；情绪/速度改变配色
     const C = this.body.reduce((a, p) => [a[0] + p[0] / ch.K, a[1] + p[1] / ch.K], [0, 0]);
@@ -739,8 +775,8 @@ class Pet {
     R.hl.setAttribute('d', bspline(hlP));
     // 脸：整体平移（锚定身体 + 滞后 + 视线），表情只变锚点
     const fo = this.faceOffset();
-    const eyesP = ch.eyes.map((c, i) => this.eyeS[i].pts(c[0] + fo[0], c[1] + fo[1]));
-    const mouthP = this.mouthS.pts(ch.mouth[0] + fo[0], ch.mouth[1] + fo[1]);
+    const eyesP = ch.eyes.map((c, i) => roundGuard(this.eyeS[i].pts(c[0] + fo[0], c[1] + fo[1]), R_FACE));
+    const mouthP = roundGuard(this.mouthS.pts(ch.mouth[0] + fo[0], ch.mouth[1] + fo[1]), R_FACE);
     R.e[0].setAttribute('d', bspline(eyesP[0])); R.e[1].setAttribute('d', bspline(eyesP[1])); R.mo.setAttribute('d', bspline(mouthP));
     this.lastFace = [...eyesP, mouthP];
     if (this.showAnchors) {
@@ -945,7 +981,7 @@ function renderFx(now, dt) {
   const hx = phys.x + (ch.cx + 42 - 100) * s, hy = floorY() - phys.y - (GROUND - ch.top + 10) * s;
   fxA.x.t = hx; fxA.y.t = hy; fxA.x.step(dt); fxA.y.step(dt); keysX.t = phys.x; keysX.step(dt);
   const ax = fxA.x.x, ay = fxA.y.x;
-  const draw = (P, ox, oy, sc, fill) => out.push(`<path d="${bspline(P.map(p => [ox + p[0] * sc, oy + p[1] * sc]))}" fill="${fill}"/>`);
+  const draw = (P, ox, oy, sc, fill) => out.push(`<path d="${bspline(roundGuard(P, R_FX).map(p => [ox + p[0] * sc, oy + p[1] * sc]))}" fill="${fill}"/>`);
   if (state === 'sleeping' || (state === 'collapse-sleep' && now - stT > 700 * T)) { if (now - lastZ > 1000 * T) { lastZ = now; particles.push({ k: 'z', x: ax, y: ay, vx: 16, vy: -30, t0: now, life: 2800 * T }); } }
   if (state === 'error' && now - lastSweat > 1700 * T) { lastSweat = now; particles.push({ k: 'drop', x: phys.x - (ch.cx - 100 + 30) * s * -1, y: floorY() - phys.y - (GROUND - ch.top - 18) * s, vx: 0, vy: 10, t0: now, life: 1400 }); }
   particles = particles.filter(p => now - p.t0 < p.life);
