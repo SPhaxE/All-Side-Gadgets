@@ -1,4 +1,17 @@
+# 通用
 __pycache__/
 *.pyc
+node_modules/
 .qa-*
 .probe-*
+
+# showcase（视效短片渲染包）
+showcase/out/
+showcase/assets/footage/
+showcase/assets/build/
+
+# sound-lab（Web Audio 音效库）
+sound-lab/out/
+
+# audio-lab（参考视频复刻音效）
+audio-lab/dist/*.wav
