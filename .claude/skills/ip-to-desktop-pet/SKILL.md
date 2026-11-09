@@ -5,7 +5,23 @@ description: 把一张 IP 形象绘制教程图（或现成的 IP 形象）先�
 
 # IP 绘制 → 动态桌宠
 
-这套流程来自 `ip-pet/` 项目（暖橙水滴小橙 + 软五角星噼啪；中途试过的云朵「糯糯」因效果最差被删掉）。参考实现就是仓库里的 `ip-pet/index.html`：开工时先读它，新角色、新项目优先在它的引擎上改，而不是从头写。
+这套流程来自 `ip-pet/` 项目（暖橙水滴小橙 + 软五角星噼啪；中途试过的云朵「糯糯」因效果最差被删掉）。参考实现是仓库里的 `ip-pet/index.html`（技能内另有快照 `assets/reference-implementation/`）：开工时先读它，新角色、新项目优先在它的引擎上改，而不是从头写。
+
+## 资料索引（按需读取，不要一次全读）
+
+| 什么时候 | 读 / 用 |
+|---|---|
+| 开工前 | `assets/reference-implementation/RETRO.md`（迭代记录 + 20 条踩坑）、本文件的硬性规则 |
+| 复刻教程图 | `references/replication.md`；`scripts/split_panels.py` 切画板；`scripts/trace_outline.py` 半强度阈值量尺寸；`scripts/contact_sheet.py --overlay` 做三联对照 |
+| 需要具体数值（换算比例、颜色、几何、弹簧、拟合设置、会话脚本） | `references/data.md` |
+| 设计 / 修改身体形状 | `references/engine.md` 第 3 节；外凸形状用 `scripts/rho_shape.py` 原型并检查参数极值；`scripts/fit_search.py` 选 K、c、λ |
+| 写或改引擎、加角色 | `references/engine.md`；从 `assets/reference-implementation/index.html` 复制起步 |
+| 定位问题（抽动、没转、拐点、时序） | `scripts/pet_probe.js`：`jitter` 分段量抖动、`params` 逐帧打印参数、`curv` 统计曲率变号、`film` 截胶片、`agent` 跑会话序列 |
+| 验收 | `references/qa.md`；`scripts/qa_pet.js`（自动，过 / 不过） + 读截图 |
+| 出分享页 | `scripts/build_share.py <index.html> [share.html]` |
+| 试跑工具 | `assets/examples/tutorial-steps.jpg`（本项目原图） |
+
+脚本都在技能目录下，路径以仓库根为准：`.claude/skills/ip-to-desktop-pet/scripts/…`。Python 脚本用 `python3 -I` 运行（只需 numpy、Pillow）；Node 脚本依赖预装的 Playwright（`require('playwright')`）。浏览器类脚本较慢，按项目规则放后台跑。
 
 ## 交付物
 

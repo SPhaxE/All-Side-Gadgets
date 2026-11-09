@@ -774,12 +774,15 @@ class Pet {
     const ch = this.ch, v = this.vals(), S = ch.genAll(v);
     const [w2, w3] = this.wob.map(w => w.x);
     let B = applyFit(ch.M, S).map(([x, y]) => { const a = Math.atan2(y - 100, x - 100), dr = w2 * Math.cos(2 * a + .4) + w3 * Math.cos(3 * a); return [x + dr * Math.cos(a), y + dr * Math.sin(a)]; });
+    const dbg = window.__pet && window.__pet.debug, fitB = dbg && B.map(q => q.slice());       // 调试：记录管线各段（measure_jitter.js 用）
     B = roundGuard(B, Math.min(this.rFloor.x, ch.rmin), 4, true);
+    const guardB = dbg && B.map(q => q.slice());
     if (ch.convex) B = convexGuard(B);
     const [, dyT] = groundSnap(B);
     if (this.dyS === undefined) this.dyS = new Spring(dyT, 1600, 80); this.dyS.t = dyT; this.dyS.step(1 / 60);
     const dy = Math.abs(this.dyS.x - dyT) > 3 ? (this.dyS.x = dyT) : this.dyS.x;              // 大跳（换角色等）直接对齐
     const G = B.map(q => [q[0], q[1] + dy]);
+    if (dbg) this._stages = { fit: fitB, guard: guardB, convex: B, snap: G, dy };
     const sx = Math.exp(.15 * v.sq);
     this.frame = { dy, sx, sy: 1 / sx, rot: v.rot * DEG };
     return G;
@@ -1238,7 +1241,7 @@ window.addEventListener('resize', layout);
 /* ---------- 自检接口（QA 用） ---------- */
 window.__pet = {
   get state() { return state; }, get phys() { return phys; }, get pet() { return pet; }, CHARS, eyeFit, mouthFit, curvePts, bspline, OMEGA_FIT, OMEGA,
-  setState: s => setState(s, 'test'), mount: k => mountPet(k, false),
+  setState: s => setState(s, 'test'), mount: k => mountPet(k, false), agent: ev => agentEvent(ev, 'test'), debug: false,
   g2(P) {
     const n = P.length; let dA = 0, dK = 0;
     const seg = i => { const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n]; return [[(a[0] + 4 * b[0] + c[0]) / 6, (a[1] + 4 * b[1] + c[1]) / 6], [(2 * b[0] + c[0]) / 3, (2 * b[1] + c[1]) / 3], [(b[0] + 2 * c[0]) / 3, (b[1] + 2 * c[1]) / 3], [(b[0] + 4 * c[0] + e[0]) / 6, (b[1] + 4 * c[1] + e[1]) / 6]]; };
