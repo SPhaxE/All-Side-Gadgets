@@ -1,0 +1,1263 @@
+<title>暖橙水滴 IP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: 深灰「画板胶片」放 8 步复刻 → pet-forge 流程 → 两只桌宠舞台 + 控制台 → 迪士尼法则对照 */
+:root {
+  --bg: #f4f2f3; --surface: #ffffff; --ink: #2a2426; --muted: #6f6467; --line: #e2dcde;
+  --strip: #444043; --artboard: #ffffff; --artboard-ink: #222;
+  --accent: #f0533a; --chip: #f7eef0; --stage-top: #fff8f3; --stage-floor: #f3e7e2;
+  --ok: #2f8f5b; --warn: #c27a00; --bad: #c8372d;
+  --f-display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --f-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1d1a1c; --surface: #272325; --ink: #f2ecee; --muted: #b0a4a8; --line: #3a3437;
+  --strip: #121011; --accent: #ff7a5e; --chip: #332d30; --stage-top: #2b2426; --stage-floor: #382d2c;
+  --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #1d1a1c; --surface: #272325; --ink: #f2ecee; --muted: #b0a4a8; --line: #3a3437;
+  --strip: #121011; --accent: #ff7a5e; --chip: #332d30; --stage-top: #2b2426; --stage-floor: #382d2c;
+  --ok: #6cc795; --warn: #f0b35a; --bad: #ff7a70; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 48px; }
+h1, h2 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: .02em; }
+h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.15; }
+h2 { font-size: 26px; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 62ch; }
+header { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
+header .mini { width: 92px; height: 92px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; }
+.sec-head > div:first-child { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.note { font-size: 13px; color: var(--muted); max-width: 80ch; }
+code { font-family: var(--f-mono); font-size: .9em; background: var(--chip); padding: 0 4px; border-radius: 3px; }
+
+/* ---------- 8 步复刻 ---------- */
+.strip { background: var(--strip); border-radius: 6px; padding: 14px; display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 860px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; gap: 10px; } }
+.card { background: var(--artboard); color: var(--artboard-ink); display: flex; flex-direction: column; padding: 10px 10px 14px; gap: 8px; margin: 0; }
+.card .art { position: relative; aspect-ratio: 400 / 360; max-width: 100%; }
+.card .art > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.card .art img { object-fit: cover; opacity: 0; transition: opacity .25s; }
+.card .art .tag { inset: auto auto 4px 4px; width: auto; height: auto; font: 600 10px/1 var(--f-mono); letter-spacing: .08em; padding: 4px 6px; border-radius: 3px; background: #222; color: #fff; opacity: 0; transition: opacity .25s; }
+.strip[data-view="ref"] .art img, .strip[data-view="ref"] .art .tag, .card:hover .art img, .card:hover .art .tag, .card:focus-within .art img { opacity: 1; }
+.card .cap { display: flex; gap: 8px; align-items: baseline; }
+.card .num { font: 600 12px/1 var(--f-mono); color: #c0392b; }
+.card .ttl { font-weight: 700; font-size: 15px; }
+.card .param { font: 11px/1.5 var(--f-mono); color: #6a5f62; min-height: 3em; }
+.card .grad-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #ff413b, #fcd685); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--surface); }
+.seg button { border: 0; background: transparent; color: var(--muted); font: 500 13px var(--f-body); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+button:focus-visible, .pet-host:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- 流程 ---------- */
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.flow li { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.flow b { font-size: 14px; }
+.flow .k { font: 600 11px var(--f-mono); color: var(--accent); letter-spacing: .08em; }
+.flow span { font-size: 13px; color: var(--muted); }
+
+/* ---------- 角色卡 ---------- */
+.cast { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .cast { grid-template-columns: minmax(0, 1fr); } }
+.who { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center; text-align: left; padding: 12px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); border-radius: 6px; cursor: pointer; font: inherit; }
+.who[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.who svg { width: 84px; height: 84px; overflow: visible; }
+.who b { font-family: var(--f-display); font-weight: 400; font-size: 20px; display: block; }
+.who small { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.who .sw { display: flex; gap: 4px; margin-top: 6px; }
+.who .sw i { width: 14px; height: 14px; border-radius: 50%; display: block; }
+
+/* ---------- 舞台 ---------- */
+.play { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 900px) { .play { grid-template-columns: minmax(0, 1fr); } }
+.stage { position: relative; height: 440px; border-radius: 6px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
+  background: linear-gradient(var(--stage-top) 0 80%, var(--stage-floor) 80% 100%); border: 1px solid var(--line); }
+.stage .hud { position: absolute; left: 12px; top: 10px; right: 12px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; font: 12px var(--f-mono); color: var(--muted); }
+.stage .hud b { color: var(--ink); font-weight: 600; }
+.pet-host { position: absolute; left: 0; top: 0; width: 230px; height: 230px; cursor: grab; touch-action: none; will-change: transform; }
+.pet-host.dragging { cursor: grabbing; }
+.pet-host svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.shadow { position: absolute; left: 0; top: 0; height: 26px; border-radius: 50%; pointer-events: none; will-change: transform, opacity; }
+.hint { position: absolute; left: 12px; bottom: 10px; right: 12px; font-size: 12px; color: var(--muted); pointer-events: none; }
+.console { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.console h3 { margin: 0 0 6px; font-size: 13px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.console h3 small { font: 11px var(--f-mono); color: var(--muted); font-weight: 400; }
+.grid-btn { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 4px; padding: 5px 8px; cursor: pointer; font: 12px var(--f-mono); display: inline-flex; gap: 6px; align-items: center; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-current="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.cls { font-size: 10px; font-weight: 600; padding: 0 4px; border-radius: 3px; border: 1px solid currentColor; opacity: .85; }
+.cls-A { color: var(--ok); } .cls-B { color: var(--warn); } .cls-C { color: var(--bad); }
+.chip[aria-current="true"] .cls { color: inherit; }
+.ev { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; }
+.ev span { font: 11px var(--f-mono); color: var(--muted); }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.row label { color: var(--muted); }
+.row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--accent); }
+.row output { font: 12px var(--f-mono); min-width: 4.5em; text-align: right; font-variant-numeric: tabular-nums; }
+.log { font: 12px/1.6 var(--f-mono); background: var(--bg); border-radius: 4px; padding: 8px 10px; height: 128px; overflow: auto; margin: 0; list-style: none; }
+.log li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.log li b { color: var(--ink); font-weight: 600; }
+.btn { border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 4px; padding: 7px 12px; cursor: pointer; font: 500 13px var(--f-body); }
+.btn.ghost { background: transparent; color: var(--ink); }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+#agent-now code { margin-right: 6px; }
+.steps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; font: 11px var(--f-mono); }
+.steps li { padding: 2px 7px; border-radius: 999px; background: var(--chip); color: var(--muted); transition: background .2s, color .2s; }
+.steps li.done { color: var(--ink); }
+.steps li.on { background: var(--accent); color: #fff; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 11px var(--f-mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td b { white-space: nowrap; }
+</style>
+<style>
+.fx-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.who svg { width: 84px; height: 84px; }
+.pet-svg { shape-rendering: geometricPrecision; }
+</style>
+
+<div class="wrap">
+  <header>
+    <svg class="mini" viewBox="10 14 160 150" aria-hidden="true" id="hdr-mini"></svg>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+      <span class="eyebrow">IP 复刻 · pet-forge SVG 路线</span>
+      <h1>暖橙水滴和它的朋友噼啪</h1>
+      <p class="lede">先按原教程 8 步把形象用 SVG 复刻出来；再按 pet-forge 的 SVG 路线做成桌宠，并发散出一只外形、面部、配色、性格都不同的伙伴。身体由参数化的 G2 曲线生成，表情、姿态、旋转都靠锚点变化完成；节奏按迪士尼 12 条动画法则来做。</p>
+    </div>
+  </header>
+
+  <section aria-labelledby="s-steps">
+    <div class="sec-head">
+      <div>
+        <span class="eyebrow">Part 1 · 逐步复刻</span>
+        <h2 id="s-steps">8 步绘制</h2>
+        <p class="note">身体、眼睛按教程几何还原（教程里的圆角水滴是圆弧拼接，只有 G1）；ω 嘴按原图量取的几何构造，再用 20 个 B 样条锚点拟合。悬停单张看原图，或切到「原图」整排对照。</p>
+      </div>
+      <div class="seg" role="group" aria-label="对照方式">
+        <button id="view-mine" aria-pressed="true">复刻</button>
+        <button id="view-ref" aria-pressed="false">原图</button>
+      </div>
+    </div>
+    <div class="strip" id="strip" data-view="mine"></div>
+  </section>
+
+  <section aria-labelledby="s-flow">
+    <div class="sec-head"><div>
+      <span class="eyebrow">Part 2 · pet-forge 流程</span>
+      <h2 id="s-flow">按 SVG 路线逐项落地</h2>
+    </div></div>
+    <ol class="flow">
+      <li><span class="k">0 · 拓扑清点</span><b>只有身体和脸</b><span>两只都只有身体轮廓、两只眼、一张嘴。没有头顶装饰、四肢、腮红，差异全部来自外形、面部、填色和性格；小橙的「方角」和噼啪的「五个角」就是它们的手脚和尾巴。</span></li>
+      <li><span class="k">1 · 基础形象</span><b>教程 8 步 = 小橙设计稿</b><span>源图是矢量教程，手写 SVG 复刻，没有跑 png2svg / vtracer；ω 嘴按原图量取的几何重建再拟合。噼啪是同一画风下的新设计。</span></li>
+      <li><span class="k">2 · 可编辑矢量</span><b>参数化 G2 身体 + 少量锚点</b><span>小橙用「曲率半径随法向角的分布」定义：处处外凸、曲率连续、精确闭合；噼啪的五个角可各自伸缩、弯折。每帧按参数生成后拟合到 16 / 15 个锚点（预计算矩阵），再做圆角和凸性守护；眼 12、嘴 20 个锚点。</span></li>
+      <li><span class="k">3 · hello-idle 基线</span><b>沿用模板约定</b><span><code>viewBox 0 0 200 200</code>、<code>&lt;g id="pet"&gt;</code>、<code>--breath-period</code>、<code>--blink-min-gap</code> 等变量名照旧，由引擎读取。</span></li>
+      <li><span class="k">4 · 逐动作迭代</span><b>姿态参数 × 弹簧</b><span>小橙：角的方向、尖钝、长短、耷拉 / 翘起、整体翻转；噼啪：每个角的长短和弯折、整体尖锐度与旋转。状态只设参数目标，锚点跟着特征走、由弹簧过渡。</span></li>
+      <li><span class="k">5 · 接入运行时</span><b>事件 → 状态</b><span>按 state-map 的 Agent 事件映射接线；宿主元素负责位移和物理，特效在独立图层上带滞后跟随。</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-play">
+    <div class="sec-head"><div>
+      <span class="eyebrow">Part 3 · 交互验收</span>
+      <h2 id="s-play">两只桌宠</h2>
+      <p class="note">选一只放到舞台上。指针靠近时体内会亮起一块光，点一下会从点击处荡开一圈色波（<code>react-poke</code>），1.5 秒内连点 3 下是 <code>happy</code>；拖起来甩出去，体内色团会随速度晃荡，落地压扁回弹。不理它会犯困睡着，点一下叫醒。切换角色会播放登场动画：小橙的方角从圆水滴里「长」出来，噼啪的五个角依次升起再转一圈。</p>
+    </div></div>
+    <div class="cast" id="cast"></div>
+    <div class="play">
+      <div class="stage" id="stage">
+        <div class="hud"><span>state <b id="hud-state">idle</b> <span id="hud-cls"></span></span><span id="hud-sleep"></span></div>
+        <div class="shadow" id="shadow"></div>
+        <div class="pet-host" id="pet-host" tabindex="0" role="img" aria-label="桌宠"></div>
+        <svg class="fx-layer" id="fx-layer" aria-hidden="true"></svg>
+        <div class="hint">拖动 · 甩出去 · 点击 · 连点 · 静置等待</div>
+      </div>
+      <div class="console">
+        <div>
+          <h3>直接切状态 <small>A 循环 · B 一次性 · C 过渡</small></h3>
+          <div class="grid-btn" id="state-btns"></div>
+        </div>
+        <div>
+          <h3>模拟 Agent 事件 <small>state-map 映射</small></h3>
+          <div class="ev" id="event-btns"></div>
+          <div class="row" style="margin-top:8px"><button class="btn" id="agent-run" aria-pressed="false">▶ 跑一次会话</button><span class="note" id="agent-now">提问 → 调工具 → 出错 → 重试 → 要权限 → 完成</span></div>
+          <ol class="steps" id="agent-steps"></ol>
+        </div>
+        <div class="row">
+          <label for="idle-ms">无事件入睡</label>
+          <input type="range" id="idle-ms" min="8" max="60" step="1" value="20">
+          <output id="idle-ms-out" for="idle-ms">20 s</output>
+        </div>
+        <div class="row">
+          <button class="btn ghost" id="anchors" aria-pressed="false">显示锚点</button>
+          <button class="btn ghost" id="drop">从空中丢下</button>
+          <button class="btn" id="copy-svg">复制当前帧 SVG</button>
+          <span class="note" id="copy-msg"></span>
+        </div>
+        <div>
+          <h3>状态日志</h3>
+          <ul class="log" id="log" aria-live="polite"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-disney">
+    <div class="sec-head"><div>
+      <span class="eyebrow">附 · 动画法则</span>
+      <h2 id="s-disney">迪士尼 12 条法则在哪里</h2>
+    </div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>法则</th><th>做法</th><th>在哪里看</th></tr></thead>
+      <tbody>
+        <tr><td><b>挤压与拉伸</b></td><td>由生成器参数完成：水滴压扁时左右变宽、上下变矮，方角保持自己的半径；空中按速度拉长，落地按冲击速度压扁；另有 2 瓣 / 3 瓣果冻模态的余震。</td><td>甩出去落地、被戳、跳</td></tr>
+        <tr><td><b>预备动作</b></td><td>跳、醒、打哈欠、旋转之前先反向下蹲或收缩，时长随性格缩放。</td><td>连点 3 下、PermissionRequest、叫醒</td></tr>
+        <tr><td><b>演出布局</b></td><td>换角色时播放登场动画（水滴落地长出方角；星星五个角依次升起再转圈）；舞台上只有一只；特效在头部右上方，不挡脸。</td><td>点角色卡</td></tr>
+        <tr><td><b>连续动作与关键姿势</b></td><td>状态只给姿态参数目标（关键姿势），中间帧由弹簧逐帧求解；拖拽和下落是逐帧物理。</td><td>打开「显示锚点」</td></tr>
+        <tr><td><b>跟随与重叠</b></td><td>拖动时小橙的方角、噼啪的五个角拖在运动后面；落地时尖角张开、方角甩一下；脸比身体晚半拍；体内色团反向晃荡；特效图层带滞后跟随。</td><td>拖着左右晃</td></tr>
+        <tr><td><b>缓入缓出</b></td><td>所有锚点和权重都由阻尼弹簧驱动，起止速度为 0，中途被打断也从当前形续接。</td><td>任意切换状态</td></tr>
+        <tr><td><b>弧线</b></td><td>视线的 x / y 弹簧刚度不同，脸走弧线；抛出后按抛物线飞行；Z 字沿弧线飘起。</td><td>指针绕着桌宠转、睡觉</td></tr>
+        <tr><td><b>次要动作</b></td><td>体内色团持续流动、呼吸、随机眨眼；指针光斑、点击色波。</td><td>静置、靠近、点击</td></tr>
+        <tr><td><b>时间节奏</b></td><td>每只有自己的时间系数和弹簧参数：小橙 1.0（居中）、噼啪 0.75（快、硬、干脆）；登场动画用固定节奏，保证看得清。</td><td>对同一状态切换角色</td></tr>
+        <tr><td><b>夸张</b></td><td>噼啪被戳会把五个角伸长变尖（曲率半径降到 3，仍是圆角）再跳起转一圈；开心时整只转圈。小橙开心会翻跟头，困了侧身躺倒。</td><td>点击、拖动</td></tr>
+        <tr><td><b>扎实绘图</b></td><td>整体旋转是刚体转动，脸跟着一起转；脸只随身体平移和旋转，不变形，眼—嘴三角区稳定；眼睛永远以下眼睑为基准。</td><td>被戳瞬间、闭眼</td></tr>
+        <tr><td><b>吸引力</b></td><td>两种剪影（方角水滴、软五角星）、两套配色；小橙轮廓处处外凸无拐点，噼啪只有设计中的 5 个凸角和 5 个凹谷；脸都是白色纯色简单形。</td><td>角色卡缩略图</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="s-map">
+    <div class="sec-head"><div>
+      <span class="eyebrow">附 · 状态表</span>
+      <h2 id="s-map">状态与触发</h2>
+    </div></div>
+    <div class="tbl"><table>
+      <thead><tr><th>状态</th><th>类</th><th>表现</th><th>触发</th></tr></thead>
+      <tbody id="state-table"></tbody>
+    </table></div>
+  </section>
+</div>
+
+<script>
+(() => {
+'use strict';
+// 页面元素按需取：不存在时给一个游离占位元素，同一份引擎既能跑完整验收页，也能跑精简分享页
+const $ = id => document.getElementById(id) || document.createElement('div');
+/* =====================================================================
+   0. 曲线工具：闭合均匀三次 B 样条（C2 连续 ⇒ G2）+ 最小二乘拟合
+   ===================================================================== */
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const r2 = v => Math.round(v * 100) / 100;
+const TAU = Math.PI * 2;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const AMP = REDUCED ? 0.4 : 1;           // 减少动态：压低幅度，不去掉动画
+
+function bspline(P) {                     // P: [[x,y]...] 控制点 → SVG 路径
+  const n = P.length; let d = '';
+  for (let i = 0; i < n; i++) {
+    const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n];
+    if (i === 0) d += `M${r2((a[0] + 4 * b[0] + c[0]) / 6)} ${r2((a[1] + 4 * b[1] + c[1]) / 6)}`;
+    d += `C${r2((2 * b[0] + c[0]) / 3)} ${r2((2 * b[1] + c[1]) / 3)} ${r2((b[0] + 2 * c[0]) / 3)} ${r2((b[1] + 2 * c[1]) / 3)} ${r2((b[0] + 4 * c[0] + e[0]) / 6)} ${r2((b[1] + 4 * c[1] + e[1]) / 6)}`;
+  }
+  return d + 'Z';
+}
+const basis = t => { const t2 = t * t, t3 = t2 * t; return [(1 - t) ** 3 / 6, (3 * t3 - 6 * t2 + 4) / 6, (-3 * t3 + 3 * t2 + 3 * t + 1) / 6, t3 / 6]; };
+function curvePts(P, m = 12) {            // 在曲线上密采样
+  const n = P.length, out = [];
+  for (let i = 0; i < n; i++) for (let s = 0; s < m; s++) {
+    const w = basis(s / m), idx = [i - 1, i, i + 1, i + 2].map(k => P[(k + n) % n]);
+    out.push([w.reduce((a, wk, k) => a + wk * idx[k][0], 0), w.reduce((a, wk, k) => a + wk * idx[k][1], 0)]);
+  }
+  return out;
+}
+function solve(A, b) {                    // 高斯消元（K 很小）
+  const n = b.length, M = A.map((r, i) => [...r, b[i]]);
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+    [M[c], M[p]] = [M[p], M[c]];
+    for (let r = 0; r < n; r++) if (r !== c) { const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+  }
+  return M.map((r, i) => r[n] / r[i]);
+}
+function fitClosed(S, us, K) {            // 已知每个样本的参数 u∈[0,K)，解 K 个控制点
+  const A = Array.from({ length: K }, () => new Array(K).fill(0)), bx = new Array(K).fill(0), by = new Array(K).fill(0);
+  S.forEach((p, j) => {
+    const u = us[j], i = Math.floor(u), w = basis(u - i), idx = [i - 1, i, i + 1, i + 2].map(k => ((k % K) + K) % K);
+    for (let a = 0; a < 4; a++) { bx[idx[a]] += w[a] * p[0]; by[idx[a]] += w[a] * p[1]; for (let b = 0; b < 4; b++) A[idx[a]][idx[b]] += w[a] * w[b]; }
+  });
+  for (let i = 0; i < K; i++) A[i][i] += 1e-6;
+  const X = solve(A, bx), Y = solve(A, by);
+  return X.map((x, i) => [x, Y[i]]);
+}
+const R_BODY = 6, R_FACE = 1.5, R_FX = 1;
+// 凸性守护：均匀 B 样条有「变差缩减」性质——控制多边形是凸的，曲线就一定是凸的（没有拐点、没有凹坑）。
+// 对本应外凸的角色，把向内折的锚点推回两邻点连线外侧一点点即可。
+function convexGuard(P, passes = 8) {
+  const n = P.length; P = P.map(p => [p[0], p[1]]);
+  let A = 0; for (let i = 0; i < n; i++) { const p = P[i], q = P[(i + 1) % n]; A += p[0] * q[1] - q[0] * p[1]; }
+  const o = Math.sign(A);
+  for (let k = 0; k < passes; k++) {
+    let ok = true;
+    for (let i = 0; i < n; i++) {
+      const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], cr = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
+      const L2 = (c[0] - a[0]) ** 2 + (c[1] - a[1]) ** 2 || 1, thr = .04 * L2, v = thr - cr * o;      // 违例量（随形状连续变化）
+      if (v > 0) { ok = false; const w = clamp(v / thr, 0, 1) * .5, mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2, L = Math.sqrt(L2), tx = (c[0] - a[0]) / L, ty = (c[1] - a[1]) / L;
+        const gx = mx + o * ty * .04 * L, gy = my - o * tx * .04 * L; b[0] += (gx - b[0]) * w; b[1] += (gy - b[1]) * w; }
+    }
+    if (ok) break;
+  }
+  return P;
+}   // 最小曲率半径（单位）：身体 / 五官 / 特效
+// 圆角守护：任何时刻曲线上任意点的曲率半径都不小于 rmin。
+// 在拼接点（t=0）和段中点（t=0.5）检查，过紧处把相关锚点向邻点中点松弛，迭代至满足。
+function bsR(a, b, c, e, t) {
+  const d1x = .5 * ((c[0] - a[0]) + 2 * t * (a[0] - 2 * b[0] + c[0]) + t * t * (-a[0] + 3 * b[0] - 3 * c[0] + e[0]));
+  const d1y = .5 * ((c[1] - a[1]) + 2 * t * (a[1] - 2 * b[1] + c[1]) + t * t * (-a[1] + 3 * b[1] - 3 * c[1] + e[1]));
+  const d2x = (a[0] - 2 * b[0] + c[0]) + t * (-a[0] + 3 * b[0] - 3 * c[0] + e[0]), d2y = (a[1] - 2 * b[1] + c[1]) + t * (-a[1] + 3 * b[1] - 3 * c[1] + e[1]);
+  const cr = Math.abs(d1x * d2y - d1y * d2x); return cr < 1e-9 ? Infinity : Math.hypot(d1x, d1y) ** 3 / cr;
+}
+function roundGuard(P, rmin, passes = 14, soft = false) {
+  // hard：五官 / 特效 / 设计期——过紧就按比例松弛，迭代到满足（静态目标形，很少触发）。
+  // soft：每帧的身体——固定遍数、强度从「下限 × 1.25」处的 0 平滑升起；固定的连续运算组合仍是连续的 ⇒ 不会在阈值附近来回跳（不抖）。
+  const n = P.length; P = P.map(p => [p[0], p[1]]);
+  const relax = (i, f) => { const a = P[(i - 1 + n) % n], c = P[(i + 1) % n], b = P[i]; b[0] += ((a[0] + c[0]) / 2 - b[0]) * f; b[1] += ((a[1] + c[1]) / 2 - b[1]) * f; };
+  const str = soft ? (r => { const x = clamp((rmin * 1.25 - r) / (rmin * .5), 0, 1); return .35 * x * x * (3 - 2 * x); })
+                   : (r => (r < rmin ? clamp(1 - r / rmin, .15, .6) : 0));
+  for (let k = 0; k < (soft ? 4 : passes); k++) {
+    let ok = true;
+    for (let i = 0; i < n; i++) {
+      const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n];
+      const f0 = str(bsR(a, b, c, e, 0)); if (f0 > 0) { ok = false; relax(i, f0); }
+      for (const t of [.25, .5, .75]) { const f = str(bsR(a, b, c, e, t)); if (f > 0) { ok = false; relax(i, f * (1 - t)); relax((i + 1) % n, f * t); } }
+    }
+    if (ok && !soft) break;
+  }
+  return P;
+}
+const area = S => { let a = 0; for (let i = 0; i < S.length; i++) { const p = S[i], q = S[(i + 1) % S.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; };
+function arcU(S, K, weight) {             // 按（加权）弧长分配参数
+  const n = S.length, cum = [0];
+  for (let j = 1; j <= n; j++) { const p = S[j - 1], q = S[j % n]; cum.push(cum[j - 1] + Math.hypot(q[0] - p[0], q[1] - p[1]) * (weight ? weight(p) : 1)); }
+  return S.map((_, j) => K * cum[j] / cum[n]);
+}
+// 统一绕向（y 向下坐标中面积为正），再把起点旋到指定位置 → 不同表情锚点一一对应
+function normLoop(S, start) {
+  if (area(S) < 0) S = S.slice().reverse();
+  let bi = 0, bv = Infinity; S.forEach((p, i) => { const v = start(p); if (v < bv) { bv = v; bi = i; } });
+  return S.slice(bi).concat(S.slice(0, bi));
+}
+function resample(S, N) {
+  const n = S.length, cum = [0]; for (let j = 1; j <= n; j++) cum.push(cum[j - 1] + Math.hypot(S[j % n][0] - S[j - 1][0], S[j % n][1] - S[j - 1][1]));
+  const out = []; let j = 0;
+  for (let i = 0; i < N; i++) { const s = cum[n] * i / N; while (cum[j + 1] < s) j++; const f = (s - cum[j]) / ((cum[j + 1] - cum[j]) || 1), a = S[j], b = S[(j + 1) % n]; out.push([a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]); }
+  return out;
+}
+// 按「弧长 ×（1 + c·曲率）」分配参数：锚点自动向急弯处集中，用更少的点贴合圆头和小 U
+function curvU(R, K, c = 2) {
+  const n = R.length, seg = [], ang = [];
+  for (let i = 0; i < n; i++) { const a = R[i], b = R[(i + 1) % n]; seg.push(Math.hypot(b[0] - a[0], b[1] - a[1])); ang.push(Math.atan2(b[1] - a[1], b[0] - a[0])); }
+  const kap = ang.map((a, i) => { let d = ang[(i + 1) % n] - a; d = ((d + Math.PI) % TAU + TAU) % TAU - Math.PI; return Math.abs(d) / Math.max(seg[i], 1e-6); });
+  const sm = kap.map((_, i) => { let s = 0; for (let k = -10; k <= 10; k++) s += kap[(i + k + n) % n]; return s / 21; });
+  const cum = [0]; for (let i = 1; i < n; i++) cum.push(cum[i - 1] + seg[i - 1] * (1 + c * sm[i - 1]));
+  const tot = cum[n - 1] + seg[n - 1] * (1 + c * sm[n - 1]);
+  return cum.map(v => K * v / tot);
+}
+function smoothLoop(R, sigma) {          // 闭合曲线沿弧长的高斯平滑（R 已等弧长重采样）
+  const n = R.length, L = R.reduce((a, p, i) => a + Math.hypot(R[(i + 1) % n][0] - p[0], R[(i + 1) % n][1] - p[1]), 0), ds = L / n;
+  const h = Math.max(1, Math.round(3 * sigma / ds)), w = Array.from({ length: 2 * h + 1 }, (_, k) => Math.exp(-(((k - h) * ds / sigma) ** 2) / 2)), ws = w.reduce((a, b) => a + b);
+  return R.map((_, i) => { let x = 0, y = 0; for (let k = -h; k <= h; k++) { const q = R[(i + k + n) % n]; x += q[0] * w[k + h]; y += q[1] * w[k + h]; } return [x / ws, y / ws]; });
+}
+function fitShape(S, K, start, c = 2, sigma = .8, rmin = R_FACE) {
+  const R = smoothLoop(resample(normLoop(S, start), 600), sigma);
+  return roundGuard(fitClosed(R, curvU(R, K, c), K), rmin, 60);
+}
+function strokeLoop(cfn, T, n = 60) {     // 圆头粗线 → 闭合轮廓（稠密）
+  const C = [], top = [], bot = [];
+  for (let i = 0; i <= n; i++) C.push(cfn(-1 + 2 * i / n));
+  const nrm = i => { const a = C[Math.max(0, i - 1)], b = C[Math.min(n, i + 1)], tx = b[0] - a[0], ty = b[1] - a[1], L = Math.hypot(tx, ty) || 1; return [ty / L, -tx / L]; };
+  for (let i = 0; i <= n; i++) { const [nx, ny] = nrm(i); top.push([C[i][0] + nx * T, C[i][1] + ny * T]); bot.push([C[i][0] - nx * T, C[i][1] - ny * T]); }
+  const capPts = (c, from, sgn) => { const out = []; for (let k = 1; k < 12; k++) { const a = from + sgn * Math.PI * k / 12; out.push([c[0] + Math.cos(a) * T, c[1] + Math.sin(a) * T]); } return out; };
+  const [enx, eny] = nrm(n), [snx, sny] = nrm(0);
+  const tE = [C[n][0] - C[n - 1][0], C[n][1] - C[n - 1][1]], aE = Math.atan2(eny, enx);
+  const sE = (Math.cos(aE - Math.PI / 2) * tE[0] + Math.sin(aE - Math.PI / 2) * tE[1]) > 0 ? -1 : 1;
+  const aS = Math.atan2(-sny, -snx);
+  return top.concat(capPts(C[n], aE, sE), bot.reverse(), capPts(C[0], aS, sE));
+}
+const ellipseLoop = (cx, cy, rx, ry, n = 72) => Array.from({ length: n }, (_, i) => [cx + Math.cos(i / n * TAU) * rx, cy + Math.sin(i / n * TAU) * ry]);
+function capsuleLoop(w, h, n = 96) {      // 竖向胶囊，底边在 y = 0
+  const r = Math.min(w, h) / 2, half = Math.max(0, h / 2 - r), cy = -h / 2, out = [];
+  for (let i = 0; i < n; i++) { const a = i / n * TAU, c = Math.cos(a), s = Math.sin(a); out.push([c * r, cy + s * r + (s > 0 ? half : -half)]); }
+  return out;
+}
+
+/* =====================================================================
+   1. 参考 ω 嘴：按原图量取的几何（描边宽 5.3、三臂中心、U 半径、中缝为两外弧交点）构造，
+      再用曲率加权的最少锚点拟合（20 个；中缝尖角按圆角规则倒圆，最大偏差约 0.5 单位）
+   ===================================================================== */
+function omegaLoop(sw = 5.3, xl = 72.3, xm = 83.15, xr = 94.15, yt = 115.15, yc = 117.3, hy = 4.9) {
+  const r = sw / 2, R1 = (xm - xl) / 2, R2 = (xr - xm) / 2, c1 = (xl + xm) / 2, c2 = (xm + xr) / 2, out = [];
+  const arc = (cx, cy, rad, a0, a1, n = 24) => { for (let i = 0; i < n; i++) { const a = a0 + (a1 - a0) * i / n; out.push([cx + rad * Math.cos(a), cy + rad * Math.sin(a)]); } };
+  const line = (p, q, n = 6) => { for (let i = 0; i < n; i++) out.push([p[0] + (q[0] - p[0]) * i / n, p[1] + (q[1] - p[1]) * i / n]); };
+  const hole = (cx, rx) => { for (let i = 0; i < 30; i++) { const a = Math.PI - Math.PI * i / 30; out.push([cx + rx * Math.cos(a), yt + hy * Math.sin(a)]); } };   // 洞 = 半椭圆 U
+  arc(xl, yt, r, Math.PI, TAU); hole(c1, R1 - r);
+  arc(xm, yt, r, Math.PI, TAU); hole(c2, R2 - r);
+  arc(xr, yt, r, Math.PI, TAU); line([xr + r, yt], [xr + r, yc]);
+  arc(c2, yc, R2 + r, 0, Math.acos((xm - c2) / (R2 + r))); arc(c1, yc, R1 + r, Math.acos((xm - c1) / (R1 + r)), Math.PI);
+  line([xl - r, yc], [xl - r, yt]);
+  return out;
+}
+const OMEGA = omegaLoop();
+const OMEGA_C = [83.2, 119.3];
+const OMEGA_REL = OMEGA.map(p => [p[0] - OMEGA_C[0], p[1] - OMEGA_C[1]]);
+const MOUTH_K = 20, EYE_K = 12;
+const leftmost = p => p[0] * 1000 + p[1];
+const OMEGA_FIT = fitShape(OMEGA_REL, MOUTH_K, leftmost);   // 中缝原本是两弧交出的尖角，按圆角规则倒圆（误差约 0.5 单位全部来自这里）
+
+/* =====================================================================
+   Part 1：教程复刻
+   ===================================================================== */
+const BODY = 'M86 30H137A9 9 0 0 1 146 39V90A60 60 0 0 1 86 150A60 60 0 0 1 26 90A60 60 0 0 1 86 30Z';
+const FLAT = '#ff764f', G0 = '#ff413b', G1 = '#fcd685', GLOW = '#fde3a7', SHADOW = '#ff785a';
+function defs(p) {
+  return `<defs>
+    <linearGradient id="${p}-grad" x1=".12" y1=".08" x2=".88" y2=".92"><stop offset=".04" stop-color="${G0}"/><stop offset=".86" stop-color="${G1}"/></linearGradient>
+    <filter id="${p}-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#fff" result="w"/><feComposite in="w" in2="SourceAlpha" operator="out" result="outside"/>
+      <feGaussianBlur in="outside" stdDeviation="13" result="soft"/><feComposite in="soft" in2="SourceAlpha" operator="in" result="edge"/>
+      <feFlood flood-color="${GLOW}" flood-opacity=".9"/><feComposite in2="edge" operator="in" result="glow"/>
+      <feBlend in="glow" in2="SourceGraphic" mode="screen"/>
+    </filter>
+    <filter id="${p}-hblur" x="-150%" y="-100%" width="400%" height="300%"><feGaussianBlur stdDeviation="3.6"/></filter>
+    <filter id="${p}-sblur" x="-60%" y="-80%" width="220%" height="260%"><feGaussianBlur stdDeviation="12"/></filter>
+  </defs>`;
+}
+const highlight = (p, blur) => `<ellipse cx="59" cy="62" rx="8.5" ry="15" transform="rotate(35 59 62)" fill="#fff"${blur ? ` filter="url(#${p}-hblur)" opacity=".92"` : ''}/>`;
+const shadow = (p, blur) => `<ellipse cx="107" cy="124" rx="64" ry="31" transform="rotate(-14 107 124)" fill="${SHADOW}"${blur ? ` filter="url(#${p}-sblur)" opacity=".55"` : ''}/>`;
+const EYES = `<rect x="47.7" y="66.4" width="15" height="25.2" rx="7.5" fill="#fff"/><rect x="73.9" y="66.4" width="15" height="25.2" rx="7.5" fill="#fff"/>`;
+const MOUTH_W = `<path d="${bspline(OMEGA_FIT.map(p => [p[0] + OMEGA_C[0] - 14, p[1] + OMEGA_C[1] - 10]))}" fill="#fff"/>`;
+function stepSVG(p, n) {
+  let s = defs(p);
+  if (n >= 7) s += shadow(p, n >= 8);
+  if (n === 1) s += `<rect x="36" y="40" width="100" height="100" fill="${FLAT}"/>`;
+  else if (n === 2) s += `<path d="${BODY}" fill="${FLAT}"/>`;
+  else s += `<path d="${BODY}" fill="url(#${p}-grad)"${n >= 5 ? ` filter="url(#${p}-glow)"` : ''}/>`;
+  if (n >= 4) s += highlight(p, n >= 6);
+  if (n >= 7) s += EYES + MOUTH_W;
+  return s;
+}
+const STEPS = [
+  ['画一个方', '矩形 100×100 · 纯色 #FF764F'],
+  ['拖动圆角为水滴形状', '三个角 r = 60（半边长），右上角 r = 9'],
+  ['来个华丽的渐变色', '线性渐变 左上 → 右下 #FF413B → #FCD685', true],
+  ['画个高光形状', '白色椭圆 rx 8.5 / ry 15，旋转 35°'],
+  ['外轮廓加内发光', '教程：滤色 · #FDE3A7 · 60% · 模糊 100px · 边缘。SVG 等效值（对照原图调出）：不透明度 0.9 · stdDeviation 13 · feBlend screen'],
+  ['高光添加高斯模糊', '教程：半径 129.1 px。SVG 等效值（对照原图调出，原画板尺寸未知）：stdDeviation 3.6'],
+  ['绘制眼睛与投影', '胶囊眼 15×25.2（原图半强度阈值量取）；ω 嘴按原图量取几何构造，20 锚点拟合，中缝倒圆；投影 #FF785A 右下偏移'],
+  ['投影添加高斯模糊 · GET', '投影 stdDeviation 12 · 不透明度 55%（对照原图调出）'],
+];
+const strip = $('strip');
+strip.innerHTML = STEPS.map(([t, param, grad], i) => `
+  <figure class="card" tabindex="0">
+    <div class="art">
+      <svg viewBox="-0.4 9.2 173.4 156" role="img" aria-label="第 ${i + 1} 步：${t}">${stepSVG('s' + (i + 1), i + 1)}</svg>
+      <img src="ref/step${i + 1}.jpg" alt="原教程第 ${i + 1} 步" loading="lazy"><span class="tag">原图</span>
+    </div>
+    <figcaption class="cap"><span class="num">${String(i + 1).padStart(2, '0')}</span><span class="ttl">${t}</span></figcaption>
+    ${grad ? '<div class="grad-bar" aria-hidden="true"></div>' : ''}
+    <div class="param">${param}</div>
+  </figure>`).join('');
+$('hdr-mini').innerHTML = stepSVG('hdr', 8);
+const vMine = $('view-mine'), vRef = $('view-ref');
+function setView(v) { strip.dataset.view = v; vMine.setAttribute('aria-pressed', v === 'mine'); vRef.setAttribute('aria-pressed', v === 'ref'); }
+vMine.onclick = () => setView('mine'); vRef.onclick = () => setView('ref');
+
+/* =====================================================================
+   2. 角色：参数化身体生成器（每帧按当前参数重新生成并拟合到同一组锚点）
+      - 参数 p∈[0,1) 跟着特征走（水滴：相对角方向；星：随尖角旋转/弯折），锚点永远落在同一特征上
+      - 生成器本身 G2：水滴的角用「局部旋转超椭圆 + 平滑变化的指数」，没有直线和圆弧拼接
+      - 固定参数分配下，最小二乘拟合是常矩阵乘法（预计算），每帧开销很小
+   ===================================================================== */
+const GROUND = 160, DEG = Math.PI / 180;
+const NSAMP = 180, PS = Array.from({ length: NSAMP }, (_, j) => j / NSAMP);   // 生成器采样参数（固定）
+// 小橙：用「曲率半径随法向角的分布 ρ(θ)」直接定义形状。
+//   ρ>0 处处成立 ⇒ 处处外凸；ρ 光滑 ⇒ G2。静止形：圆部分 ρ=60，角部 ρ=rc=9，上边、右边各是一个
+//   宽 5° 的高斯「长度脉冲」(51)，正好还原教程几何。去掉 ρ 的一阶谐波 ⇒ 任何参数下曲线都精确闭合。
+//   参数：rc 角半径（尖 / 钝），m 角的量（0 = 圆水滴），d 两条边长差（+ 耷拉 / − 翘起），cdir 角沿身体滑动，rot 整体旋转。
+function dropAll(s) {
+  const N = PS.length, dth = TAU / N, thc = (-45 + s.cdir + s.rot) * DEG, sw = 6 * DEG, sg = 5 * DEG, R = 60;
+  const m = clamp(s.m, 0, 1.25), rc = clamp(s.rc, 6, 20), d = clamp(s.d, -.4, .4);
+  const G = x => Math.exp(-.5 * (x / sg) ** 2) / (sg * Math.sqrt(TAU));
+  const th = [], rho = [];
+  for (let j = 0; j < N; j++) {
+    const phi = TAU * (PS[j] + .5 / N - .5), win = .5 * (Math.tanh((phi + Math.PI / 4) / sw) - Math.tanh((phi - Math.PI / 4) / sw));
+    th.push(thc + phi);
+    rho.push(R - (R - rc) * Math.min(m, 1) * win + m * 51 * ((1 + d) * G(phi + Math.PI / 4) + (1 - d) * G(phi - Math.PI / 4)));
+  }
+  let c = 0, sn = 0; for (let j = 0; j < N; j++) { c += rho[j] * Math.cos(th[j]); sn += rho[j] * Math.sin(th[j]); }
+  c *= dth / Math.PI; sn *= dth / Math.PI;
+  const out = []; let x = 0, y = 0;
+  for (let j = 0; j < N; j++) { const r = rho[j] - c * Math.cos(th[j]) - sn * Math.sin(th[j]); out.push([x, y]); x -= r * Math.sin(th[j]) * dth; y += r * Math.cos(th[j]) * dth; if (j === 0) rho[0] = r; }
+  const cx = out[0][0] - rho[0] * Math.cos(th[0]), cy = out[0][1] - rho[0] * Math.sin(th[0]);   // 角对面那段圆弧的圆心 → (100,100)
+  const sx = Math.exp(.15 * s.sq), sy = 1 / sx;
+  return out.map(([px, py]) => [100 + (px - cx) * sx, 100 + (py - cy) * sy]);
+}
+// 噼啪：五个尖角各自可伸缩、可弯折；整体可旋转、可变尖。θ(p) 随尖角一起转，锚点跟着尖角走。
+const TIP_W = .1;
+const tipDist = (p, i) => { let d = p - i / 5; d -= Math.round(d); return d; };
+function starGen(p, s) {
+  let th = -Math.PI / 2 + p * TAU + s.rot * DEG, r = s.core;
+  const sig = .046 / s.sharp;
+  for (let i = 0; i < 5; i++) {
+    const d = tipDist(p, i);
+    if (Math.abs(d) < TIP_W) th += s.bend[i] * Math.cos(Math.PI * d / (2 * TIP_W)) ** 2;
+    r += s.ext[i] * .44 * Math.exp(-((d / sig) ** 2));
+  }
+  const sx = Math.exp(.15 * s.sq), sy = 1 / sx;
+  return [100 + 58 * r * Math.cos(th) * sx, 100 + 58 * r * Math.sin(th) * sy];
+}
+function starAll(s) { return PS.map(p => starGen(p, s)); }
+const TIP_ANG = Array.from({ length: 5 }, (_, i) => -Math.PI / 2 + i * TAU / 5);
+
+const CHARS = {
+  orange: {
+    name: '小橙', tag: '元气 · 好奇', palette: ['#ff413b', '#fcd685', '#ff2d55'],
+    blurb: '教程原型。右上那个方角就是它的尾巴和情绪：开心翘起，委屈耷拉，被戳会甩一下；跳起来会翻个跟头，困了就侧身躺倒。',
+    K: 16, curvC: 4, lambda: .02, convex: true, genAll: dropAll, params: { sq: 0, rot: 0, cdir: 0, m: 1, rc: 9, d: 0 }, rmin: 6,
+    grad: [[54, 50], [146, 150]], colors: ['#ff413b', '#fcd685'], glow: ['#fde3a7', 13, .9],
+    blobs: [['#ff1f4b', 70, 72, 48, .55], ['#ffe9a6', 128, 136, 44, .7]], light: '#fff3d6',
+    hl: [73, 73, 11, 19, 35], warm: '#ffb347', cool: '#c06a8a',
+    eye: { w: 15, h: 25.2 }, eyes: [[69.2, 101.6], [95.4, 101.6]], mouth: [83.2, 119.3], mouthW: 27, idleMouth: 'w',
+    shadow: ['#ff6a4a', .62], accent: '#f0533a', T: 1, exag: 1, body: [190, 13], morph: [300, 28], sleepS: 20, breath: 4.8, blink: [3000, 7000, 150],
+  },
+  berry: {
+    name: '噼啪', tag: '调皮 · 急性子', palette: ['#a86bff', '#ff7fb0', '#5b8cff'],
+    blurb: '软五角星，五个角就是它的手脚：一个个升起来登场，打字时轮流敲，生气时全部变尖，开心就整只转圈；拎起来时角会甩在后面。',
+    K: 15, genAll: starAll, params: { sq: 0, rot: 0, sharp: 1, core: .78, ext: [1, 1, 1, 1, 1], bend: [0, 0, 0, 0, 0] }, rmin: 3,
+    grad: [[60, 40], [150, 160]], colors: ['#a86bff', '#ff7fb0'], glow: ['#ffd9f7', 9, .7],
+    blobs: [['#5b8cff', 82, 118, 40, .6], ['#ffd1f0', 122, 74, 32, .6]], light: '#fff0ff',
+    hl: [80, 74, 7, 12, 30], warm: '#ffb86b', cool: '#4b3f8f',
+    eye: { w: 14, h: 21 }, eyes: [[86.5, 111], [113.5, 111]], mouth: [100, 123], mouthW: 26, idleMouth: 'grin',
+    shadow: ['#8c4cf0', .66], accent: '#7a3df0', T: .75, exag: 1.3, body: [330, 17], morph: [460, 34], sleepS: 35, breath: 3.6, blink: [2200, 5000, 120],
+  },
+};
+const plain = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, Array.isArray(v) ? v.slice() : v]));
+// 预计算：静止形按「弧长 ×（1 + 2·曲率）」定参数 u（随特征走，任何姿态都沿用）；拟合算子 M =（AᵀA + λ·DᵀD）⁻¹Aᵀ
+function fitOperator(us, K, lambda) {
+  const N = us.length, A = us.map(u => { const row = new Array(K).fill(0), i = Math.floor(u), w = basis(u - i); [i - 1, i, i + 1, i + 2].forEach((k, a) => { row[((k % K) + K) % K] += w[a]; }); return row; });
+  const Mt = Array.from({ length: K }, (_, a) => Array.from({ length: K }, (_, b) => A.reduce((s, r) => s + r[a] * r[b], 0)));
+  for (let i = 0; i < K; i++) { const D = [[i - 1, 1], [i, -2], [i + 1, 1]]; for (const [a, wa] of D) for (const [b, wb] of D) Mt[((a % K) + K) % K][((b % K) + K) % K] += lambda * wa * wb; }
+  const inv = Mt.map((_, c) => solve(Mt, Mt.map((__, r) => (r === c ? 1 : 0))));          // 第 c 列
+  return Array.from({ length: K }, (_, k) => Array.from({ length: N }, (_, j) => A[j].reduce((s, a, m) => s + inv[m][k] * a, 0)));
+}
+function applyFit(M, S) { return M.map(row => { let x = 0, y = 0; for (let j = 0; j < row.length; j++) { x += row[j] * S[j][0]; y += row[j] * S[j][1]; } return [x, y]; }); }
+function groundSnap(P) {                  // 最低点贴地：密采样 + 抛物线插值求极值，随形状连续变化
+  const C = curvePts(P, 10), n = C.length; let j = 0; for (let i = 1; i < n; i++) if (C[i][1] > C[j][1]) j = i;
+  const y0 = C[(j - 1 + n) % n][1], y1 = C[j][1], y2 = C[(j + 1) % n][1], den = y0 - 2 * y1 + y2;
+  const maxY = den < -1e-9 ? y1 - (y2 - y0) ** 2 / (8 * den) : y1, dy = GROUND - maxY;
+  return [P.map(q => [q[0], q[1] + dy]), dy];
+}
+for (const ch of Object.values(CHARS)) {
+  const restS = ch.genAll(ch.params);
+  ch.us = curvU(restS, ch.K, ch.curvC ?? 2);
+  ch.M = fitOperator(ch.us, ch.K, ch.lambda ?? .002);
+  const [R] = groundSnap(roundGuard(applyFit(ch.M, restS), ch.rmin, 60));
+  ch.fit = { rest: R };
+  ch.fitErr = Math.max(...restS.map(q => Math.min(...curvePts(applyFit(ch.M, restS), 24).map(c => Math.hypot(c[0] - q[0], c[1] - q[1])))));
+  const xs = R.map(p => p[0]); ch.cx = (Math.min(...xs) + Math.max(...xs)) / 2; ch.top = Math.min(...curvePts(R).map(p => p[1]));
+  ch.restC = R.reduce((a, p) => [a[0] + p[0] / ch.K, a[1] + p[1] / ch.K], [0, 0]);
+  ch.restDy = groundSnap(applyFit(ch.M, restS))[1];
+}
+
+/* =====================================================================
+   3. 表情：同点数、同起点、同绕向；眼睛以下眼睑为基准（底点固定在 y=0）
+   ===================================================================== */
+const bottomCenter = p => Math.abs(p[0]) * 2 - p[1] * 3;
+function eyeTarget(e, name, side) {
+  const { w, h } = e, T = Math.max(2.3, w * .16);
+  const capT = (lim) => capsuleLoop(w, h).map(p => [p[0], Math.max(p[1], lim(p[0]))]);
+  switch (name) {
+    case 'wide':   return capsuleLoop(w * 1.08, h * 1.1);
+    case 'half':   return capT(() => -h * .46);
+    case 'blink':  return strokeLoop(u => [u * w * .52, -T], T);
+    case 'closed': return strokeLoop(u => [u * w * .56, -T - 3 * w / 14 * (u * u)], T);
+    case 'happy':  return strokeLoop(u => [u * w * .58, -T - 4.2 * w / 14 * (1 - u * u)], T);
+    case 'wince':  return strokeLoop(u => [u * w * .56, -T - (1 - side * u) * h * .1], T);
+    case 'sad':    return capT(x => -h * .6 - (side < 0 ? x : -x) * .55);     // 内侧高、外侧耷拉
+    case 'angry':  return capT(x => -h * .62 + (side < 0 ? x : -x) * .7);     // 内侧压低
+    default:       return capsuleLoop(w, h);
+  }
+}
+function mouthTarget(ch, name) {
+  const W = ch.mouthW, T = 2.75;
+  switch (name) {
+    case 'w':     return OMEGA_REL;
+    case 'smile': return strokeLoop(u => [u * W * .42, 3.2 * (1 - u * u) - 1.6], T);
+    case 'small': return strokeLoop(u => [u * W * .26, 2 * (1 - u * u) - 1], T * .9);
+    case 'o':     return ellipseLoop(0, 0, W * .17, W * .2);
+    case 'yawn':  return ellipseLoop(0, 1, W * .2, W * .3);
+    case 'open':  { const out = []; for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; out.push([Math.cos(a) * W * .4, -W * .12 + Math.sin(a) * W * .36]); } for (let i = 1; i < 12; i++) out.push([-W * .4 + W * .8 * i / 12, -W * .12 - .3]); return out; }
+    case 'grin':  { const out = []; for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; out.push([Math.cos(a) * W * .46, -W * .06 + Math.sin(a) * W * .26 + Math.cos(a) * 1.2]); } for (let i = 1; i < 12; i++) { const x = -W * .46 + W * .92 * i / 12; out.push([x, -W * .06 - 1.6 * (1 - (x / (W * .46)) ** 2) + 1.2 * x / (W * .46)]); } return out; }
+    case 'wavy':  return strokeLoop(u => [u * W * .44, 1.5 * Math.sin(2 * Math.PI * u)], T * .8);     // 波长够长，内侧不折叠
+    case 'pout':  return strokeLoop(u => [u * W * .2, -2 * (1 - u * u) + 1], T * .9);
+    default:      return strokeLoop(u => [u * W * .32, 0], T * .85);   // flat
+  }
+}
+const EXPR_CACHE = new Map();
+function eyeFit(ch, name, side) {
+  const key = ch.name + 'e' + name + side; if (EXPR_CACHE.has(key)) return EXPR_CACHE.get(key);
+  let P = fitShape(eyeTarget(ch.eye, name, side), EYE_K, bottomCenter);
+  const lo = Math.max(...curvePts(P).map(p => p[1]));                 // 拟合后再把最低点钉回下眼睑
+  P = P.map(p => [p[0], p[1] - lo]); EXPR_CACHE.set(key, P); return P;
+}
+function mouthFit(ch, name) {
+  const key = ch.name + 'm' + name; if (EXPR_CACHE.has(key)) return EXPR_CACHE.get(key);
+  const P = name === 'w' ? OMEGA_FIT : fitShape(mouthTarget(ch, name), MOUTH_K, leftmost); EXPR_CACHE.set(key, P); return P;
+}
+// 特效字形（单位坐标），出现/消失 = 从同点数的小圆点过渡到字形
+const GLYPH = {};
+function glyph(name) {
+  if (GLYPH[name]) return GLYPH[name];
+  const pairs = {
+    z: [strokeLoop(u => { const t = (u + 1) / 2 * 3, k = Math.min(2, Math.floor(t)), f = t - k, pts = [[-5, -5], [5, -5], [-5, 5], [5, 5]]; return [pts[k][0] + (pts[k + 1][0] - pts[k][0]) * f, pts[k][1] + (pts[k + 1][1] - pts[k][1]) * f]; }, 1.7, 90), 12],
+    drop: [Array.from({ length: 60 }, (_, i) => { const a = i / 60 * TAU; return [Math.sin(a) * 4 * (1 - .55 * Math.max(0, -Math.cos(a))), -Math.cos(a) * 5.5]; }), 8],
+    badge: [ellipseLoop(0, 0, 13, 13), 8], bar: [strokeLoop(u => [0, u * 4.2], 2, 30), 8], pt: [ellipseLoop(0, 0, 2.1, 2.1), 8],
+    key: [Array.from({ length: 60 }, (_, i) => { const a = i / 60 * TAU, c = Math.cos(a), s = Math.sin(a); return [8 * Math.sign(c) * Math.abs(c) ** .35, -3.5 + 3.5 * Math.sign(s) * Math.abs(s) ** .35]; }), 8],
+    keyDown: [Array.from({ length: 60 }, (_, i) => { const a = i / 60 * TAU, c = Math.cos(a), s = Math.sin(a); return [8.6 * Math.sign(c) * Math.abs(c) ** .35, -1.6 + 1.6 * Math.sign(s) * Math.abs(s) ** .35]; }), 8],
+  };
+  const [S, K] = pairs[name];
+  const P = fitShape(S, K, leftmost), C = S.reduce((a, p) => [a[0] + p[0] / S.length, a[1] + p[1] / S.length], [0, 0]);
+  return (GLYPH[name] = { P, dot: fitShape(ellipseLoop(C[0], C[1], .9, .9), K, leftmost) });
+}
+const lerpPts = (A, B, t) => A.map((p, i) => [p[0] + (B[i][0] - p[0]) * t, p[1] + (B[i][1] - p[1]) * t]);
+
+/* =====================================================================
+   4. 弹簧
+   ===================================================================== */
+class Spring {
+  constructor(x, k, c) { this.x = x; this.v = 0; this.t = x; this.k = k; this.c = c; }
+  step(dt) { this.v += (this.k * (this.t - this.x) - this.c * this.v) * dt; this.x += this.v * dt; }
+}
+class PtsSpring {                          // K 个锚点，每个坐标一根弹簧
+  constructor(P) { this.n = P.length; this.x = P.flat(); this.v = new Array(2 * this.n).fill(0); this.t = this.x.slice(); }
+  set(P) { if (P.length !== this.n) throw new Error('锚点数不一致'); for (let i = 0; i < this.n; i++) { this.t[2 * i] = P[i][0]; this.t[2 * i + 1] = P[i][1]; } }
+  step(dt, k, c) { for (let j = 0; j < this.x.length; j++) { this.v[j] += (k * (this.t[j] - this.x[j]) - c * this.v[j]) * dt; this.x[j] += this.v[j] * dt; } }
+  pts(ox = 0, oy = 0) { const o = []; for (let i = 0; i < this.n; i++) o.push([this.x[2 * i] + ox, this.x[2 * i + 1] + oy]); return o; }
+}
+
+/* =====================================================================
+   5. 颜色
+   ===================================================================== */
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const toHex = a => '#' + a.map(v => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0')).join('');
+const mix = (a, b, t) => { const A = hex(a), B = hex(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
+const grey = h => { const [r, g, b] = hex(h), y = .3 * r + .59 * g + .11 * b; return toHex([y, y, y + 8]); };
+
+/* =====================================================================
+   6. 一只桌宠
+   ===================================================================== */
+class Pet {
+  constructor(host, ch, uid, isMain) {
+    this.ch = ch; this.uid = uid; const [k, c] = ch.body;
+    // 身体参数弹簧：数组参数（尖角）每个元素一根；rot 更软、尖角更活
+    const kc = { rot: [.45, .75], ext: [1.1, .75], bend: [1.1, .7], cdir: [.9, .65], m: [.8, .7], d: [.9, .55], rc: [.8, .8] };
+    this.P = {};
+    for (const [n, v] of Object.entries(ch.params)) { const [kk, cc] = kc[n] || [1, 1]; this.P[n] = Array.isArray(v) ? v.map(x => new Spring(x, k * kk, c * cc)) : new Spring(v, k * kk, c * cc); }
+    this.rFloor = new Spring(ch.rmin, 40, 12); this.spin = 0;
+    this.wob = [new Spring(0, k * 1.3, c * .35), new Spring(0, k * 2.2, c * .4)];          // 果冻：2 瓣、3 瓣两个平滑模态（不会让轮廓起皱）
+    this.gx = new Spring(0, 70 / ch.T, 11 / Math.sqrt(ch.T)); this.gy = new Spring(0, 40 / ch.T, 8.5 / Math.sqrt(ch.T));   // x/y 刚度不同 → 弧线
+    this.fox = new Spring(0, 80, 10); this.foy = new Spring(0, 80, 10);                                                  // 整张脸滞后
+    this.warm = new Spring(0, 14, 7); this.cool = new Spring(0, 10, 6); this.grey = new Spring(0, 14, 7); this.speed = new Spring(0, 30, 10);
+    this.lightA = new Spring(0, 30, 9); this.lx = new Spring(ch.cx, 60, 12); this.ly = new Spring(110, 60, 12);
+    this.slx = new Spring(0, 40, 6); this.sly = new Spring(0, 40, 6);                                                    // 色团晃荡（欠阻尼）
+    this.ripples = [];
+    this.face = { eyes: 'open', mouth: ch.idleMouth }; this.blinkUntil = 0; this.t = 0;
+    this.eyeS = [new PtsSpring(eyeFit(ch, 'open', -1)), new PtsSpring(eyeFit(ch, 'open', 1))];
+    this.mouthS = new PtsSpring(mouthFit(ch, ch.idleMouth));
+    this.showAnchors = false;
+    this.build(host, isMain);
+    this.body = ch.fit.rest.map(p => p.slice()); this.frame = { dy: ch.restDy, sx: 1, sy: 1, rot: 0 };
+  }
+  build(host, isMain) {
+    const ch = this.ch, u = this.uid;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 200 200'); svg.classList.add('pet-svg');
+    svg.style.setProperty('--breath-period', ch.breath + 's');
+    svg.style.setProperty('--blink-min-gap', ch.blink[0]); svg.style.setProperty('--blink-max-gap', ch.blink[1]); svg.style.setProperty('--blink-duration', ch.blink[2]);
+    const rg = (id, col, op, mid) => `<radialGradient id="${u}-${id}"><stop offset="0" stop-color="${col}" stop-opacity="${op}"/>${mid || ''}<stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`;
+    svg.innerHTML = `<defs>
+        <linearGradient id="${u}-g" gradientUnits="userSpaceOnUse"><stop offset="0"/><stop offset="1"/></linearGradient>
+        ${rg('b0', ch.blobs[0][0], ch.blobs[0][4])}${rg('b1', ch.blobs[1][0], ch.blobs[1][4])}${rg('li', ch.light, 1, `<stop offset=".4" stop-color="${ch.light}" stop-opacity=".75"/>`)}
+        <radialGradient id="${u}-rp"><stop offset=".55" stop-color="${ch.light}" stop-opacity="0"/><stop offset=".82" stop-color="${ch.light}" stop-opacity=".75"/><stop offset="1" stop-color="${ch.light}" stop-opacity="0"/></radialGradient>
+        ${rg('hl', '#ffffff', .9, '<stop offset=".45" stop-color="#fff" stop-opacity=".5"/>')}
+        <mask id="${u}-m" maskUnits="userSpaceOnUse" x="-120" y="-120" width="440" height="440"><path fill="#fff"/></mask>
+        <filter id="${u}-glow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+          <feFlood flood-color="#fff" result="w"/><feComposite in="w" in2="SourceAlpha" operator="out" result="o"/>
+          <feGaussianBlur in="o" stdDeviation="${ch.glow[1]}" result="s"/><feComposite in="s" in2="SourceAlpha" operator="in" result="e"/>
+          <feFlood flood-color="${ch.glow[0]}" flood-opacity="${ch.glow[2]}"/><feComposite in2="e" operator="in" result="gl"/>
+          <feBlend in="gl" in2="SourceGraphic" mode="screen"/>
+        </filter>
+      </defs>
+      <g ${isMain ? 'id="pet"' : ''}>
+        <g filter="url(#${u}-glow)"><g mask="url(#${u}-m)">
+          <rect x="-80" y="-80" width="360" height="360" fill="url(#${u}-g)"/>
+          <ellipse class="b0" fill="url(#${u}-b0)"/><ellipse class="b1" fill="url(#${u}-b1)"/>
+          <circle class="li" r="56" fill="url(#${u}-li)" opacity="0"/>
+          <g class="rp"></g>
+          <path class="hl" fill="url(#${u}-hl)"/>
+        </g></g>
+        <g class="face" fill="#fff"><path class="e0"/><path class="e1"/><path class="mo"/></g>
+        <g class="anchors"></g>
+      </g>`;
+    host.replaceChildren(svg);
+    const q = s => svg.querySelector(s);
+    this.r = { svg, mask: q('mask path'), grad: q('linearGradient'), stops: svg.querySelectorAll('linearGradient stop'), b0: q('.b0'), b1: q('.b1'), li: q('.li'), rp: q('.rp'),
+               hl: q('.hl'), e: [q('.e0'), q('.e1')], mo: q('.mo'), anchors: q('.anchors') };
+  }
+  setFace(eyes, mouth) {
+    if (eyes) this.face.eyes = eyes; if (mouth) this.face.mouth = mouth;
+    const e = this.t < this.blinkUntil && ['open', 'wide', 'half', 'sad', 'angry'].includes(this.face.eyes) ? 'blink' : this.face.eyes;
+    this.eyeS[0].set(eyeFit(this.ch, e, -1)); this.eyeS[1].set(eyeFit(this.ch, e, 1));
+    this.mouthS.set(mouthFit(this.ch, this.face.mouth));
+  }
+  setFaceOnce(e, m) { if (this.face.eyes !== e || this.face.mouth !== m) this.setFace(e, m); }
+  blink(now, dur) { this.blinkUntil = now + dur; this._bl = true; this.setFace(); }
+  ripple(x, y) { this.ripples.push({ x, y, t0: this.t }); if (this.ripples.length > 3) this.ripples.shift(); }
+  kickJelly(s) { this.wob[0].v += s * .9; this.wob[1].v -= s * .6; }
+  // 设参数目标：未给出的回到默认值
+  target(tg) {
+    for (const [n, def] of Object.entries(this.ch.params)) {
+      let v = tg[n] ?? def;
+      if (n === 'rot') v += this.spin;                                        // 整圈旋转单独累计，不被状态目标覆盖
+      if (Array.isArray(def)) this.P[n].forEach((sp, i) => { sp.t = Array.isArray(v) ? v[i] : v; }); else this.P[n].t = v;
+    }
+  }
+  vals() { return Object.fromEntries(Object.entries(this.P).map(([n, v]) => [n, Array.isArray(v) ? v.map(s => s.x) : v.x])); }
+  each(fn) { for (const v of Object.values(this.P)) Array.isArray(v) ? v.forEach(fn) : fn(v); }
+  step(dt, now, ax, ay) {
+    this.t = now;
+    if (this._bl && now > this.blinkUntil) { this._bl = false; this.setFace(); }
+    this.each(s => s.step(dt));
+    const P = this.P;
+    if (P.sq) P.sq.x = clamp(P.sq.x, -1.6, 1.6);
+    if (P.bend) P.bend.forEach(b => { b.x = clamp(b.x, -.34, .34); });                 // θ(p) 保持单调
+    if (P.ext) P.ext.forEach(e => { e.x = clamp(e.x, -.05, 1.6); });
+    if (P.sharp) P.sharp.x = clamp(P.sharp.x, .7, 1.55);
+    if (P.m) { P.m.x = clamp(P.m.x, 0, 1.25); P.rc.x = clamp(P.rc.x, 6, 20); P.d.x = clamp(P.d.x, -.4, .4); }
+    // 转满一圈后把目标和当前值一起减掉整圈（形状、脸都与 0° 一致，看不出跳变）
+    const R = P.rot; if (this.spin && Math.abs(R.x - R.t) < 2 && Math.abs(R.v) < 20) { R.t -= this.spin; R.x -= this.spin; this.spin = 0; }
+    this.rFloor.step(dt);
+    for (const s of [this.gx, this.gy, this.fox, this.foy, this.warm, this.cool, this.grey, this.speed, this.lightA, this.lx, this.ly, this.slx, this.sly]) s.step(dt);
+    const [k, c] = this.ch.body;
+    this.wob.forEach(w => { w.step(dt); w.x = clamp(w.x, -3.5, 3.5); });
+    const km = this._bl ? 2.6 : 1, [mk, mc] = this.ch.morph;
+    this.eyeS.forEach(s => s.step(dt, mk * km, mc * Math.sqrt(km))); this.mouthS.step(dt, mk, mc);
+    this.slx.v += -ax * .0012 * dt * 60; this.sly.v += -ay * .0012 * dt * 60;      // 色团反向晃荡
+    this.slx.x = clamp(this.slx.x, -30, 30); this.sly.x = clamp(this.sly.x, -30, 30);
+  }
+  // 身体：按当前参数生成 → 常矩阵拟合到 K 个锚点 → 锚点果冻 → 圆角守护 → 脚底贴地
+  genBody() {
+    const ch = this.ch, v = this.vals(), S = ch.genAll(v);
+    const [w2, w3] = this.wob.map(w => w.x);
+    let B = applyFit(ch.M, S).map(([x, y]) => { const a = Math.atan2(y - 100, x - 100), dr = w2 * Math.cos(2 * a + .4) + w3 * Math.cos(3 * a); return [x + dr * Math.cos(a), y + dr * Math.sin(a)]; });
+    const dbg = window.__pet && window.__pet.debug, fitB = dbg && B.map(q => q.slice());       // 调试：记录管线各段（measure_jitter.js 用）
+    B = roundGuard(B, Math.min(this.rFloor.x, ch.rmin), 4, true);
+    const guardB = dbg && B.map(q => q.slice());
+    if (ch.convex) B = convexGuard(B);
+    const [, dyT] = groundSnap(B);
+    if (this.dyS === undefined) this.dyS = new Spring(dyT, 1600, 80); this.dyS.t = dyT; this.dyS.step(1 / 60);
+    const dy = Math.abs(this.dyS.x - dyT) > 3 ? (this.dyS.x = dyT) : this.dyS.x;              // 大跳（换角色等）直接对齐
+    const G = B.map(q => [q[0], q[1] + dy]);
+    if (dbg) this._stages = { fit: fitB, guard: guardB, convex: B, snap: G, dy };
+    const sx = Math.exp(.15 * v.sq);
+    this.frame = { dy, sx, sy: 1 / sx, rot: v.rot * DEG };
+    return G;
+  }
+  // 身体局部坐标 → 舞台坐标（随身体旋转、随压扁移动位置，但不缩放形状本身）
+  place(q, withRot = true) {
+    const f = this.frame, x = (q[0] - 100) * f.sx, y = (q[1] - 100) * f.sy, a = withRot ? f.rot : 0;
+    return [100 + x * Math.cos(a) - y * Math.sin(a), 100 + f.dy + x * Math.sin(a) + y * Math.cos(a)];
+  }
+  render() {
+    const ch = this.ch, R = this.r, t = this.t / 1000;
+    this.body = this.genBody();
+    R.mask.setAttribute('d', bspline(this.body));
+    // 填色：渐变方向固定在世界（光从左上来），随速度转向；色团在体内随身体转、反向晃荡
+    const C = this.place([100, 100], false);
+    const ang = clamp(this.slx.x * .02, -.6, .6), ca = Math.cos(ang), sa = Math.sin(ang);
+    const end = q => { const w = this.place(q, false), x = w[0] - C[0], y = w[1] - C[1]; return [C[0] + x * ca - y * sa, C[1] + x * sa + y * ca]; };
+    const A = end(ch.grad[0]), B = end(ch.grad[1]);
+    R.grad.setAttribute('x1', r2(A[0])); R.grad.setAttribute('y1', r2(A[1])); R.grad.setAttribute('x2', r2(B[0])); R.grad.setAttribute('y2', r2(B[1]));
+    const tone = col => { let c = mix(col, ch.warm, clamp(this.warm.x, 0, 1) * .45); c = mix(c, ch.cool, clamp(this.cool.x, 0, 1) * .35); c = mix(c, '#ffffff', clamp(this.speed.x, 0, 1) * .25); return mix(c, grey(c), clamp(this.grey.x, 0, 1) * .75); };
+    R.stops[0].setAttribute('stop-color', tone(ch.colors[0])); R.stops[1].setAttribute('stop-color', tone(ch.colors[1]));
+    R.stops[0].setAttribute('offset', r2(.04 + .05 * Math.sin(t * .7))); R.stops[1].setAttribute('offset', r2(.88 + .05 * Math.sin(t * .53 + 1)));
+    ch.blobs.forEach((b, i) => {
+      const el = i ? R.b1 : R.b0, ph = i * 2.1, w = this.place([b[1] + 9 * Math.sin(t * .9 + ph), b[2] + 7 * Math.sin(t * 1.17 + ph)]);
+      el.setAttribute('cx', r2(w[0] + this.slx.x * (i ? 1 : .7))); el.setAttribute('cy', r2(w[1] + this.sly.x * (i ? 1 : .7)));
+      el.setAttribute('rx', r2(b[3] * (1 + .08 * Math.sin(t * 1.3 + ph)) + Math.abs(this.slx.x) * .5)); el.setAttribute('ry', r2(b[3] * (1 + .08 * Math.cos(t * 1.1 + ph))));
+    });
+    R.li.setAttribute('cx', r2(this.lx.x)); R.li.setAttribute('cy', r2(this.ly.x)); R.li.setAttribute('opacity', r2(clamp(this.lightA.x, 0, 1)));
+    this.ripples = this.ripples.filter(rp => this.t - rp.t0 < 900);
+    R.rp.innerHTML = this.ripples.map(rp => { const f = (this.t - rp.t0) / 900; return `<circle cx="${r2(rp.x)}" cy="${r2(rp.y)}" r="${r2(10 + f * 110)}" fill="url(#${this.uid}-rp)" opacity="${r2(1 - f)}"/>`; }).join('');
+    // 高光：世界方向固定（不随身体转）
+    const [hx, hy, hrx, hry, hrot] = ch.hl, hw = this.place([hx, hy], false);
+    const hlP = ellipseLoop(0, 0, hrx, hry, 8).map(([x, y]) => { const a = hrot * DEG; return [hw[0] - this.fox.x * .5 + x * Math.cos(a) - y * Math.sin(a), hw[1] - this.foy.x * .5 + x * Math.sin(a) + y * Math.cos(a)]; });
+    R.hl.setAttribute('d', bspline(hlP));
+    // 脸：刚体，随身体平移 + 旋转（下眼睑规则在身体局部坐标里成立），表情只变锚点
+    const rot = this.frame.rot, cr = Math.cos(rot), sr = Math.sin(rot), off = [this.fox.x + this.gx.x, this.foy.x + this.gy.x];
+    const put = (anchor, P) => { const a = this.place(anchor); return P.map(([x, y]) => { const lx = x + off[0], ly = y + off[1]; return [a[0] + lx * cr - ly * sr, a[1] + lx * sr + ly * cr]; }); };
+    const eyesP = ch.eyes.map((c, i) => roundGuard(put(c, this.eyeS[i].pts()), R_FACE));
+    const mouthP = roundGuard(put(ch.mouth, this.mouthS.pts()), R_FACE);
+    R.e[0].setAttribute('d', bspline(eyesP[0])); R.e[1].setAttribute('d', bspline(eyesP[1])); R.mo.setAttribute('d', bspline(mouthP));
+    this.lastFace = [...eyesP, mouthP];
+    if (this.showAnchors) {
+      R.anchors.innerHTML = [this.body, ...this.lastFace].map((P, k) => `<path d="M${P.map(p => r2(p[0]) + ' ' + r2(p[1])).join('L')}Z" fill="none" stroke="#1a73e8" stroke-width=".4" opacity=".75"/>` +
+        P.map((p, i) => `<circle cx="${r2(p[0])}" cy="${r2(p[1])}" r="${k ? .9 : i ? 1.5 : 2.6}" fill="#1a73e8"/>`).join('')).join('');
+    } else if (R.anchors.firstChild) R.anchors.innerHTML = '';
+  }
+  topY() { return Math.min(...this.body.map(q => q[1])); }
+  widthNow() { const xs = this.body.map(q => q[0]); return Math.max(...xs) - Math.min(...xs); }
+  restPreview() { this.t = 0; this.render(); }
+}
+
+/* =====================================================================
+   7. 状态机（state-map：A 循环 / B 一次性回原姿态 / C 过渡链接下一状态）
+      状态只设姿态参数、表情和冲量的「目标」，不直接写姿态
+   ===================================================================== */
+const S = {
+  'intro':          { c: 'C', ms: 2400, next: 'idle', d: '小橙：圆水滴落下，着地后方角「长」出来并甩一下；噼啪：圆球着地，五个角依次升起，再转一圈', tr: '页面加载 / 切换角色' },
+  'idle':           { c: 'A', d: '呼吸、随机眨眼，脸沿弧线看向指针；小橙的方角轻轻摆、靠近时指向指针；噼啪五个角轮流起伏、靠近时整只凑过去', tr: '默认 / 无活动' },
+  'idle-look':      { c: 'B', ms: 1900, d: '左右张望，身体跟着转，角或尖角拖在后面', tr: 'idle 中随机' },
+  'idle-yawn':      { c: 'B', ms: 2300, then: 'idle-dozing', d: '先压再伸，方角 / 顶角向上伸直，嘴变竖椭圆', tr: '无事件计时到点' },
+  'idle-dozing':    { c: 'A', after: [4000, 'collapse-sleep'], d: '半眯眼点头；小橙方角耷拉，噼啪五个角下垂收短', tr: 'idle-yawn 之后' },
+  'collapse-sleep': { c: 'C', ms: 1300, next: 'sleeping', d: '小橙侧身倒下；噼啪的角依次收回，身体斜靠', tr: 'idle-dozing 超时' },
+  'sleeping':       { c: 'A', d: '侧躺 / 斜靠的睡姿慢呼吸，Z 字沿弧线飘起', tr: 'collapse-sleep 结束' },
+  'wake':           { c: 'C', ms: 1000, next: 'idle', d: '先缩一下（预备），再弹回站姿；噼啪的角依次弹出并转一圈', tr: '睡着时点击 / 有事件' },
+  'thinking':       { c: 'A', d: '左右摇摆；小橙方角像手指一样敲，噼啪顶角来回点', tr: 'UserPromptSubmit' },
+  'working-typing': { c: 'A', d: '快速点头；小橙方角快速抖，噼啪五个角轮流「敲键」', tr: 'PreToolUse / PostToolUse' },
+  'error':          { c: 'A', d: '褪灰、冒汗；小橙方角塌下变钝，噼啪五个角耷拉发抖', tr: 'PostToolUseFailure' },
+  'notification':   { c: 'B', ms: 1800, d: '预备下蹲后跳起；小橙方角竖起变尖，噼啪五个角依次张开', tr: 'PermissionRequest' },
+  'happy':          { c: 'B', ms: 1900, d: '小橙连跳两下、第二下翻跟头；噼啪连跳三下、最后一下转圈；角变圆润，配色变暖', tr: 'Stop / 连点 3 下' },
+  'react-poke':     { c: 'B', ms: 1000, d: '小橙挤扁、方角甩一下；噼啪生气：五个角伸长变尖（最小曲率半径降到 3，仍是圆角），跳起转一圈', tr: '点击' },
+  'react-drag':     { c: 'A', d: '拉长、随速度摆动，方角 / 尖角拖在运动后面；松手抛物线落地，尖角着地张开', tr: '按住拖动' },
+};
+const MOOD = { intro: '登场', idle: '发呆中', 'idle-look': '东张西望', 'idle-yawn': '打哈欠', 'idle-dozing': '犯困', 'collapse-sleep': '快睡着了', sleeping: '睡着了', wake: '醒啦',
+  thinking: '在想事情', 'working-typing': '干活中', error: '出错了', notification: '有事找你', happy: '开心', 'react-poke': '被戳了', 'react-drag': '被拎起来' };
+// 模拟 Agent：事件 → 状态（state-map 映射），以及一段脚本化的会话
+const AGENT = [
+  { ev: 'UserPromptSubmit', label: '提问', st: 'thinking' },
+  { ev: 'PreToolUse', label: '调用工具', st: 'working-typing' },
+  { ev: 'PostToolUseFailure', label: '工具出错', st: 'error' },
+  { ev: 'PermissionRequest', label: '请求权限', st: 'notification' },
+  { ev: 'Stop', label: '回答完毕', st: 'happy' },
+  { ev: 'Idle', label: '长时间没动静', st: 'idle-yawn' },
+];
+const SESSION = [[0, 'UserPromptSubmit'], [2600, 'PreToolUse'], [5000, 'PostToolUseFailure'], [7000, 'PreToolUse'], [9200, 'PermissionRequest'], [11200, 'PreToolUse'], [13400, 'Stop']];
+const FACE = {
+  'intro': () => ['wide', 'o'], 'idle': ch => ['open', ch.idleMouth], 'idle-look': ch => ['open', ch.idleMouth], 'idle-dozing': () => ['half', 'small'], 'idle-yawn': () => ['half', 'small'],
+  'collapse-sleep': () => ['closed', 'small'], 'sleeping': () => ['closed', 'small'], 'wake': () => ['wide', 'o'],
+  'thinking': () => ['open', 'small'], 'working-typing': ch => ['open', ch.idleMouth], 'error': () => ['sad', 'wavy'],
+  'notification': () => ['wide', 'o'], 'happy': () => ['happy', 'open'],
+  'react-poke': ch => ch === CHARS.berry ? ['angry', 'pout'] : ['wince', 'w'],
+  'react-drag': ch => ch === CHARS.berry ? ['happy', 'open'] : ['wide', 'o'],
+};
+// 噼啪的尖角工具：下垂（右侧顺时针、左侧逆时针转向下方）、依次（第 i 个角延迟）
+const droop = a => TIP_ANG.map(th => a * Math.cos(th));
+const seq = (t, t0, gap, from, to) => TIP_ANG.map((_, i) => (t > t0 + i * gap ? to : from));
+function behave(P, st, t, ctx) {
+  const ch = P.ch, T = ch.T, X = ch.exag * AMP, sin = Math.sin, star = ch === CHARS.berry;
+  const g = { p: {}, gaze: null, warm: 0, cool: 0, grey: 0, fx: {}, rFloor: ch.rmin };
+  const p = g.p, breath = .14 * AMP * sin(TAU * t / (ch.breath * 1000));
+  const wave = (amp, per) => TIP_ANG.map((_, i) => 1 + amp * sin(TAU * t / per - i * TAU / 5));
+  switch (st) {
+    case 'intro':
+      if (star) {
+        p.ext = seq(t, 380, 170, 0, 1.15); p.core = .84; p.sq = t < 300 ? .5 : 0;               // 五个角依次升起（舞台节奏不随性格缩短）
+        if (t > 1300) { p.ext = [1, 1, 1, 1, 1]; p.core = .78; ctx.once('spin', () => { ctx.spin(1); ctx.hop(330); }); }
+      } else {
+        p.m = ctx.grounded && t > 150 ? 1 : 0;
+        if (ctx.grounded && t > 150) ctx.once('pop', () => { P.P.m.v += 6 * X; P.P.cdir.v -= 260 * X; P.P.sq.v += 5; });
+      }
+      break;
+    case 'idle':
+      p.sq = breath;
+      if (star) { p.ext = wave(.09 * AMP, 1600 * T); if (ctx.near) { p.rot = clamp(ctx.pointerDX * .06, -14, 14); p.bend = [clamp(ctx.pointerDX * .002, -.25, .25), 0, 0, 0, 0]; } }
+      else { p.cdir = 7 * AMP * sin(TAU * t / (3200 * T)) + (ctx.near ? clamp(ctx.pointerDX * .08, -16, 16) : 0); }
+      break;
+    case 'idle-look': {
+      const f = t / (S['idle-look'].ms * T), gx = f < .12 ? 0 : f < .45 ? -4 : f < .78 ? 4 : 0;
+      g.gaze = [gx, f < .12 || f > .78 ? 0 : -1.5]; p.sq = breath; p.rot = gx * (star ? 2.6 : 1.6);
+      if (star) p.bend = TIP_ANG.map(() => -gx * .03); else p.cdir = -gx * 3;
+      break;
+    }
+    case 'idle-yawn': {
+      if (t < 300 * T) { p.sq = .5; P.setFaceOnce('half', 'small'); }
+      else if (t < 1500 * T) { p.sq = -.9 * X; P.setFaceOnce('closed', 'yawn'); if (star) { p.ext = [1.35, 1, 1, 1, 1]; } else { p.d = -.35; p.m = 1.2; } }
+      else { p.sq = .1; P.setFaceOnce('half', 'small'); if (star) p.bend = droop(.12); else p.d = .2; }
+      g.cool = .3; break;
+    }
+    case 'idle-dozing': {
+      const nod = .5 + .5 * sin(TAU * t / (3200 * T));
+      if (star) { p.bend = droop(.2 + .06 * nod); p.ext = [.85, .85, .85, .85, .85]; p.rot = 6 + 5 * nod; }
+      else { p.d = .25 + .1 * nod; p.m = .9; p.rc = 12; p.rot = -4 - 5 * nod; }
+      g.cool = .5; break;
+    }
+    case 'collapse-sleep':
+      if (t < 260 * T) p.sq = -.35;
+      else if (star) { p.ext = seq(t, 260 * T, 90 * T, .85, .45); p.bend = droop(.28); p.rot = 20; p.sq = .25; }
+      else { p.rot = -62; p.m = .85; p.rc = 13; p.d = .2; p.sq = .2; }
+      g.cool = .8; g.fx.zzz = t > 700 * T; break;
+    case 'sleeping': {
+      const b = .07 * AMP * sin(TAU * t / (5600 * T));
+      if (star) { p.ext = TIP_ANG.map((_, i) => .45 + .06 * AMP * sin(TAU * t / (5600 * T) - i)); p.bend = droop(.28); p.rot = 20; p.sq = .25 + b; }
+      else { p.rot = -62; p.m = .85; p.rc = 13; p.d = .2; p.sq = .18 + b; }
+      g.cool = .9; g.fx.zzz = true; break;
+    }
+    case 'wake':
+      if (t < 160 * T) { p.sq = .5; if (star) { p.ext = [.3, .3, .3, .3, .3]; p.rot = 24; } else p.rot = -70; }
+      else if (star) { p.ext = seq(t, 160 * T, 60 * T, .3, 1.2); ctx.once('w', () => { P.P.sq.v -= 7 * X; ctx.spin(-1); ctx.hop(280); }); }
+      else { p.m = 1.15; p.d = -.3; ctx.once('w', () => { P.P.sq.v -= 7 * X; ctx.hop(260); }); }
+      break;
+    case 'thinking': {
+      const tap = Math.max(0, sin(TAU * t / (700 * T))) ** 4;
+      p.rot = (star ? 12 : 6) * X * sin(TAU * t / (2600 * T)); g.gaze = [2, -3]; g.fx.dots = true; p.sq = breath;
+      if (star) { p.bend = [.3 * tap, 0, 0, 0, 0]; p.ext = [1.15, 1, 1, 1, 1]; } else p.d = -.38 * tap;
+      break;
+    }
+    case 'working-typing':
+      p.sq = .28 * X * sin(TAU * t / (330 * T)); g.gaze = [0, 2]; g.fx.keys = true;
+      if (star) p.ext = TIP_ANG.map((_, i) => (i === 2 || i === 3) ? 1 : 1 + .32 * Math.max(0, sin(TAU * t / (380 * T) - i * 1.26)) ** 2);   // 腿踩稳，上面三个角轮流敲
+      else { p.cdir = 9 * sin(TAU * t / (170 * T)); p.d = .15 * sin(TAU * t / (340 * T)); }
+      break;
+    case 'error': {
+      g.grey = 1; g.fx.sweat = true; const ph = (t % (2100 * T)) / (520 * T), env = ph < 1 ? sin(Math.PI * ph) ** 2 : 0, sh = env * sin(t / (22 * T));
+      if (star) { p.bend = droop(.28).map((b, i) => b + .05 * sh * (i % 2 ? 1 : -1)); p.ext = [.8, .8, .8, .8, .8]; p.sharp = .8; p.rot = 3 * sh; }
+      else { p.d = .4; p.cdir = 14; p.m = .75; p.rc = 16; p.rot = 3 * sh; }
+      p.sq = .18; break;
+    }
+    case 'notification':
+      g.fx.bang = t > 140 * T;
+      if (t < 140 * T) p.sq = .7; else ctx.once('n', () => ctx.hop(380));
+      if (star) { p.ext = seq(t, 140 * T, 50 * T, 1, 1.4); p.sharp = 1.2; } else { p.d = -.38; p.m = 1.25; p.rc = 6.5; }
+      break;
+    case 'happy': {
+      g.warm = 1;
+      const hops = star ? [0, 520, 1040] : [0, 820];
+      if (star) { p.ext = [1.2, 1.2, 1.2, 1.2, 1.2]; p.sharp = .82; } else { p.m = 1.2; p.d = -.3; }
+      hops.forEach((h0, i) => {
+        if (t > h0 * T && t < (h0 + 140) * T) p.sq = .8;
+        if (t >= (h0 + 140) * T) ctx.once('h' + i, () => { ctx.hop(star ? 480 + i * 60 : 520); if (i === hops.length - 1) ctx.spin(star ? 1 : -1); });
+      });
+      break;
+    }
+    case 'react-poke':
+      if (star) {                                         // 生气：角伸长变尖，最小曲率半径降到 3（仍是圆角），预备后跳起转一圈
+        p.sharp = 1.55; p.ext = [1.3, 1.3, 1.3, 1.3, 1.3]; p.core = .74; g.rFloor = 2.6;
+        if (t < 120 * T) p.sq = .8; else ctx.once('p', () => { ctx.hop(430); ctx.spin(ctx.pointerDX > 0 ? -1 : 1); });
+      } else {
+        p.m = 1.1; p.rc = 7.5; p.sq = breath;
+        ctx.once('p', () => { P.P.sq.v += 9 * X; P.P.cdir.v += 320 * X * (ctx.pointerDX > 0 ? -1 : 1); P.P.d.v += 4 * X; P.kickJelly(30 * X); });
+      }
+      break;
+    case 'react-drag':
+      p.sq = -.45; if (star) { p.ext = [1.1, 1.1, 1.1, 1.1, 1.1]; p.bend = droop(.15); } else p.m = 1.1;
+      break;
+  }
+  return g;
+}
+
+/* =====================================================================
+   8. 舞台：物理 + 特效图层（特效带滞后，粒子飘出后独立运动）
+   ===================================================================== */
+const stage = $('stage'), host = $('pet-host'), shadowEl = $('shadow'), fxSvg = $('fx-layer');
+const G = 2600; let SZ = 230;
+const phys = { x: 0, y: 0, vx: 0, vy: 0, ax: 0, ay: 0, drag: false, tx: 0, ty: 0, grounded: true, impacts: 0 };
+let pet = null, curKey = 'orange', state = 'idle', base = 'idle', stT = 0, gen_ = 0, onceSet = new Set(), timers = [], lastInput = performance.now(), queued = null, pressed = false;
+const pointer = { x: 0, y: 0, inside: false };
+const floorY = () => stage.clientHeight * .8, u2p = () => SZ / 200;
+const toSvg = (px, py) => [(px - (phys.x - SZ / 2)) / u2p(), (py - (floorY() - phys.y - GROUND * u2p())) / u2p()];
+const fxA = { x: new Spring(0, 45, 10), y: new Spring(0, 45, 10) }, keysX = new Spring(0, 30, 9);
+const fxLv = { dots: new Spring(0, 120, 14), bang: new Spring(0, 260, 13), keys: new Spring(0, 160, 16) };
+let particles = [], lastZ = 0, lastSweat = 0;
+
+const ctx = {
+  get near() { return pointer.inside && Math.hypot(pointer.x - phys.x, pointer.y - (floorY() - phys.y - SZ * .25)) < SZ * .7; },
+  get pointerDX() { return pointer.inside ? pointer.x - phys.x : 0; },
+  once(key, fn) { if (!onceSet.has(key)) { onceSet.add(key); fn(); } },
+  get grounded() { return phys.grounded && phys.y < .5 && !phys.drag; },
+  hop(v) { if (phys.drag) return; phys.vy = v * Math.sqrt(pet.ch.exag) * (REDUCED ? .55 : 1); phys.grounded = false; pet.P.sq.v -= 3 * AMP; },
+  spin(dir) { pet.spin += 360 * dir; },
+};
+function log(msg) {
+  const li = document.createElement('li'); li.innerHTML = `${new Date().toTimeString().slice(0, 8)}  ${msg}`;
+  const el = $('log'); el.prepend(li); while (el.children.length > 40) el.lastChild.remove();
+}
+function setState(next, why) {
+  const def = S[next]; if (!def || !pet) return;
+  const T = pet.ch.T; gen_++; onceSet = new Set(); timers = [];
+  const prev = state;
+  if (def.c === 'A') base = next; else if (def.c === 'C') base = def.next;
+  state = next; stT = performance.now();
+  const [e, m] = FACE[next](pet.ch); pet.setFace(e, m);
+  $('hud-state').textContent = next;
+  $('hud-cls').innerHTML = `<span class="cls cls-${def.c}">${def.c}</span>`;
+  document.querySelectorAll('#state-btns .chip').forEach(b => b.setAttribute('aria-current', b.dataset.s === next));
+  log(`<b>${prev}</b> → <b>${next}</b> <span class="cls cls-${def.c}">${def.c}</span>${why ? ' · ' + why : ''}`);
+  const g = gen_, later = (ms, fn) => timers.push({ at: stT + ms, g, fn });
+  const ms = def.ms;
+  $('pet-mood').textContent = next === 'react-poke' && pet.ch === CHARS.berry ? '生气了' : MOOD[next] || next;
+  if (def.c === 'B') later(ms * T, () => setState(def.then || base, def.then ? '链到 ' + def.then : '回到 ' + base));
+  else if (def.c === 'C') later(ms * T, () => { if (next === 'wake' && queued) { const q = queued; queued = null; setState(q, '唤醒后处理事件'); } else setState(def.next, 'C 过渡结束'); });
+  else if (def.after) later(def.after[0] * T, () => setState(def.after[1], '打盹超时'));
+}
+function mountPet(key, dropIn) {
+  curKey = key; const ch = CHARS[key];
+  pet = new Pet(host, ch, 'main-' + key, true);
+  shadowEl.style.background = `radial-gradient(closest-side, ${ch.shadow[0]}88, ${ch.shadow[0]}00)`;
+  host.setAttribute('aria-label', '桌宠 ' + ch.name);
+  $('idle-ms').value = ch.sleepS; $('idle-ms-out').textContent = ch.sleepS + ' s';
+  document.querySelectorAll('.who').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
+  $('pet-name').textContent = ch.name; $('pet-tag').textContent = ch.tag;
+  if (pet.P.ext) { pet.P.ext.forEach(e => { e.x = 0; }); pet.P.core.x = .84; } else pet.P.m.x = 0;     // 登场起点：圆球 / 圆水滴
+  particles = []; base = 'idle'; state = 'idle'; setState('intro', '换角色：' + ch.name);
+  if (dropIn) { phys.y = stage.clientHeight * .75; phys.vy = 0; phys.vx = 0; phys.grounded = false; }
+  lastInput = performance.now();
+}
+
+/* ---------- 指针 ---------- */
+let down = null, pokes = [];
+const localXY = e => { const r = stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+stage.addEventListener('pointermove', e => { const [x, y] = localXY(e); pointer.x = x; pointer.y = y; pointer.inside = true; touch(); });
+stage.addEventListener('pointerleave', () => { pointer.inside = false; });
+host.addEventListener('pointerdown', e => {
+  e.preventDefault(); host.setPointerCapture(e.pointerId);
+  const [x, y] = localXY(e); pointer.x = x; pointer.y = y; pointer.inside = true; pressed = true;
+  down = { x, y, gox: x - phys.x, goy: (floorY() - phys.y) - y }; touch();
+});
+host.addEventListener('pointermove', e => {
+  if (!down) return;
+  const [x, y] = localXY(e);
+  if (!phys.drag && Math.hypot(x - down.x, y - down.y) > 5) {
+    phys.drag = true; host.classList.add('dragging'); phys.grounded = false;
+    if (state === 'sleeping' || state === 'idle-dozing') log('<b>' + state + '</b> 被拎起来');
+    setState('react-drag', '拖动开始');
+  }
+  if (phys.drag) { phys.tx = x - down.gox; phys.ty = Math.max(0, floorY() - (y + down.goy)); }
+});
+function release() {
+  if (!down) return;
+  const wasDrag = phys.drag, d = down; down = null; phys.drag = false; pressed = false; host.classList.remove('dragging');
+  if (wasDrag) { const sp = Math.hypot(phys.vx, phys.vy), cap = 1800; if (sp > cap) { phys.vx *= cap / sp; phys.vy *= cap / sp; } base = 'idle'; log(`松手 · 抛出速度 ${Math.round(Math.hypot(phys.vx, phys.vy))} px/s`); return; }
+  pet.ripple(...toSvg(d.x, d.y));                                    // 点击处荡开色波
+  if (['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) { setState('wake', '点击叫醒'); return; }
+  if (state === 'happy') return;
+  const now = performance.now(); pokes = pokes.filter(t => now - t < 1500); pokes.push(now);
+  if (pokes.length >= 3) { pokes = []; setState('happy', '连点 3 下'); } else setState('react-poke', '点击');
+}
+host.addEventListener('pointerup', release); host.addEventListener('pointercancel', release);
+host.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); touch(); pet.ripple(pet.ch.cx, 110); setState('react-poke', '键盘'); } });
+function touch() { lastInput = performance.now(); }
+
+/* ---------- 主循环 ---------- */
+let visible = true, lastF = performance.now(), nextIdleAct = performance.now() + 6000, nextBlink = performance.now() + 2500;
+new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(stage);
+function physicsStep(dt) {
+  const W = stage.clientWidth, half = SZ * .34, vx0 = phys.vx, vy0 = phys.vy;
+  if (phys.drag) {
+    const k = 380, c = 28;
+    phys.vx += (k * (phys.tx - phys.x) - c * phys.vx) * dt; phys.vy += (k * (phys.ty - phys.y) - c * phys.vy) * dt;
+    phys.x += phys.vx * dt; phys.y = Math.max(0, phys.y + phys.vy * dt);
+  } else if (!phys.grounded || phys.y > 0 || phys.vy > 0) {
+    phys.vy -= G * dt; phys.y += phys.vy * dt; phys.x += phys.vx * dt;
+    if (phys.y <= 0) {
+      phys.y = 0; const imp = -phys.vy;
+      if (imp > 140) {                                              // 落地：偏向压扁形 + 锚点果冻 + 回弹 + 色团下压
+        phys.vy = imp * .34; phys.vx *= .7;
+        const P = pet.P; P.sq.v += imp * .03 * pet.ch.exag * AMP; pet.kickJelly(imp * .03 * AMP); pet.sly.v += imp * .08; pet.speed.v += imp * .004;
+        if (P.ext) { P.ext.forEach(e => { e.v += imp * .004 * AMP; }); P.bend[2].v -= imp * .004 * AMP; P.bend[3].v += imp * .004 * AMP; }   // 尖角着地张开
+        else { P.cdir.v += imp * .5 * AMP * (Math.random() < .5 ? -1 : 1); P.m.v += imp * .004 * AMP; }               // 方角甩一下
+        phys.impacts++;
+      } else { phys.vy = 0; phys.grounded = true; if (state === 'react-drag') setState('idle', '落地站稳'); }
+    }
+  } else { phys.vx *= Math.exp(-7 * dt); phys.x += phys.vx * dt; }
+  if (phys.x < half) { phys.x = half; phys.vx = Math.abs(phys.vx) * .5; pet.kickJelly(15); }
+  if (phys.x > W - half) { phys.x = W - half; phys.vx = -Math.abs(phys.vx) * .5; pet.kickJelly(15); }
+  phys.ax = phys.ax * .7 + ((phys.vx - vx0) / Math.max(dt, 1e-3)) * .3;
+  phys.ay = phys.ay * .7 + (-(phys.vy - vy0) / Math.max(dt, 1e-3)) * .3;
+}
+function renderFx(now, dt) {
+  const s = u2p(), ch = pet.ch, T = ch.T, out = [], col = ch.accent;
+  // 特效锚点：头部右上方，弹簧滞后跟随
+  const hx = phys.x + (ch.cx + 42 - 100) * s, hy = floorY() - phys.y - (GROUND - pet.topY() + 10) * s;
+  fxA.x.t = hx; fxA.y.t = hy; fxA.x.step(dt); fxA.y.step(dt); keysX.t = phys.x; keysX.step(dt);
+  const ax = fxA.x.x, ay = fxA.y.x;
+  const draw = (P, ox, oy, sc, fill) => out.push(`<path d="${bspline(roundGuard(P, R_FX).map(p => [ox + p[0] * sc, oy + p[1] * sc]))}" fill="${fill}"/>`);
+  if (state === 'sleeping' || (state === 'collapse-sleep' && now - stT > 700 * T)) { if (now - lastZ > 1000 * T) { lastZ = now; particles.push({ k: 'z', x: ax, y: ay, vx: 16, vy: -30, t0: now, life: 2800 * T }); } }
+  if (state === 'error' && now - lastSweat > 1700 * T) { lastSweat = now; particles.push({ k: 'drop', x: phys.x + 30 * s, y: floorY() - phys.y - (GROUND - pet.topY() - 18) * s, vx: 0, vy: 10, t0: now, life: 1400 }); }
+  particles = particles.filter(p => now - p.t0 < p.life);
+  for (const p of particles) {
+    const f = (now - p.t0) / p.life;
+    p.x += (p.vx + (p.k === 'z' ? 10 * Math.sin(f * 7) : 0)) * dt; p.y += p.vy * dt; if (p.k === 'drop') p.vy += 60 * dt;
+    const m = Math.min(1, f / .18, (1 - f) / .25), gl = glyph(p.k), e = m * m * (3 - 2 * m);
+    draw(lerpPts(gl.dot.P || gl.dot, gl.P, e), p.x, p.y, s * (p.k === 'z' ? 1.05 : 1.1), p.k === 'drop' ? '#8fd3ff' : col);
+  }
+  for (const k in fxLv) fxLv[k].step(dt);
+  const d = fxLv.dots.x;
+  if (d > .02) for (let k = 0; k < 3; k++) { const r = (2.4 + 1.1 * Math.sin(now / 180 - k * 1.2)) * clamp(d, 0, 1.2) * s; draw(ellipseLoop(0, 0, r, r, 24).filter((_, i) => i % 3 === 0), ax + k * 11 * s, ay + 4 * s - 3 * Math.max(0, Math.sin(now / 180 - k * 1.2)) * s, 1, col); }
+  const b = fxLv.bang.x;
+  if (b > .01) { const e = clamp(b, 0, 1.3); for (const [n, fill, oy] of [['badge', col, 0], ['bar', '#fff', -2.6], ['pt', '#fff', 6]]) { const gl = glyph(n); draw(lerpPts(gl.dot, gl.P, e), ax + 6 * s, ay + oy * s * Math.min(1, e), s, fill); } }
+  const kk = fxLv.keys.x;
+  if (kk > .01) for (let k = 0; k < 5; k++) { const gu = glyph('key'), gd = glyph('keyDown'), press = Math.max(0, Math.sin(now / 95 + k * 2.2)); const shape = lerpPts(gu.P, gd.P, press); draw(lerpPts(gu.dot, shape, clamp(kk, 0, 1)), keysX.x + (k - 2) * 20 * s, floorY() + 16, s, mix(col, '#ffffff', .45)); }
+  fxSvg.innerHTML = out.join('');
+}
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(.033, (now - lastF) / 1000); lastF = now;
+  if (!visible || !pet) return;
+  for (const tm of timers.splice(0)) { if (tm.g !== gen_) continue; if (now >= tm.at) tm.fn(); else timers.push(tm); }
+  const g = behave(pet, state, now - stT, ctx);
+  const air = !phys.grounded || phys.y > .5, star = pet.ch === CHARS.berry;
+  let sq = g.p.sq ?? 0;
+  if (phys.drag) {                                   // 拎着：拉长、按速度摆，角 / 尖角拖在运动后面（跟随）
+    sq = Math.min(sq, -.4 - clamp(Math.abs(phys.vy) * .0006, 0, .6));
+    g.p.rot = (g.p.rot ?? 0) + clamp(phys.vx * .012, -16, 16);
+    if (star) g.p.bend = (g.p.bend || [0, 0, 0, 0, 0]).map(b => clamp(b - phys.vx * .0009, -.34, .34));
+    else g.p.cdir = (g.p.cdir ?? 0) + clamp(-phys.vx * .035, -42, 42);
+  } else if (air) sq = Math.min(sq, -clamp(Math.abs(phys.vy) * .0011 * pet.ch.exag * AMP, 0, 1.1));
+  g.p.sq = sq; pet.target(g.p); pet.rFloor.t = g.rFloor;
+  pet.warm.t = g.warm; pet.cool.t = g.cool; pet.grey.t = g.grey; pet.speed.t = clamp(Math.hypot(phys.vx, phys.vy) / 1400, 0, 1);
+  fxLv.dots.t = g.fx.dots ? 1 : 0; fxLv.bang.t = g.fx.bang ? 1 : 0; fxLv.keys.t = g.fx.keys ? 1 : 0;
+  // 视线（整张脸平移）
+  if (g.gaze) { pet.gx.t = g.gaze[0]; pet.gy.t = g.gaze[1]; }
+  else if (pointer.inside && ['open', 'wide', 'half'].includes(pet.face.eyes)) {
+    const cx = phys.x, cy = floorY() - phys.y - SZ * .3, dx = pointer.x - cx, dy = pointer.y - cy, dd = Math.hypot(dx, dy) || 1, k = Math.min(1, dd / 160);
+    pet.gx.t = dx / dd * 4 * k; pet.gy.t = dy / dd * 2.5 * k;
+  } else { pet.gx.t = 0; pet.gy.t = 0; }
+  pet.fox.t = clamp(-phys.vx * .006, -5, 5); pet.foy.t = clamp(phys.vy * .004, -5, 5);
+  // 指针光斑：靠近亮起、按下更亮，位置带滞后
+  if (pointer.inside) { const [sx, sy] = toSvg(pointer.x, pointer.y); pet.lx.t = clamp(sx, 40, 160); pet.ly.t = clamp(sy, 60, 150); }
+  pet.lightA.t = pressed ? 1 : ctx.near ? .8 : 0;
+  if (now > nextBlink) {
+    const [mn, mx, du] = pet.ch.blink; nextBlink = now + mn + Math.random() * (mx - mn);
+    if (['open', 'wide', 'half', 'sad', 'angry'].includes(pet.face.eyes)) { pet.blink(now, du); if (pet.ch === CHARS.berry && Math.random() < .3) setTimeout(() => pet.blink(performance.now(), du), du + 140); }
+  }
+  const sub = dt > .017 ? 2 : 1;
+  for (let i = 0; i < sub; i++) { physicsStep(dt / sub); pet.step(dt / sub, now, phys.ax, phys.ay); }
+  pet.render(); renderFx(now, dt);
+  const s = u2p();
+  host.style.transform = `translate3d(${(phys.x - SZ / 2).toFixed(2)}px, ${(floorY() - phys.y - GROUND * s).toFixed(2)}px, 0)`;
+  const shW = SZ * pet.ch.shadow[1] * (1 - clamp(phys.y / 420, 0, .6)) * (pet.widthNow() / 120);
+  shadowEl.style.width = shW.toFixed(1) + 'px';
+  shadowEl.style.transform = `translate3d(${(phys.x - shW / 2 + 6 * s).toFixed(2)}px, ${(floorY() - 13).toFixed(2)}px, 0)`;
+  shadowEl.style.opacity = (1 - clamp(phys.y / 500, 0, .65)).toFixed(3);
+  const hudSleep = $('hud-sleep');
+  if (state === 'idle' && !phys.drag && phys.grounded) {
+    const IDLE = (+$('idle-ms').value || pet.ch.sleepS) * 1000, left = Math.max(0, IDLE - (now - lastInput));
+    hudSleep.textContent = `入睡倒计时 ${Math.ceil(left / 1000)} s`;
+    if (left <= 0) setState('idle-yawn', `${IDLE / 1000}s 无事件`);
+    else if (now > nextIdleAct) {
+      nextIdleAct = now + (5000 + Math.random() * 5000) * pet.ch.T;
+      if (pet.ch === CHARS.berry && Math.random() < .55) { pet.P.sq.v += 4; pet.P.bend.forEach((b, i) => { b.v += (i % 2 ? 4 : -4); }); setTimeout(() => ctx.hop(300), 110); log('<b>idle</b> · 噼啪坐不住，原地蹦一下'); }
+      else if (Math.random() < .6) setState('idle-look', '随机');
+    }
+  } else hudSleep.textContent = state === 'sleeping' ? '睡着了 · 点一下叫醒' : '';
+}
+
+/* ---------- 角色卡 ---------- */
+const cast = $('cast');
+cast.innerHTML = Object.entries(CHARS).map(([k, ch]) => `
+  <button class="who" data-k="${k}" aria-pressed="${k === curKey}">
+    <span class="thumb" data-k="${k}"></span>
+    <span><b>${ch.name}</b><small>${ch.tag}</small><small>${ch.blurb}</small>
+      <span class="sw">${ch.palette.map(c => `<i style="background:${c}"></i>`).join('')}</span></span>
+  </button>`).join('');
+cast.querySelectorAll('.thumb').forEach(el => { const p = new Pet(el, CHARS[el.dataset.k], 'th-' + el.dataset.k, false); p.r.svg.setAttribute('viewBox', '15 15 170 170'); p.restPreview(); });
+cast.addEventListener('click', e => { const b = e.target.closest('.who'); if (b && b.dataset.k !== curKey) mountPet(b.dataset.k, true); });
+
+/* ---------- 控制台 ---------- */
+$('state-btns').innerHTML = Object.entries(S).map(([k, v]) => `<button class="chip" data-s="${k}" aria-current="${k === 'idle'}">${k}<span class="cls cls-${v.c}">${v.c}</span></button>`).join('');
+$('state-btns').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { touch(); setState(b.dataset.s, '手动'); } });
+/* ---------- 模拟 Agent ---------- */
+$('event-btns').innerHTML = AGENT.map(a => `<button class="chip" data-agent-ev="${a.ev}">${a.ev}</button><span>${a.label} → ${a.st}</span>`).join('');
+$('agent-btns').innerHTML = AGENT.map(a => `<button class="ag" data-agent-ev="${a.ev}">${a.label}</button>`).join('');
+$('agent-steps').innerHTML = SESSION.map(([, ev], i) => `<li data-i="${i}">${AGENT.find(a => a.ev === ev).label}</li>`).join('');
+function agentEvent(ev, src) {
+  const a = AGENT.find(x => x.ev === ev); if (!a || !pet) return;
+  touch();
+  $('agent-now').innerHTML = `<code>${ev}</code><span>→ ${MOOD[a.st]}</span>`;
+  document.querySelectorAll('[data-agent-ev]').forEach(b => b.setAttribute('aria-current', b.dataset.agentEv === ev));
+  const why = ev + (src ? ' · ' + src : '');
+  if (ev === 'Stop') base = 'idle';
+  if (ev === 'Idle') { if (!['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) setState('idle-yawn', why); return; }
+  if (['sleeping', 'idle-dozing', 'collapse-sleep'].includes(state)) { queued = a.st; setState('wake', why); } else setState(a.st, why);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-agent-ev]'); if (b) agentEvent(b.dataset.agentEv); });
+let sessionTimers = [];
+function stopSession(msg) {
+  sessionTimers.forEach(clearTimeout); sessionTimers = [];
+  $('agent-run').textContent = '▶ 跑一次会话'; $('agent-run').setAttribute('aria-pressed', 'false');
+  document.querySelectorAll('#agent-steps li').forEach(li => li.classList.remove('on'));
+  if (msg) $('agent-now').innerHTML = `<span>${msg}</span>`;
+}
+$('agent-run').addEventListener('click', () => {
+  if (sessionTimers.length) { stopSession('已停止'); return; }
+  $('agent-run').textContent = '■ 停止'; $('agent-run').setAttribute('aria-pressed', 'true');
+  const steps = document.querySelectorAll('#agent-steps li');
+  steps.forEach(li => li.classList.remove('on', 'done'));
+  SESSION.forEach(([at, ev], i) => sessionTimers.push(setTimeout(() => {
+    steps.forEach((li, k) => { li.classList.toggle('on', k === i); li.classList.toggle('done', k < i); });
+    agentEvent(ev, '会话 ' + (i + 1) + '/' + SESSION.length);
+  }, at)));
+  sessionTimers.push(setTimeout(() => { steps.forEach(li => { li.classList.remove('on'); li.classList.add('done'); }); stopSession(); $('agent-now').innerHTML = '<span>会话结束</span>'; }, SESSION.at(-1)[0] + 2400));
+});
+$('state-table').innerHTML = Object.entries(S).map(([k, v]) => `<tr><td><code>${k}</code></td><td><span class="cls cls-${v.c}">${v.c}</span></td><td>${v.d}</td><td>${v.tr}</td></tr>`).join('');
+$('idle-ms').addEventListener('input', e => { $('idle-ms-out').textContent = e.target.value + ' s'; });
+const anchorsBtn = $('anchors');
+anchorsBtn.addEventListener('click', () => { pet.showAnchors = !pet.showAnchors; anchorsBtn.setAttribute('aria-pressed', pet.showAnchors); anchorsBtn.textContent = pet.showAnchors ? '隐藏锚点' : '显示锚点'; });
+$('drop').addEventListener('click', () => { touch(); phys.y = stage.clientHeight * .7; phys.vy = 0; phys.vx = (Math.random() - .5) * 500; phys.grounded = false; if (state !== 'idle') setState('idle', '丢下'); });
+$('copy-svg').addEventListener('click', async () => {
+  const s = pet.r.svg.cloneNode(true); s.setAttribute('xmlns', NS); s.querySelector('.anchors').remove();
+  const code = s.outerHTML, msg = $('copy-msg');
+  try { await navigator.clipboard.writeText(code); msg.textContent = '已复制'; }
+  catch { const ta = document.createElement('textarea'); ta.value = code; document.body.append(ta); ta.select(); msg.textContent = '已选中，按 Ctrl/Cmd+C 复制'; setTimeout(() => ta.remove(), 8000); }
+});
+function layout() { SZ = stage.clientWidth < 520 ? 190 : 230; host.style.width = host.style.height = SZ + 'px'; if (!phys.x) phys.x = stage.clientWidth / 2; }
+window.addEventListener('resize', layout);
+
+/* ---------- 自检接口（QA 用） ---------- */
+window.__pet = {
+  get state() { return state; }, get phys() { return phys; }, get pet() { return pet; }, CHARS, eyeFit, mouthFit, curvePts, bspline, OMEGA_FIT, OMEGA,
+  setState: s => setState(s, 'test'), mount: k => mountPet(k, false), agent: ev => agentEvent(ev, 'test'), debug: false,
+  g2(P) {
+    const n = P.length; let dA = 0, dK = 0;
+    const seg = i => { const a = P[(i - 1 + n) % n], b = P[i], c = P[(i + 1) % n], e = P[(i + 2) % n]; return [[(a[0] + 4 * b[0] + c[0]) / 6, (a[1] + 4 * b[1] + c[1]) / 6], [(2 * b[0] + c[0]) / 3, (2 * b[1] + c[1]) / 3], [(b[0] + 2 * c[0]) / 3, (b[1] + 2 * c[1]) / 3], [(b[0] + 4 * c[0] + e[0]) / 6, (b[1] + 4 * c[1] + e[1]) / 6]]; };
+    const kap = (d1, d2) => (d1[0] * d2[1] - d1[1] * d2[0]) / Math.hypot(...d1) ** 3;
+    for (let i = 0; i < n; i++) {
+      const A = seg(i), B = seg((i + 1) % n);
+      const d1a = [3 * (A[3][0] - A[2][0]), 3 * (A[3][1] - A[2][1])], d2a = [6 * (A[3][0] - 2 * A[2][0] + A[1][0]), 6 * (A[3][1] - 2 * A[2][1] + A[1][1])];
+      const d1b = [3 * (B[1][0] - B[0][0]), 3 * (B[1][1] - B[0][1])], d2b = [6 * (B[2][0] - 2 * B[1][0] + B[0][0]), 6 * (B[2][1] - 2 * B[1][1] + B[0][1])];
+      let da = Math.abs(Math.atan2(d1a[1], d1a[0]) - Math.atan2(d1b[1], d1b[0])); if (da > Math.PI) da = TAU - da;
+      dA = Math.max(dA, da); dK = Math.max(dK, Math.abs(kap(d1a, d2a) - kap(d1b, d2b)));
+    }
+    return { maxAngle: dA, maxCurvDiff: dK };
+  },
+};
+layout();
+mountPet('orange', true);
+requestAnimationFrame(frame);
+})();
+</script>
