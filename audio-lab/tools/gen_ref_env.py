@@ -1,4 +1,4 @@
-"""Write audio-lab/src/ref-env.js: normalised RMS envelopes of the reference clips, drawn as a ghost line on the page."""
+"""Write src/ref-env.js (run from audio-lab/): normalised RMS envelopes of the reference clips, drawn as a ghost line on the page."""
 import sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 from analyze_ref import load, rms_env

@@ -1,5 +1,5 @@
 // Node: envelope-similarity score of every sound (same metric as the page shows)
-const E = require('../audio-lab/dist/engine.js');
+const E = require('../dist/engine.js');
 const pick = process.argv[2];
 for (const [kind, list] of [['sfx', E.SFX], ['loops', E.LOOPS]]) for (const s of list) {
   if (pick && !pick.split(',').includes(s.id)) continue;

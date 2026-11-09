@@ -1,6 +1,6 @@
 // Node: render every sound to 16-bit mono WAV (for spectrogram / metric comparison against the reference audio).
 const fs = require('fs'), path = require('path');
-const E = require('../audio-lab/dist/engine.js');
+const E = require('../dist/engine.js');
 const out = process.argv[2], which = process.argv[3] || 'sfx', opt = process.argv[4] === 'opt';
 fs.mkdirSync(out, { recursive: true });
 function wav(buf, sr) {

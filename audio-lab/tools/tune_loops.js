@@ -1,6 +1,6 @@
 // Fit each loop's event time shift to the reference clip's envelope (the clip windows are only known to ~0.1 s).
-// Prints a LOOP_TUNE table to paste into audio-lab/src/loops.js. Usage: node tools/tune_loops.js [id,id,...]
-const E = require('../audio-lab/dist/engine.js');
+// Prints a LOOP_TUNE table to paste into src/loops.js. Usage: node tools/tune_loops.js [id,id,...]
+const E = require('../dist/engine.js');
 const pick = process.argv[2] && process.argv[2].split(',');
 const out = {};
 for (const s of E.LOOPS) {

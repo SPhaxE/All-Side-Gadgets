@@ -14,10 +14,12 @@
 - `src/sfx.js` 12 个音效;`src/loops.js` 10 条循环;`src/loops_extra.js` 12 条补充
 - `src/ref-env.js` 参考片段的波形外轮廓(由 `tools/gen_ref_env.py` 生成)
 - `src/page.html` + `src/ui.js` 页面;`build.mjs` 拼成 `dist/index.html`(发布)、`dist/preview.html`(本地预览)、`dist/engine.js`(Node 用)
+- `references/videos/` 两段参考视频;`tools/` 分析、渲染、拟合、检查脚本
 
 ## 常用命令
+以下命令都在 `audio-lab/` 目录里运行(先 `cd audio-lab`)。
 ```
-node audio-lab/build.mjs                                  # 构建
+node build.mjs                                            # 构建
 node tools/render_sfx.js OUT_DIR sfx opt                  # 渲染优化版音效为 wav(loops 同理;去掉 opt 为复刻版)
 python3 tools/check_audio.py OUT_SFX OUT_LOOPS            # 削波/直流/首尾爆音/接缝/低频噪声检查
 node tools/envscore.js                                    # 复刻版的边缘贴合度

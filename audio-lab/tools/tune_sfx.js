@@ -1,5 +1,5 @@
 // Fit each one-shot's time offset against the reference clip (edge fit). Usage: node tools/tune_sfx.js [id,id,...]
-const E = require('../audio-lab/dist/engine.js');
+const E = require('../dist/engine.js');
 const pick = process.argv[2] && process.argv[2].split(',');
 const out = {};
 for (const s of E.SFX) {
