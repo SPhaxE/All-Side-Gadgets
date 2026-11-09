@@ -31,9 +31,7 @@ ffmpeg -hide_banner -encoders | grep nvenc        # Windows PowerShell: ffmpeg -
 
 ```bash
 git clone https://github.com/SPhaxE/All-Side-Gadgets.git
-cd All-Side-Gadgets
-git checkout claude/clever-allen-27vz0a
-cd showcase
+cd All-Side-Gadgets/showcase
 npm install
 npx playwright install chromium        # 或者直接用你装好的 Google Chrome：后面的命令加 --chrome
 ```

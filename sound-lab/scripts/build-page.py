@@ -23,5 +23,6 @@ instruments = '\n'.join(
 html = read('scripts', 'page.template.html')
 html = html.replace('/*INSTRUMENTS*/', instruments)
 html = html.replace('/*BUNDLE*/', bundle)
+os.makedirs(os.path.dirname(os.path.abspath(sys.argv[1])), exist_ok=True)   # 输出目录（如被忽略的 out/）不存在时先建好
 open(sys.argv[1], 'w', encoding='utf-8').write(html)
 print(f'{sys.argv[1]}: {len(html) / 1e6:.1f} MB')

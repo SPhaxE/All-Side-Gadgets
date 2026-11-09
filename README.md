@@ -5,7 +5,7 @@
 | 目录 | 项目 | 入口 |
 |---|---|---|
 | [`ip-pet/`](ip-pet/) | 暖橙水滴 IP：8 步绘制教程的 SVG 复刻，以及两只可交互桌宠（参数化 G2 曲线、锚点表情、物理、模拟 Agent 事件） | `index.html` 验收页、`share.html` 分享页；复盘见 `RETRO.md` |
-| [`showcase/`](showcase/) | Visual FX Reel：20 种视效无缝循环短片（1920×1080、60 fps、120 秒）的本地渲染包 | `先看我-README.md`、`render.sh` / `render-windows.bat` |
+| [`showcase/`](showcase/) | Visual FX Reel：20 种视效无缝循环短片（1920×1080、60 fps、120 秒）的本地渲染包 | 从仓库渲染看 `RENDER-LOCAL.md`（完整说明）；`先看我-README.md` 针对已含素材帧的本地渲染包（zip），素材帧不在仓库里（`showcase/assets/footage/`、`assets/build/` 被忽略） |
 | [`sound-lab/`](sound-lab/) | Sound Lab：Web Audio 音效库与背景循环，基于真实乐器采样 | `index.html` 试听页；`scripts/build-page.py` 打包 |
 | [`audio-lab/`](audio-lab/) | 音效复刻台：把两段参考视频里的音效和循环用纯 JS 合成复刻 | `dist/index.html`；命令见 `README.md` |
 

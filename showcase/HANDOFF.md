@@ -1,6 +1,6 @@
 # 20 种视效演示 · 交接文档（v2）
 
-分支：`claude/clever-allen-27vz0a`　目录：`showcase/`
+目录：`showcase/`（位于 `main` 分支；原开发分支 `claude/clever-allen-27vz0a` 已合并进 main）
 
 ## 状态
 
