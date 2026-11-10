@@ -1,0 +1,52 @@
+{
+ "_note": "数值来自 61 篇笔记的目测估算，非取色器实测；详见 references/01-visual-system.md",
+ "colors": {
+  "white": "FFFFFF",
+  "green": "0E7C66",
+  "green_dark": "1F5C46",
+  "green_mid": "6FB5A0",
+  "mint": "A9D3C4",
+  "green_bg": "E4F0EA",
+  "panel": "EEF2EF",
+  "card": "F1F1EE",
+  "head_gray": "E8E8E8",
+  "bar_gray": "D9D9D9",
+  "line": "D9D9D9",
+  "ink": "1A1A1A",
+  "gray2": "777777",
+  "gray3": "AAAAAA",
+  "red": "D0312D",
+  "red_dark": "8B1A1A"
+ },
+ "area_budget": {
+  "white_or_blank": "55-65%",
+  "gray_cards": "20-30%",
+  "light_green": "5-15%",
+  "solid_green": "<=10%",
+  "red": "<2%"
+ },
+ "slide": {
+  "width_in": 13.333,
+  "height_in": 7.5,
+  "margin_pct": "3-5%"
+ },
+ "font_pt": {
+  "page_no": "24-28 bold",
+  "title_en": "22-28 bold (default 24)",
+  "case_suffix": "14-18 regular",
+  "big_label_light_green": "22-30 light",
+  "conclusion": "11-14 bold (default 12)",
+  "card_title": "10-12 bold",
+  "body_dense": "7-10",
+  "body_presentation": "10-12",
+  "annotation": "6-9 gray",
+  "footnote": "6-8 light gray",
+  "kpi_number": "30-48 (default 36)"
+ },
+ "spacing_in": {
+  "card_gap": "0.08-0.15",
+  "card_padding": "0.15-0.2",
+  "corner_radius_px": "6-12",
+  "line_pt": "<=1"
+ }
+}
