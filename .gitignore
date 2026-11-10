@@ -16,3 +16,6 @@ sound-lab/out/
 # audio-lab（参考视频复刻音效）
 audio-lab/dist/*.wav
 audio-lab/out/
+
+# money-maxxing（支付宝基金持仓量化跟踪与双模型对冲投研）
+money-maxxing/_backup/

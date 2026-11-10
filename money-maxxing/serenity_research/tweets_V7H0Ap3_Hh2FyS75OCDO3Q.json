@@ -1,0 +1,1103 @@
+{
+  "data": {
+    "user": {
+      "result": {
+        "__typename": "User",
+        "timeline_v2": {
+          "timeline": {
+            "instructions": [
+              {
+                "type": "TimelineClearCache"
+              },
+              {
+                "entries": [
+                  {
+                    "content": {
+                      "__typename": "TimelineTimelineItem",
+                      "clientEventInfo": {
+                        "component": "profile_best_highlights",
+                        "element": "tweet"
+                      },
+                      "entryType": "TimelineTimelineItem",
+                      "itemContent": {
+                        "__typename": "TimelineTweet",
+                        "itemType": "TimelineTweet",
+                        "tweetDisplayType": "Tweet",
+                        "tweet_results": {
+                          "result": {
+                            "__typename": "Tweet",
+                            "core": {
+                              "user_results": {
+                                "result": {
+                                  "__typename": "User",
+                                  "affiliates_highlighted_label": {
+                                    "label": {
+                                      "badge": {
+                                        "url": "https://pbs.twimg.com/profile_images/2071341570792779776/x6ION4vt_bigger.jpg"
+                                      },
+                                      "description": "Serenity Research",
+                                      "url": {
+                                        "url": "https://twitter.com/SerenityRSH",
+                                        "urlType": "DeepLink"
+                                      },
+                                      "userLabelDisplayType": "Badge",
+                                      "userLabelType": "BusinessLabel"
+                                    }
+                                  },
+                                  "has_graduated_access": true,
+                                  "id": "VXNlcjoxOTQwMzYwODM3NTQ3NTY1MDU2",
+                                  "is_blue_verified": true,
+                                  "legacy": {
+                                    "blocked_by": false,
+                                    "blocking": false,
+                                    "can_dm": false,
+                                    "can_media_tag": false,
+                                    "created_at": "Wed Jul 02 10:44:15 +0000 2025",
+                                    "default_profile": true,
+                                    "default_profile_image": false,
+                                    "description": "Only on X, don’t trust fake accs\n\nAI/Semi Supply Chains Research\n\nNothing is investment advice. No paid promos; may trade/hold names disc, views my own.",
+                                    "entities": {
+                                      "description": {}
+                                    },
+                                    "fast_followers_count": 0,
+                                    "favourites_count": 17107,
+                                    "follow_request_sent": false,
+                                    "followed_by": false,
+                                    "followers_count": 1065834,
+                                    "following": false,
+                                    "friends_count": 212,
+                                    "has_custom_timelines": false,
+                                    "is_translator": false,
+                                    "listed_count": 9569,
+                                    "location": "Not Financial Advice",
+                                    "media_count": 2319,
+                                    "muting": false,
+                                    "name": "Serenity",
+                                    "needs_phone_verification": false,
+                                    "normal_followers_count": 1065834,
+                                    "notifications": false,
+                                    "possibly_sensitive": false,
+                                    "profile_banner_url": "https://pbs.twimg.com/profile_banners/1940360837547565056/1788271605",
+                                    "profile_image_url_https": "https://pbs.twimg.com/profile_images/1996176688414367744/LXfA_lIx_normal.jpg",
+                                    "profile_interstitial_type": "",
+                                    "protected": false,
+                                    "screen_name": "aleabitoreddit",
+                                    "statuses_count": 7885,
+                                    "time_zone": "",
+                                    "translator_type": "none",
+                                    "url": "",
+                                    "utc_offset": 0,
+                                    "verified": false,
+                                    "withheld_description": "",
+                                    "withheld_scope": ""
+                                  },
+                                  "profile_image_shape": "Circle",
+                                  "rest_id": "1940360837547565056",
+                                  "super_follow_eligible": false,
+                                  "super_followed_by": false,
+                                  "super_following": false
+                                }
+                              }
+                            },
+                            "edit_control": {
+                              "edit_tweet_ids": [
+                                "1984837960735285593"
+                              ],
+                              "editable_until_msecs": "1762060821000",
+                              "edits_remaining": "5",
+                              "is_edit_eligible": true
+                            },
+                            "is_translatable": false,
+                            "legacy": {
+                              "bookmark_count": 668,
+                              "bookmarked": false,
+                              "conversation_id_str": "1984837960735285593",
+                              "created_at": "Sun Nov 02 04:20:21 +0000 2025",
+                              "display_text_range": [
+                                0,
+                                272
+                              ],
+                              "entities": {
+                                "media": [
+                                  {
+                                    "allow_download_status": {
+                                      "allow_download": true
+                                    },
+                                    "display_url": "pic.x.com/z3HZ07q5wn",
+                                    "expanded_url": "https://x.com/aleabitoreddit/status/1984837960735285593/photo/1",
+                                    "ext_media_availability": {
+                                      "status": "Available"
+                                    },
+                                    "features": {
+                                      "large": {
+                                        "faces": []
+                                      },
+                                      "medium": {
+                                        "faces": []
+                                      },
+                                      "orig": {
+                                        "faces": []
+                                      },
+                                      "small": {
+                                        "faces": []
+                                      }
+                                    },
+                                    "id_str": "1984837699157774336",
+                                    "indices": [
+                                      273,
+                                      296
+                                    ],
+                                    "media_key": "3_1984837699157774336",
+                                    "media_results": {
+                                      "result": {
+                                        "media_key": "3_1984837699157774336"
+                                      }
+                                    },
+                                    "media_url_https": "https://pbs.twimg.com/media/G4uPXwsaUAAWNHE.jpg",
+                                    "original_info": {
+                                      "focus_rects": [
+                                        {
+                                          "h": 853,
+                                          "w": 1523,
+                                          "x": 152,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 853,
+                                          "x": 487,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 748,
+                                          "x": 539,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 427,
+                                          "x": 700,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 1928,
+                                          "x": 0,
+                                          "y": 0
+                                        }
+                                      ],
+                                      "height": 853,
+                                      "width": 1928
+                                    },
+                                    "sizes": {
+                                      "large": {
+                                        "h": 853,
+                                        "resize": "fit",
+                                        "w": 1928
+                                      },
+                                      "medium": {
+                                        "h": 531,
+                                        "resize": "fit",
+                                        "w": 1200
+                                      },
+                                      "small": {
+                                        "h": 301,
+                                        "resize": "fit",
+                                        "w": 680
+                                      },
+                                      "thumb": {
+                                        "h": 150,
+                                        "resize": "crop",
+                                        "w": 150
+                                      }
+                                    },
+                                    "type": "photo",
+                                    "url": "https://t.co/z3HZ07q5wn"
+                                  }
+                                ],
+                                "symbols": [
+                                  {
+                                    "indices": [
+                                      105,
+                                      110
+                                    ],
+                                    "text": "CRWV"
+                                  },
+                                  {
+                                    "indices": [
+                                      120,
+                                      125
+                                    ],
+                                    "text": "NBIS"
+                                  },
+                                  {
+                                    "indices": [
+                                      136,
+                                      141
+                                    ],
+                                    "text": "IREN"
+                                  },
+                                  {
+                                    "indices": [
+                                      152,
+                                      157
+                                    ],
+                                    "text": "APLD"
+                                  },
+                                  {
+                                    "indices": [
+                                      167,
+                                      172
+                                    ],
+                                    "text": "RIOT"
+                                  },
+                                  {
+                                    "indices": [
+                                      182,
+                                      187
+                                    ],
+                                    "text": "CIFR"
+                                  },
+                                  {
+                                    "indices": [
+                                      196,
+                                      201
+                                    ],
+                                    "text": "WULF"
+                                  },
+                                  {
+                                    "indices": [
+                                      211,
+                                      215
+                                    ],
+                                    "text": "HUT"
+                                  },
+                                  {
+                                    "indices": [
+                                      224,
+                                      229
+                                    ],
+                                    "text": "CLSK"
+                                  },
+                                  {
+                                    "indices": [
+                                      239,
+                                      244
+                                    ],
+                                    "text": "HIVE"
+                                  },
+                                  {
+                                    "indices": [
+                                      258,
+                                      263
+                                    ],
+                                    "text": "WYFI"
+                                  }
+                                ]
+                              },
+                              "extended_entities": {
+                                "media": [
+                                  {
+                                    "allow_download_status": {
+                                      "allow_download": true
+                                    },
+                                    "display_url": "pic.x.com/z3HZ07q5wn",
+                                    "expanded_url": "https://x.com/aleabitoreddit/status/1984837960735285593/photo/1",
+                                    "ext_media_availability": {
+                                      "status": "Available"
+                                    },
+                                    "features": {
+                                      "large": {
+                                        "faces": []
+                                      },
+                                      "medium": {
+                                        "faces": []
+                                      },
+                                      "orig": {
+                                        "faces": []
+                                      },
+                                      "small": {
+                                        "faces": []
+                                      }
+                                    },
+                                    "id_str": "1984837699157774336",
+                                    "indices": [
+                                      273,
+                                      296
+                                    ],
+                                    "media_key": "3_1984837699157774336",
+                                    "media_results": {
+                                      "result": {
+                                        "media_key": "3_1984837699157774336"
+                                      }
+                                    },
+                                    "media_url_https": "https://pbs.twimg.com/media/G4uPXwsaUAAWNHE.jpg",
+                                    "original_info": {
+                                      "focus_rects": [
+                                        {
+                                          "h": 853,
+                                          "w": 1523,
+                                          "x": 152,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 853,
+                                          "x": 487,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 748,
+                                          "x": 539,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 427,
+                                          "x": 700,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 853,
+                                          "w": 1928,
+                                          "x": 0,
+                                          "y": 0
+                                        }
+                                      ],
+                                      "height": 853,
+                                      "width": 1928
+                                    },
+                                    "sizes": {
+                                      "large": {
+                                        "h": 853,
+                                        "resize": "fit",
+                                        "w": 1928
+                                      },
+                                      "medium": {
+                                        "h": 531,
+                                        "resize": "fit",
+                                        "w": 1200
+                                      },
+                                      "small": {
+                                        "h": 301,
+                                        "resize": "fit",
+                                        "w": 680
+                                      },
+                                      "thumb": {
+                                        "h": 150,
+                                        "resize": "crop",
+                                        "w": 150
+                                      }
+                                    },
+                                    "type": "photo",
+                                    "url": "https://t.co/z3HZ07q5wn"
+                                  }
+                                ]
+                              },
+                              "favorite_count": 555,
+                              "favorited": false,
+                              "full_text": "Neocloud Ecosystem Cheat Sheet Part 1/2:\n\nBullet Point Positive vs. Negatives.\n\nFull List by Marketcap:\n\n$CRWV ($66.2B)\n$NBIS ($32.85B)\n$IREN ($16.52B)\n$APLD ($9.69B)\n$RIOT ($7.34B)\n$CIFR ($7.3B)\n$WULF ($6.36B)\n$HUT($5.39B)\n$CLSK ($5.01B)\n$HIVE ($1.74B CAD)\n$WYFI ($1.29B) https://t.co/z3HZ07q5wn",
+                              "id_str": "1984837960735285593",
+                              "is_quote_status": true,
+                              "lang": "en",
+                              "possibly_sensitive": false,
+                              "possibly_sensitive_editable": true,
+                              "quote_count": 5,
+                              "quoted_status_id_str": "1982931539836187074",
+                              "quoted_status_permalink": {
+                                "display": "x.com/aleabitoreddit…",
+                                "expanded": "https://twitter.com/aleabitoreddit/status/1982931539836187074",
+                                "url": "https://t.co/0hSNH30MIi"
+                              },
+                              "reply_count": 40,
+                              "retweet_count": 92,
+                              "retweeted": false,
+                              "user_id_str": "1940360837547565056"
+                            },
+                            "note_tweet": {
+                              "is_expandable": true,
+                              "note_tweet_results": {
+                                "result": {
+                                  "entity_set": {
+                                    "hashtags": [],
+                                    "symbols": [
+                                      {
+                                        "indices": [
+                                          105,
+                                          110
+                                        ],
+                                        "text": "CRWV"
+                                      },
+                                      {
+                                        "indices": [
+                                          120,
+                                          125
+                                        ],
+                                        "text": "NBIS"
+                                      },
+                                      {
+                                        "indices": [
+                                          136,
+                                          141
+                                        ],
+                                        "text": "IREN"
+                                      },
+                                      {
+                                        "indices": [
+                                          152,
+                                          157
+                                        ],
+                                        "text": "APLD"
+                                      },
+                                      {
+                                        "indices": [
+                                          167,
+                                          172
+                                        ],
+                                        "text": "RIOT"
+                                      },
+                                      {
+                                        "indices": [
+                                          182,
+                                          187
+                                        ],
+                                        "text": "CIFR"
+                                      },
+                                      {
+                                        "indices": [
+                                          196,
+                                          201
+                                        ],
+                                        "text": "WULF"
+                                      },
+                                      {
+                                        "indices": [
+                                          211,
+                                          215
+                                        ],
+                                        "text": "HUT"
+                                      },
+                                      {
+                                        "indices": [
+                                          224,
+                                          229
+                                        ],
+                                        "text": "CLSK"
+                                      },
+                                      {
+                                        "indices": [
+                                          239,
+                                          244
+                                        ],
+                                        "text": "HIVE"
+                                      },
+                                      {
+                                        "indices": [
+                                          258,
+                                          263
+                                        ],
+                                        "text": "WYFI"
+                                      },
+                                      {
+                                        "indices": [
+                                          273,
+                                          278
+                                        ],
+                                        "text": "WLAC"
+                                      },
+                                      {
+                                        "indices": [
+                                          290,
+                                          295
+                                        ],
+                                        "text": "DGXX"
+                                      },
+                                      {
+                                        "indices": [
+                                          308,
+                                          313
+                                        ],
+                                        "text": "SLNH"
+                                      },
+                                      {
+                                        "indices": [
+                                          699,
+                                          704
+                                        ],
+                                        "text": "CRWV"
+                                      },
+                                      {
+                                        "indices": [
+                                          1840,
+                                          1845
+                                        ],
+                                        "text": "NBIS"
+                                      },
+                                      {
+                                        "indices": [
+                                          2823,
+                                          2828
+                                        ],
+                                        "text": "IREN"
+                                      },
+                                      {
+                                        "indices": [
+                                          4215,
+                                          4220
+                                        ],
+                                        "text": "APLD"
+                                      },
+                                      {
+                                        "indices": [
+                                          4941,
+                                          4946
+                                        ],
+                                        "text": "RIOT"
+                                      },
+                                      {
+                                        "indices": [
+                                          5741,
+                                          5746
+                                        ],
+                                        "text": "CIFR"
+                                      },
+                                      {
+                                        "indices": [
+                                          5837,
+                                          5843
+                                        ],
+                                        "text": "GOOGL"
+                                      },
+                                      {
+                                        "indices": [
+                                          6511,
+                                          6516
+                                        ],
+                                        "text": "CIFR"
+                                      },
+                                      {
+                                        "indices": [
+                                          6521,
+                                          6526
+                                        ],
+                                        "text": "APLD"
+                                      }
+                                    ],
+                                    "urls": [],
+                                    "user_mentions": []
+                                  },
+                                  "id": "Tm90ZVR3ZWV0OjE5ODQ4Mzc5NjAwNTE2OTk3MTI=",
+                                  "media": {
+                                    "inline_media": []
+                                  },
+                                  "richtext": {
+                                    "richtext_tags": []
+                                  },
+                                  "text": "Neocloud Ecosystem Cheat Sheet Part 1/2:\n\nBullet Point Positive vs. Negatives.\n\nFull List by Marketcap:\n\n$CRWV ($66.2B)\n$NBIS ($32.85B)\n$IREN ($16.52B)\n$APLD ($9.69B)\n$RIOT ($7.34B)\n$CIFR ($7.3B)\n$WULF ($6.36B)\n$HUT($5.39B)\n$CLSK ($5.01B)\n$HIVE ($1.74B CAD)\n$WYFI ($1.29B)\n$WLAC($600m IPO)\n$DGXX ($393M CAD)\n$SLNH ($281.9M)\n\n_\n\nSummary\n\nWhen comparing, a major source of alpha generation currently lies in the megawatt valuation arbitrage, which involves converting low-multiple Bitcoin power capacity into high-multiple AI hosting capacity.\n\nThe second major alpha is margin generation, which involves being vertically integrated from the bottom up from GPU orchestration to software.\n\nCoreweave ( $CRWV )  - $66.2B Marketcap\n\n🍏Positives\n________________\n\n- Sector leader by scale: quarterly revenue of $1.21B (+206.75% YoY) and EBITDA of $607.69M; on pace for $5B+ ARR in 2025.\n- $30B+ backlog, anchored by:\n   - $14B Meta deal,\n   - OpenAI\n    - $6.3B NVIDIA GPU backstop agreement,\n    - growng Gov contracts via CRWV Federal .\n- Expansion into U.S. government infrastructure is a major long-term moat if backstopped by federal workloads.\n- NVIDIA partnership ensures utilization floor; de-risks GPU oversupply.\n- Positioned as hyperscaler alternative with Tier 1 clients and national buildout footprint.\n\nNegatives\n________________\n\n- Aggressive capex: Q3 spend of $2.9–3.4B, with 2025 full-year guidance of $20–23B.\n- High-cost debt structure: Over $1B in projected annual interest, versus competors using low- or zero-interest convertible notes.\n- Q2 GAAP net loss of $291M, signaling limited profitability despite scale.\n- Execution risk remains high: e.g., failed $9B Core Scientific acquisition due to shareholder rejection.\n- Competitors like Nebius are closing the full-stack gap, weakening CoreWeave's software moat.\n\nNebius ( $NBIS ) - $32.85B MarketCap\n\n🍏Positives\n________________\n\n- $17.4B Microsoft deal for full-stack AI infrastructure (possibly rising to $19.4B).\n- Active include many enterprises such as MSFT, Shopify, Accenture, governments, and AI startups.\n- 71%+ gross margins on AI infra segment; profitable at the EBITDA level.\n- 1 GW+ powr secured, targeting dense GPU deployments across new sites.\n- Fully integrated software+hardware stack, which increases opex and is a moat.\n- $10B+ in assets, from $5.8B+ cash, ownership of companies like Clickhouse that powers Anthropic, Meta, and others growing rapidly.\n\nNegatives\n________________\n\n- Execution risks around full-stack delivery and latency SLAs could derail rollout.\n- Microsoft is the primary anchor on forward revenue extreme contract dependency (high concentration risk projected AI revenue)\n- 71% gross margin figure not representative of forward revenue or execution at scale and could lower to a more conservative 50-65% number.\n\n$IREN - $16.52B marketcap\n\n🍏Positives\n________________\n\n- 2.91 GW power secured, diversified across North America, and expanding more than 3GW in renewable power capacity.\n- Full control over power, land, and data center construction = vertical efficiency and higher margin control compare to other bare metal.\n- Targets customers (e.g., AI labs, hyperscalers) who might bring their own Type-1 orchestration and prefer bare-metal control.\n- Historically the most efficient and profitable large-scale BTC miner and better positioned to handle rising GPU power/cooling requirements in B100/B200 generations for AI cloud pivot.\n- Targeting an ARR of over $500 million by the first quarter of 2026 by buildouting out a fleet of 23,000 NVIDIA B200/B300 + AMD MI350X GPUs.\n\nDownsides\n________________\n\n- No well-known enteprsie/hyperscaler contract visibility and limited disclosed large SLA deals yet\n- Not a full-stack provider; acts as Tier-1 (shell/colocation) = lower margin and tenant risk and illustrative GPU target. Meaning it is unable to capture the highest-margin revenues associated with integrated, proprietary full-stack cloud\n- Quoted 92% margins excludes expense recognition, and with D&A and would be much lower at scale.\n- The substantial capital expenditure required for the large-scale GPU purchase risks negative returns if future utilization rates fail to meet expectations\n\n$APLD\n\n🍏Positives\n________________\n\n- $5B Macquarie financing facility, with first draw building 400MW AI campus.\n- Tenant: CoreWeave fully leasing Polaris Forge 1 (400MW), scalable to 1GW.\n- Proprietary waterless liquid cooling optimized for dense AI workloads\n- Capex-light via preferred equity. \n- AI-first buildout focused on latency, fiber, and power pairing in North Dakota.\n\nDownsides\n________________\n\n- Large-scale buildout depends on continued draws from Macquarie’s $5B facility.\n- 400MW CoreWeave lease is all-or-nothing; no clarity on tenant diversity.\n- Execution risk at Polaris Forge: weather, zoning, grid integration delays.\n- Exposed to single-tenant concentration and private-market GPU pricing dynamics.\n\n$RIOT\n\n🍏Positives\n________________\n\n- 600MW idle capacity in Corsicana, TX under AI redeployment review.\n- Gigawatt-scale infrastructure in place, ready for rapid pivot.\n- Leverages one of the lowest power costs in the U.S. (ERCOT access).\n- TTM Gross Margin of nearly 60% as of Q2 2025, primarily derived from its core mining business. The successful implementation of this contract gives more confidence in converting additional existing mining sites into high-multiple HPC capacity.\n\nNegatives\n________________\n\n- AI pivot is purely exploratory; no firm buildout announced.\n- 600MW idle capacity = opportunity, but also dead capital for now.\n- Canceling mining expansion (8.3 EH/s) may weaken near-term revenues.\n- Needs permits, fiber, GPU supply, and anchor tenant before AI rollout can begin.\n\n$CIFR\n\n🍏Positives\n________________\n\n- 10-year, $3B+ computing 168MW agreement with Fluidstack + $GOOGL\n- Agreement is substantially de-risked by a $1.4 billion commitment from Google to backstop the Fluidstack lease\n- High-margin, low-risk hosting model with leased facilities.\n\nNegatives\n________________\n\n- Fluidstack deal is 10-year but fixed-price, limiting upside if GPU rental rates increase.\n- $1.3B convertible debt adds dilution risk if equity markets weaken.\n- Site buildouts dependent on few customers, very high fill and utilization risk.\n\n_\n\nSince the data center sector is so nuanced and broad thought it would be helpful if I wrote created a full TLDR list for newcomers to see the tradeoffs of each approach.\n\nI'll probably go back and add more stuff to $CIFR and $APLD and others in one final post since it didn't get enough justice. \n\nI just didn't realize how much time this took to write up + please correct me if any figures are off lol.\n\nAlso would save me time if people helped fill out the rest lol so would appreciate it too for 2/2.\n\n~~~ Help with the Crowdsourcing ~~~"
+                                }
+                              }
+                            },
+                            "quick_promote_eligibility": {
+                              "eligibility": "IneligibleUserUnauthorized"
+                            },
+                            "quoted_status_result": {},
+                            "rest_id": "1984837960735285593",
+                            "unmention_data": {},
+                            "views": {
+                              "count": "365106",
+                              "state": "EnabledWithCount"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "entryId": "tweet-1984837960735285593",
+                    "sortIndex": "2118402687803326464"
+                  },
+                  {
+                    "content": {
+                      "__typename": "TimelineTimelineItem",
+                      "clientEventInfo": {
+                        "component": "profile_best_highlights",
+                        "element": "tweet"
+                      },
+                      "entryType": "TimelineTimelineItem",
+                      "itemContent": {
+                        "__typename": "TimelineTweet",
+                        "itemType": "TimelineTweet",
+                        "tweetDisplayType": "Tweet",
+                        "tweet_results": {
+                          "result": {
+                            "__typename": "Tweet",
+                            "core": {
+                              "user_results": {
+                                "result": {
+                                  "__typename": "User",
+                                  "affiliates_highlighted_label": {
+                                    "label": {
+                                      "badge": {
+                                        "url": "https://pbs.twimg.com/profile_images/2071341570792779776/x6ION4vt_bigger.jpg"
+                                      },
+                                      "description": "Serenity Research",
+                                      "url": {
+                                        "url": "https://twitter.com/SerenityRSH",
+                                        "urlType": "DeepLink"
+                                      },
+                                      "userLabelDisplayType": "Badge",
+                                      "userLabelType": "BusinessLabel"
+                                    }
+                                  },
+                                  "has_graduated_access": true,
+                                  "id": "VXNlcjoxOTQwMzYwODM3NTQ3NTY1MDU2",
+                                  "is_blue_verified": true,
+                                  "legacy": {
+                                    "blocked_by": false,
+                                    "blocking": false,
+                                    "can_dm": false,
+                                    "can_media_tag": false,
+                                    "created_at": "Wed Jul 02 10:44:15 +0000 2025",
+                                    "default_profile": true,
+                                    "default_profile_image": false,
+                                    "description": "Only on X, don’t trust fake accs\n\nAI/Semi Supply Chains Research\n\nNothing is investment advice. No paid promos; may trade/hold names disc, views my own.",
+                                    "entities": {
+                                      "description": {}
+                                    },
+                                    "fast_followers_count": 0,
+                                    "favourites_count": 17107,
+                                    "follow_request_sent": false,
+                                    "followed_by": false,
+                                    "followers_count": 1065834,
+                                    "following": false,
+                                    "friends_count": 212,
+                                    "has_custom_timelines": false,
+                                    "is_translator": false,
+                                    "listed_count": 9569,
+                                    "location": "Not Financial Advice",
+                                    "media_count": 2319,
+                                    "muting": false,
+                                    "name": "Serenity",
+                                    "needs_phone_verification": false,
+                                    "normal_followers_count": 1065834,
+                                    "notifications": false,
+                                    "possibly_sensitive": false,
+                                    "profile_banner_url": "https://pbs.twimg.com/profile_banners/1940360837547565056/1788271605",
+                                    "profile_image_url_https": "https://pbs.twimg.com/profile_images/1996176688414367744/LXfA_lIx_normal.jpg",
+                                    "profile_interstitial_type": "",
+                                    "protected": false,
+                                    "screen_name": "aleabitoreddit",
+                                    "statuses_count": 7885,
+                                    "time_zone": "",
+                                    "translator_type": "none",
+                                    "url": "",
+                                    "utc_offset": 0,
+                                    "verified": false,
+                                    "withheld_description": "",
+                                    "withheld_scope": ""
+                                  },
+                                  "profile_image_shape": "Circle",
+                                  "rest_id": "1940360837547565056",
+                                  "super_follow_eligible": false,
+                                  "super_followed_by": false,
+                                  "super_following": false
+                                }
+                              }
+                            },
+                            "edit_control": {
+                              "edit_tweet_ids": [
+                                "1988048592754589970"
+                              ],
+                              "editable_until_msecs": "1762826295000",
+                              "edits_remaining": "5",
+                              "is_edit_eligible": true
+                            },
+                            "is_translatable": false,
+                            "legacy": {
+                              "bookmark_count": 42,
+                              "bookmarked": false,
+                              "conversation_id_str": "1988048592754589970",
+                              "created_at": "Tue Nov 11 00:58:15 +0000 2025",
+                              "display_text_range": [
+                                0,
+                                279
+                              ],
+                              "entities": {
+                                "media": [
+                                  {
+                                    "allow_download_status": {
+                                      "allow_download": true
+                                    },
+                                    "display_url": "pic.x.com/JtL7M2liXh",
+                                    "expanded_url": "https://x.com/aleabitoreddit/status/1988048592754589970/photo/1",
+                                    "ext_media_availability": {
+                                      "status": "Available"
+                                    },
+                                    "features": {
+                                      "large": {
+                                        "faces": [
+                                          {
+                                            "h": 55,
+                                            "w": 55,
+                                            "x": 58,
+                                            "y": 54
+                                          }
+                                        ]
+                                      },
+                                      "medium": {
+                                        "faces": [
+                                          {
+                                            "h": 54,
+                                            "w": 54,
+                                            "x": 57,
+                                            "y": 53
+                                          }
+                                        ]
+                                      },
+                                      "orig": {
+                                        "faces": [
+                                          {
+                                            "h": 55,
+                                            "w": 55,
+                                            "x": 58,
+                                            "y": 54
+                                          }
+                                        ]
+                                      },
+                                      "small": {
+                                        "faces": [
+                                          {
+                                            "h": 30,
+                                            "w": 30,
+                                            "x": 32,
+                                            "y": 30
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "id_str": "1988044019545563136",
+                                    "indices": [
+                                      280,
+                                      303
+                                    ],
+                                    "media_key": "3_1988044019545563136",
+                                    "media_results": {
+                                      "result": {
+                                        "media_key": "3_1988044019545563136"
+                                      }
+                                    },
+                                    "media_url_https": "https://pbs.twimg.com/media/G5bzgK7aYAAkZ5D.jpg",
+                                    "original_info": {
+                                      "focus_rects": [
+                                        {
+                                          "h": 679,
+                                          "w": 1213,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 963,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 845,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 482,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 1213,
+                                          "x": 0,
+                                          "y": 0
+                                        }
+                                      ],
+                                      "height": 963,
+                                      "width": 1213
+                                    },
+                                    "sizes": {
+                                      "large": {
+                                        "h": 963,
+                                        "resize": "fit",
+                                        "w": 1213
+                                      },
+                                      "medium": {
+                                        "h": 953,
+                                        "resize": "fit",
+                                        "w": 1200
+                                      },
+                                      "small": {
+                                        "h": 540,
+                                        "resize": "fit",
+                                        "w": 680
+                                      },
+                                      "thumb": {
+                                        "h": 150,
+                                        "resize": "crop",
+                                        "w": 150
+                                      }
+                                    },
+                                    "type": "photo",
+                                    "url": "https://t.co/JtL7M2liXh"
+                                  }
+                                ],
+                                "symbols": [
+                                  {
+                                    "indices": [
+                                      55,
+                                      60
+                                    ],
+                                    "text": "WULF"
+                                  },
+                                  {
+                                    "indices": [
+                                      193,
+                                      198
+                                    ],
+                                    "text": "CIFR"
+                                  },
+                                  {
+                                    "indices": [
+                                      257,
+                                      262
+                                    ],
+                                    "text": "CRWV"
+                                  }
+                                ]
+                              },
+                              "extended_entities": {
+                                "media": [
+                                  {
+                                    "allow_download_status": {
+                                      "allow_download": true
+                                    },
+                                    "display_url": "pic.x.com/JtL7M2liXh",
+                                    "expanded_url": "https://x.com/aleabitoreddit/status/1988048592754589970/photo/1",
+                                    "ext_media_availability": {
+                                      "status": "Available"
+                                    },
+                                    "features": {
+                                      "large": {
+                                        "faces": [
+                                          {
+                                            "h": 55,
+                                            "w": 55,
+                                            "x": 58,
+                                            "y": 54
+                                          }
+                                        ]
+                                      },
+                                      "medium": {
+                                        "faces": [
+                                          {
+                                            "h": 54,
+                                            "w": 54,
+                                            "x": 57,
+                                            "y": 53
+                                          }
+                                        ]
+                                      },
+                                      "orig": {
+                                        "faces": [
+                                          {
+                                            "h": 55,
+                                            "w": 55,
+                                            "x": 58,
+                                            "y": 54
+                                          }
+                                        ]
+                                      },
+                                      "small": {
+                                        "faces": [
+                                          {
+                                            "h": 30,
+                                            "w": 30,
+                                            "x": 32,
+                                            "y": 30
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "id_str": "1988044019545563136",
+                                    "indices": [
+                                      280,
+                                      303
+                                    ],
+                                    "media_key": "3_1988044019545563136",
+                                    "media_results": {
+                                      "result": {
+                                        "media_key": "3_1988044019545563136"
+                                      }
+                                    },
+                                    "media_url_https": "https://pbs.twimg.com/media/G5bzgK7aYAAkZ5D.jpg",
+                                    "original_info": {
+                                      "focus_rects": [
+                                        {
+                                          "h": 679,
+                                          "w": 1213,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 963,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 845,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 482,
+                                          "x": 0,
+                                          "y": 0
+                                        },
+                                        {
+                                          "h": 963,
+                                          "w": 1213,
+                                          "x": 0,
+                                          "y": 0
+                                        }
+                                      ],
+                                      "height": 963,
+                                      "width": 1213
+                                    },
+                                    "sizes": {
+                                      "large": {
+                                        "h": 963,
+                                        "resize": "fit",
+                                        "w": 1213
+                                      },
+                                      "medium": {
+                                        "h": 953,
+                                        "resize": "fit",
+                                        "w": 1200
+                                      },
+                                      "small": {
+                                        "h": 540,
+                                        "resize": "fit",
+                                        "w": 680
+                                      },
+                                      "thumb": {
+                                        "h": 150,
+                                        "resize": "crop",
+                                        "w": 150
+                                      }
+                                    },
+                                    "type": "photo",
+                                    "url": "https://t.co/JtL7M2liXh"
+                                  }
+                                ]
+                              },
+                              "favorite_count": 125,
+                              "favorited": false,
+                              "full_text": "Neocloud Earnings Today + Why Michael Burry is Wrong:\n\n$WULF - ER was positive, $17B TCV from 520 MW HPC capacity. \n\n240 MW JV in Texas for DC expansion + $5B financing. \n\nNothing special like $CIFR ER with AWS, just conf (eg. deal finances) and site dev.\n\n$CRWV - ER was bearish https://t.co/JtL7M2liXh",
+                              "id_str": "1988048592754589970",
+                              "is_quote_status": true,
+                              "lang": "en",
+                              "possibly_sensitive": false,
+                              "possibly_sensitive_editable": true,
+                              "quote_count": 0,
+                              "quoted_status_id_str": "1985334909108433014",
+                              "quoted_status_permalink": {
+                                "display": "x.com/aleabitoreddit…",
+                                "expanded": "https://twitter.com/aleabitoreddit/status/1985334909108433014",
+                                "url": "https://t.co/CrCP7dhoaS"
+                              },
+                              "reply_count": 18,
+                              "retweet_count": 11,
+                              "retweeted": false,
+                              "user_id_str": "1940360837547565056"
+                            },
+                            "note_tweet": {
+                              "is_expandable": true,
+                              "note_tweet_results": {
+                                "result": {
+                                  "entity_set": {
+                                    "hashtags": [],
+                                    "symbols": [
+                                      {
+                                        "indices": [
+                                          55,
+                                          60
+                                        ],
+                                        "text": "WULF"
+                                      },
+                                      {
+                                        "indices": [
+                                          193,
+                                          198
+                                        ],
+                                        "text": "CIFR"
+                                      },
+                                      {
+                                        "indices": [
+                                          257,
+                                          262
+                                        ],
+                                        "text": "CRWV"
+                                      }
+                                    ],
+                                    "urls": [],
+                                    "user_mentions": []
+                                  },
+                                  "id": "Tm90ZVR3ZWV0OjE5ODgwNDg1OTI1MzY1NjM3MTU=",
+                                  "media": {
+                                    "inline_media": []
+                                  },
+                                  "richtext": {
+                                    "richtext_tags": []
+                                  },
+                                  "text": "Neocloud Earnings Today + Why Michael Burry is Wrong:\n\n$WULF - ER was positive, $17B TCV from 520 MW HPC capacity. \n\n240 MW JV in Texas for DC expansion + $5B financing. \n\nNothing special like $CIFR ER with AWS, just conf (eg. deal finances) and site dev.\n\n$CRWV - ER was bearish near term due to lower forward revenue Q4.  \n\n$55.6B backlog ($22.4B from OpenAI). Slight earnings beat 1.36B vs. 1.29B (129% Y/Y), EBITDA margins (61%). \n\nStock dropped on datacenter delay, this hurts FY 2025 (505-5.15B vs. 5.29B consensus). Operating margins was lowered, which I predicted due to debt financing with interest (~1B+ interest/year) that cuts into margins, while other Neoclouds don't have that same issue. \n\nThat being said this was a one-off issue, and we'll likely see any sell-off bought back after next quarter since markets are forward looking. \n\n_\n\nAs for Michael Burry arguing on GPU deprecation: he's completely wrong, but partially right about understating it. \n\nHis general claim: capex of chips on a 2-3 yr product cycle should not result in the extension of useful lives\n\n-> in Google's case, their TPUs from 7 years ago are being run at 100% utilization lol. Repeat 7 years ago.\n\nAmin Vahdat, said that Google currently has seven generations of its TPU hardware in production, and that the “seven- and eight-year-old TPUs have 100 % utilization.”  \n\n\"Google says TPU demand is outstripping supply, claims 8yr old hardware iterations have “100% utilization” -Data Center Dynamics\n\n-> in Nvidia's case A100 (PCIe and SXM4 variants), are still in operation. They were launched in 2020. It's 2025 now. Older models keep their value and still deliver equity. They don't just get nuked since it's an add-on to compliment newer models. \n\nNvidia’s A100 can be partitioned into isolated instances to maximize utilization, and older-gen accelerators are still monetized for inference or lower-prio tasks rather than getting nuked as what he claims. They actually have residual value and still re-sale for a lot 5 years later. \n\nHe's completely wrong here on shelf-life, but might be correct in how some hyperscalers stretch the idea of utilization to justify aggressive capex.\n\nIt's a nuanced argument but Neocloud thesis remains in tact and stronger than ever."
+                                }
+                              }
+                            },
+                            "quick_promote_eligibility": {
+                              "eligibility": "IneligibleUserUnauthorized"
+                            },
+                            "quoted_status_result": {},
+                            "rest_id": "1988048592754589970",
+                            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+                            "unmention_data": {},
+                            "views": {
+                              "count": "46018",
+                              "state": "EnabledWithCount"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "entryId": "tweet-1988048592754589970",
+                    "sortIndex": "2118402687803326463"
+                  }
+                ],
+                "type": "TimelineAddEntries"
+              },
+              {
+                "direction": "TopAndBottom",
+                "type": "TimelineTerminateTimeline"
+              }
+            ],
+            "metadata": {
+              "scribeConfig": {
+                "page": "profileBestHighlights"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

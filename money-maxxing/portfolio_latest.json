@@ -1,0 +1,944 @@
+{
+  "updated_at": "2026-11-10T00:20:30",
+  "latest_market_date": "2026-11-09",
+  "totals": {
+    "total_principal": 25753.42,
+    "settled_total_amount": 24291.04,
+    "settled_total_profit": -1462.38,
+    "est_today_profit": 7.9,
+    "est_total_amount": 24291.04,
+    "est_total_profit": -1462.38,
+    "est_total_return_pct": -5.68
+  },
+  "indices": [
+    {
+      "name": "上证指数",
+      "trade_date": "2026-11-09",
+      "close": 3660.79,
+      "pct": 0.32,
+      "amount_yi": 6825.33
+    },
+    {
+      "name": "深证成指",
+      "trade_date": "2026-11-09",
+      "close": 11145.49,
+      "pct": -0.27,
+      "amount_yi": 8000.81
+    },
+    {
+      "name": "沪深300",
+      "trade_date": "2026-11-09",
+      "close": 4056.11,
+      "pct": 0.05,
+      "amount_yi": 3952.05
+    },
+    {
+      "name": "创业板指",
+      "trade_date": "2026-11-09",
+      "close": 2458.56,
+      "pct": -0.27,
+      "amount_yi": 4020.68
+    },
+    {
+      "name": "科创50",
+      "trade_date": "2026-11-09",
+      "close": 1256.96,
+      "pct": 0.3,
+      "amount_yi": 717.34
+    },
+    {
+      "name": "中证转债",
+      "trade_date": "2026-11-09",
+      "close": 455.94,
+      "pct": 0.43,
+      "amount_yi": 605.62
+    }
+  ],
+  "etfs_and_heavyweights": [
+    {
+      "code": "510310",
+      "name": "沪深300ETF易方达",
+      "trade_date": "2026-11-09",
+      "close": 4.015,
+      "pct": 0.15,
+      "amount_yi": 10.39
+    },
+    {
+      "code": "159819",
+      "name": "人工智能ETF易方达",
+      "trade_date": "2026-11-09",
+      "close": 1.369,
+      "pct": 0.81,
+      "amount_yi": 2.84
+    },
+    {
+      "code": "515120",
+      "name": "创新药ETF广发",
+      "trade_date": "2026-11-09",
+      "close": 0.622,
+      "pct": -0.64,
+      "amount_yi": 2.79
+    },
+    {
+      "code": "511260",
+      "name": "十年国债ETF国泰",
+      "trade_date": "2026-11-09",
+      "close": 136.122,
+      "pct": -0.01,
+      "amount_yi": 51.18
+    },
+    {
+      "code": "300308",
+      "name": "中际旭创",
+      "trade_date": "2026-11-09",
+      "close": 452.03,
+      "pct": 0.9,
+      "amount_yi": 217.28
+    },
+    {
+      "code": "300502",
+      "name": "新易盛",
+      "trade_date": "2026-11-09",
+      "close": 176.0,
+      "pct": 2.27,
+      "amount_yi": 137.69
+    },
+    {
+      "code": "688256",
+      "name": "寒武纪",
+      "trade_date": "2026-11-09",
+      "close": 851.21,
+      "pct": 6.02,
+      "amount_yi": 103.88
+    },
+    {
+      "code": "688041",
+      "name": "海光信息",
+      "trade_date": "2026-11-09",
+      "close": 191.88,
+      "pct": 1.26,
+      "amount_yi": 34.12
+    },
+    {
+      "code": "688521",
+      "name": "芯原股份",
+      "trade_date": "2026-11-09",
+      "close": 108.33,
+      "pct": 2.88,
+      "amount_yi": 20.84
+    },
+    {
+      "code": "002230",
+      "name": "科大讯飞",
+      "trade_date": "2026-11-09",
+      "close": 37.96,
+      "pct": -0.76,
+      "amount_yi": 6.79
+    },
+    {
+      "code": "000977",
+      "name": "浪潮信息",
+      "trade_date": "2026-11-09",
+      "close": 55.54,
+      "pct": 0.76,
+      "amount_yi": 16.33
+    },
+    {
+      "code": "688111",
+      "name": "金山办公",
+      "trade_date": "2026-11-09",
+      "close": 225.6,
+      "pct": -2.76,
+      "amount_yi": 9.74
+    },
+    {
+      "code": "603259",
+      "name": "药明康德",
+      "trade_date": "2026-11-09",
+      "close": 150.29,
+      "pct": 2.24,
+      "amount_yi": 43.17
+    },
+    {
+      "code": "600276",
+      "name": "恒瑞医药",
+      "trade_date": "2026-11-09",
+      "close": 49.23,
+      "pct": -2.38,
+      "amount_yi": 24.93
+    },
+    {
+      "code": "688235",
+      "name": "百济神州",
+      "trade_date": "2026-11-09",
+      "close": 285.0,
+      "pct": 2.3,
+      "amount_yi": 14.57
+    },
+    {
+      "code": "300759",
+      "name": "康龙化成",
+      "trade_date": "2026-11-09",
+      "close": 44.5,
+      "pct": -3.03,
+      "amount_yi": 23.02
+    }
+  ],
+  "overnight_us_market": [
+    {
+      "symbol": ".IXIC",
+      "name": "纳斯达克",
+      "trade_date": "2026-11-09",
+      "close": 25145.33,
+      "pct": 2.3
+    },
+    {
+      "symbol": ".INX",
+      "name": "标普500",
+      "trade_date": "2026-11-09",
+      "close": 7522.44,
+      "pct": 1.97
+    },
+    {
+      "symbol": ".DJI",
+      "name": "道琼斯",
+      "trade_date": "2026-11-09",
+      "close": 52183.78,
+      "pct": 1.75
+    },
+    {
+      "symbol": "SOXX.OQ",
+      "name": "费城半导体ETF-iShares",
+      "trade_date": "2026-11-09",
+      "close": 145.29,
+      "pct": 6.42
+    },
+    {
+      "symbol": "NVDA.OQ",
+      "name": "英伟达",
+      "trade_date": "2026-11-09",
+      "close": 176.36,
+      "pct": -5.51
+    },
+    {
+      "symbol": "AMD.OQ",
+      "name": "超威半导体",
+      "trade_date": "2026-11-09",
+      "close": 500.25,
+      "pct": 11.4
+    },
+    {
+      "symbol": "SMCI.OQ",
+      "name": "超微电脑",
+      "trade_date": "2026-11-09",
+      "close": 29.24,
+      "pct": 1.65
+    },
+    {
+      "symbol": "MRVL.OQ",
+      "name": "迈威尔科技",
+      "trade_date": "2026-11-09",
+      "close": 154.92,
+      "pct": 9.72
+    },
+    {
+      "symbol": "LITE.OQ",
+      "name": "Lumentum",
+      "trade_date": "2026-11-09",
+      "close": 603.25,
+      "pct": 12.01
+    },
+    {
+      "symbol": "LLY.N",
+      "name": "礼来",
+      "trade_date": "2026-11-09",
+      "close": 1394.7,
+      "pct": 3.01
+    }
+  ],
+  "latest_announcements": [
+    {
+      "date": "2026-11-10",
+      "code": "000977",
+      "name": "浪潮信息",
+      "title": "浪潮信息:关于公司与专业机构共同投资的进展公告"
+    },
+    {
+      "date": "2026-11-10",
+      "code": "688235",
+      "name": "百济神州",
+      "title": "百济神州:百济神州有限公司2026年第三季度报告"
+    },
+    {
+      "date": "2026-11-10",
+      "code": "600276",
+      "name": "恒瑞医药",
+      "title": "恒瑞医药:恒瑞医药关于获得药物临床试验批准通知书的公告"
+    },
+    {
+      "date": "2026-11-10",
+      "code": "600276",
+      "name": "恒瑞医药",
+      "title": "恒瑞医药:恒瑞医药关于获得药物临床试验批准通知书的公告"
+    },
+    {
+      "date": "2026-11-10",
+      "code": "688041",
+      "name": "海光信息",
+      "title": "海光信息:海光信息技术股份有限公司关于回购股份事项前十名股东和前十名无限售条件股东持股情况的公告"
+    },
+    {
+      "date": "2026-11-09",
+      "code": "688235",
+      "name": "百济神州",
+      "title": "百济神州:有限公司投资者关系活动记录表-20261106"
+    },
+    {
+      "date": "2026-11-07",
+      "code": "600276",
+      "name": "恒瑞医药",
+      "title": "恒瑞医药:恒瑞医药关于2025年A股员工持股计划部分份额解锁条件成就暨第一个锁定期届满的提示性公告"
+    },
+    {
+      "date": "2026-11-06",
+      "code": "300759",
+      "name": "康龙化成",
+      "title": "康龙化成:关于境外子公司参与境外股权投资基金的公告"
+    },
+    {
+      "date": "2026-11-06",
+      "code": "688235",
+      "name": "百济神州",
+      "title": "百济神州:有限公司投资者关系活动记录表(2026年11月)"
+    },
+    {
+      "date": "2026-11-06",
+      "code": "688041",
+      "name": "海光信息",
+      "title": "海光信息:海光信息技术股份有限公司关于公司股份回购事项的公告"
+    }
+  ],
+  "macro_telegraph": [
+    {
+      "time": "2026-11-10 00:02:39",
+      "text": "【费城半导体指数日内涨7%】费城半导体指数日内涨7.01%，现报10048.08点。英伟达跌3.98%，博通涨9.24%，美光涨7.70%，英特尔涨5.02%，AMD涨12.09%，高通涨6.38%，台积电涨4.96%，阿斯麦涨6.56%。"
+    }
+  ],
+  "forecast_signals": {
+    "a_share_turnover": {
+      "sh_amount_yi": 6825.33,
+      "sz_amount_yi": 8000.81,
+      "total_amount_yi": 14826.14,
+      "prev_day_total_yi": 16577.94,
+      "ma20_total_yi": 16427.18,
+      "volume_ratio_vs_ma20": 0.9
+    },
+    "sector_thermometer": {
+      "ai_cpo_avg_pct": 1.58,
+      "ai_chip_soft_avg_pct": 1.23,
+      "ai_internal_divergence_pct": -0.35,
+      "pharma_cxo_avg_pct": -0.39,
+      "pharma_innov_avg_pct": -0.04,
+      "bond_10y_etf_pct": -0.01,
+      "convertible_bond_index_pct": 0.43,
+      "us_soxx_pct": 6.42,
+      "us_ixic_pct": 2.3
+    },
+    "ols_valuation_calibration": {
+      "110027": {
+        "proxies": [
+          "511260(十年国债)",
+          "000832(转债)",
+          "000300(沪深300)",
+          "159819(AI)"
+        ],
+        "weights": [
+          0.215,
+          0.215,
+          0.088,
+          0.191
+        ],
+        "mae_bps_60d": 16.9
+      },
+      "024430": {
+        "proxies": [
+          "000300(沪深300)",
+          "600276(恒瑞)",
+          "603259(药明)"
+        ],
+        "weights": [
+          0.753,
+          0.071,
+          0.037
+        ],
+        "mae_bps_60d": 40.1
+      }
+    },
+    "fund_signals": {
+      "014437": {
+        "latest_settled_1d_pct": 0.0,
+        "5d_settled_pct": 0.05,
+        "20d_settled_pct": 0.13,
+        "ma20_gap_pct": 0.05,
+        "trend_zone": "near_ma20",
+        "regime_on_last_settled": "normal_p10_p90",
+        "sample_count": 201,
+        "cond_3d_at_up_winrate_pct": 90.0,
+        "cond_3d_at_flat_or_down_winrate_pct": 10.0,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 99.0,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 0.0,
+        "event_impact_score": null
+      },
+      "110020": {
+        "latest_settled_1d_pct": 0.05,
+        "5d_settled_pct": 0.98,
+        "20d_settled_pct": -4.87,
+        "ma20_gap_pct": -0.91,
+        "trend_zone": "near_ma20",
+        "regime_on_last_settled": "normal_p10_p90",
+        "sample_count": 106,
+        "cond_3d_at_up_winrate_pct": 46.2,
+        "cond_3d_at_flat_or_down_winrate_pct": 53.8,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 82.1,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 56.6,
+        "event_impact_score": null
+      },
+      "110027": {
+        "latest_settled_1d_pct": 0.24,
+        "5d_settled_pct": 0.86,
+        "20d_settled_pct": -4.77,
+        "ma20_gap_pct": -1.59,
+        "trend_zone": "oversold_below_ma20",
+        "regime_on_last_settled": "normal_p10_p90",
+        "sample_count": 22,
+        "cond_3d_at_up_winrate_pct": 36.4,
+        "cond_3d_at_flat_or_down_winrate_pct": 63.6,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 59.1,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 40.9,
+        "event_impact_score": null
+      },
+      "012733": {
+        "latest_settled_1d_pct": 0.74,
+        "5d_settled_pct": 0.4,
+        "20d_settled_pct": -11.51,
+        "ma20_gap_pct": -4.12,
+        "trend_zone": "oversold_below_ma20",
+        "regime_on_last_settled": "normal_p10_p90",
+        "sample_count": 69,
+        "cond_3d_at_up_winrate_pct": 50.7,
+        "cond_3d_at_flat_or_down_winrate_pct": 49.3,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 84.1,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 72.5,
+        "event_impact_score": 53.6
+      },
+      "012737": {
+        "latest_settled_1d_pct": -0.64,
+        "5d_settled_pct": 4.26,
+        "20d_settled_pct": 0.1,
+        "ma20_gap_pct": 2.69,
+        "trend_zone": "overbought_above_ma20",
+        "regime_on_last_settled": "normal_p10_p90",
+        "sample_count": 40,
+        "cond_3d_at_up_winrate_pct": 45.0,
+        "cond_3d_at_flat_or_down_winrate_pct": 55.0,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 77.5,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 67.5,
+        "event_impact_score": 9.8
+      },
+      "024430": {
+        "latest_settled_1d_pct": -0.56,
+        "5d_settled_pct": 1.47,
+        "20d_settled_pct": -0.6,
+        "ma20_gap_pct": 0.69,
+        "trend_zone": "near_ma20",
+        "regime_on_last_settled": "normal_p10_p90",
+        "sample_count": 96,
+        "cond_3d_at_up_winrate_pct": 41.7,
+        "cond_3d_at_flat_or_down_winrate_pct": 58.3,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 74.0,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 49.0,
+        "event_impact_score": null
+      }
+    }
+  },
+  "holdings": [
+    {
+      "code": "014437",
+      "name": "鹏华中证同业存单AAA指数7天持有期",
+      "category": "低风险现金管理（同业存单指数，非无风险）",
+      "principal": 7503.42,
+      "shares": 6805.21,
+      "cost_nav": 1.1026,
+      "settled_date": "2026-11-09",
+      "settled_nav": 1.1056,
+      "settled_amount": 7523.84,
+      "settled_profit": 20.42,
+      "settled_return_pct": 0.27,
+      "est_date": "2026-11-09",
+      "est_daily_pct": 0.0,
+      "est_nav": 1.1056,
+      "est_daily_profit": 0.0,
+      "est_amount": 7523.84,
+      "est_profit": 20.42,
+      "est_return_pct": 0.27,
+      "trigger_rule": "平时锁死不动；仅当110020亏超-1000元时赎回4000元抄底"
+    },
+    {
+      "code": "110020",
+      "name": "易方达沪深300ETF联接A",
+      "category": "核心大盘宽基",
+      "principal": 7500.0,
+      "shares": 3955.96,
+      "cost_nav": 1.8959,
+      "settled_date": "2026-11-09",
+      "settled_nav": 1.6813,
+      "settled_amount": 6651.16,
+      "settled_profit": -848.84,
+      "settled_return_pct": -11.32,
+      "est_date": "2026-11-09",
+      "est_daily_pct": 0.05,
+      "est_nav": 1.6813,
+      "est_daily_profit": 3.56,
+      "est_amount": 6651.16,
+      "est_profit": -848.84,
+      "est_return_pct": -11.32,
+      "trigger_rule": "亏超-1000元从014437转4000元抄底；回本(+0元以上)减仓2500元"
+    },
+    {
+      "code": "110027",
+      "name": "易方达安心回报债券A",
+      "category": "二级债基/固收+（2026Q3季报：股票15.70%、债券116.04%含杠杆）",
+      "principal": 4500.0,
+      "shares": 2000.18,
+      "cost_nav": 2.2498,
+      "settled_date": "2026-11-09",
+      "settled_nav": 2.085,
+      "settled_amount": 4170.38,
+      "settled_profit": -329.62,
+      "settled_return_pct": -7.32,
+      "est_date": "2026-11-09",
+      "est_daily_pct": 0.24,
+      "est_nav": 2.085,
+      "est_daily_profit": 10.0,
+      "est_amount": 4170.38,
+      "est_profit": -329.62,
+      "est_return_pct": -7.32,
+      "trigger_rule": "11月12日满30天(0.1%费率)后，亏损缩至-50元内卖出3000元转014437"
+    },
+    {
+      "code": "012733",
+      "name": "易方达人工智能ETF联接A",
+      "category": "科技成长进攻",
+      "principal": 2500.0,
+      "shares": 1381.07,
+      "cost_nav": 1.8102,
+      "settled_date": "2026-11-09",
+      "settled_nav": 1.6009,
+      "settled_amount": 2210.95,
+      "settled_profit": -289.05,
+      "settled_return_pct": -11.56,
+      "est_date": "2026-11-09",
+      "est_daily_pct": 0.74,
+      "est_nav": 1.6009,
+      "est_daily_profit": 16.3,
+      "est_amount": 2210.95,
+      "est_profit": -289.05,
+      "est_return_pct": -11.56,
+      "trigger_rule": "11月12日满30天(0.10%费率，满180天才为0)后，红字盈利达+150元(+6%)卖出1000元落袋"
+    },
+    {
+      "code": "012737",
+      "name": "广发创新药产业ETF联接A",
+      "category": "医药底部进攻",
+      "principal": 1250.0,
+      "shares": 2108.96,
+      "cost_nav": 0.5927,
+      "settled_date": "2026-11-09",
+      "settled_nav": 0.5926,
+      "settled_amount": 1249.77,
+      "settled_profit": -0.23,
+      "settled_return_pct": -0.02,
+      "est_date": "2026-11-09",
+      "est_daily_pct": -0.64,
+      "est_nav": 0.5926,
+      "est_daily_profit": -8.01,
+      "est_amount": 1249.77,
+      "est_profit": -0.23,
+      "est_return_pct": -0.02,
+      "trigger_rule": "11月12日满30天(0费率)后，红字盈利达+75元(+6%)卖出500元落袋"
+    },
+    {
+      "code": "024430",
+      "name": "东方红核心价值混合C",
+      "category": "主动价值偏股(周云管理)",
+      "principal": 2500.0,
+      "shares": 2214.35,
+      "cost_nav": 1.129,
+      "settled_date": "2026-11-09",
+      "settled_nav": 1.1222,
+      "settled_amount": 2484.94,
+      "settled_profit": -15.06,
+      "settled_return_pct": -0.6,
+      "est_date": "2026-11-09",
+      "est_daily_pct": -0.56,
+      "est_nav": 1.1222,
+      "est_daily_profit": -13.95,
+      "est_amount": 2484.94,
+      "est_profit": -15.06,
+      "est_return_pct": -0.6,
+      "trigger_rule": "长期核心底仓保留，满30天0赎回费，盈利超+375元(+15%)再考虑分批止盈"
+    }
+  ],
+  "lots_if_redeemed": {
+    "redeem_day": "2026-11-10",
+    "note": "按先进先出逐笔计；持有天数=赎回日-份额确认日，未计节假日，实际费率以支付宝卖出页为准",
+    "total_fee_yuan": 79.52,
+    "lots": [
+      {
+        "code": "014437",
+        "nav_date": "2026-08-31",
+        "confirm_date": "2026-09-01",
+        "shares": 6805.21,
+        "principal": 7503.42,
+        "value": 7523.84,
+        "days_held": 70,
+        "fee_pct": 0.0,
+        "fee_yuan": 0.0,
+        "next_fee_change": null
+      },
+      {
+        "code": "110020",
+        "nav_date": "2026-08-31",
+        "confirm_date": "2026-09-01",
+        "shares": 3955.96,
+        "principal": 7500.0,
+        "value": 6651.16,
+        "days_held": 70,
+        "fee_pct": 0.5,
+        "fee_yuan": 33.26,
+        "next_fee_change": {
+          "date": "2027-09-01",
+          "days_held": 365,
+          "fee_pct": 0.25
+        }
+      },
+      {
+        "code": "110027",
+        "nav_date": "2026-08-31",
+        "confirm_date": "2026-09-01",
+        "shares": 1087.47,
+        "principal": 2500.0,
+        "value": 2267.37,
+        "days_held": 70,
+        "fee_pct": 0.1,
+        "fee_yuan": 2.27,
+        "next_fee_change": {
+          "date": "2027-09-01",
+          "days_held": 365,
+          "fee_pct": 0.05
+        }
+      },
+      {
+        "code": "024430",
+        "nav_date": "2026-10-12",
+        "confirm_date": "2026-10-13",
+        "shares": 2214.35,
+        "principal": 2500.0,
+        "value": 2484.94,
+        "days_held": 28,
+        "fee_pct": 0.5,
+        "fee_yuan": 12.42,
+        "next_fee_change": {
+          "date": "2026-11-12",
+          "days_held": 30,
+          "fee_pct": 0.0
+        }
+      },
+      {
+        "code": "012733",
+        "nav_date": "2026-10-12",
+        "confirm_date": "2026-10-13",
+        "shares": 1381.07,
+        "principal": 2500.0,
+        "value": 2210.95,
+        "days_held": 28,
+        "fee_pct": 0.5,
+        "fee_yuan": 11.05,
+        "next_fee_change": {
+          "date": "2026-11-12",
+          "days_held": 30,
+          "fee_pct": 0.1
+        }
+      },
+      {
+        "code": "012737",
+        "nav_date": "2026-10-12",
+        "confirm_date": "2026-10-13",
+        "shares": 2108.96,
+        "principal": 1250.0,
+        "value": 1249.77,
+        "days_held": 28,
+        "fee_pct": 0.5,
+        "fee_yuan": 6.25,
+        "next_fee_change": {
+          "date": "2026-11-12",
+          "days_held": 30,
+          "fee_pct": 0.0
+        }
+      },
+      {
+        "code": "110027",
+        "nav_date": "2026-10-12",
+        "confirm_date": "2026-10-13",
+        "shares": 912.71,
+        "principal": 2000.0,
+        "value": 1903.0,
+        "days_held": 28,
+        "fee_pct": 0.75,
+        "fee_yuan": 14.27,
+        "next_fee_change": {
+          "date": "2026-11-12",
+          "days_held": 30,
+          "fee_pct": 0.1
+        }
+      }
+    ]
+  },
+  "fee_calendar": [
+    {
+      "date": "2026-11-12",
+      "code": "024430",
+      "lot_confirm_date": "2026-10-13",
+      "from_pct": 0.5,
+      "to_pct": 0.0
+    },
+    {
+      "date": "2026-11-12",
+      "code": "012733",
+      "lot_confirm_date": "2026-10-13",
+      "from_pct": 0.5,
+      "to_pct": 0.1
+    },
+    {
+      "date": "2026-11-12",
+      "code": "012737",
+      "lot_confirm_date": "2026-10-13",
+      "from_pct": 0.5,
+      "to_pct": 0.0
+    },
+    {
+      "date": "2026-11-12",
+      "code": "110027",
+      "lot_confirm_date": "2026-10-13",
+      "from_pct": 0.75,
+      "to_pct": 0.1
+    },
+    {
+      "date": "2027-09-01",
+      "code": "110020",
+      "lot_confirm_date": "2026-09-01",
+      "from_pct": 0.5,
+      "to_pct": 0.25
+    },
+    {
+      "date": "2027-09-01",
+      "code": "110027",
+      "lot_confirm_date": "2026-09-01",
+      "from_pct": 0.1,
+      "to_pct": 0.05
+    }
+  ],
+  "risk_context": {
+    "lookback_trading_days": 250,
+    "funds": {
+      "014437": {
+        "days": 250,
+        "daily_sd_pct": 0.01,
+        "1d_p10_p50_p90_pct": [
+          0.0,
+          0.01,
+          0.01
+        ],
+        "5d_p10_p50_p90_pct": [
+          0.01,
+          0.03,
+          0.05
+        ],
+        "8d_p10_p50_p90_pct": [
+          0.03,
+          0.05,
+          0.08
+        ],
+        "20d_p10_p50_p90_pct": [
+          0.08,
+          0.12,
+          0.18
+        ]
+      },
+      "110020": {
+        "days": 250,
+        "daily_sd_pct": 1.06,
+        "1d_p10_p50_p90_pct": [
+          -1.31,
+          -0.02,
+          1.22
+        ],
+        "5d_p10_p50_p90_pct": [
+          -2.77,
+          -0.14,
+          2.25
+        ],
+        "8d_p10_p50_p90_pct": [
+          -3.44,
+          -0.5,
+          2.53
+        ],
+        "20d_p10_p50_p90_pct": [
+          -5.3,
+          -0.95,
+          3.77
+        ]
+      },
+      "110027": {
+        "days": 250,
+        "daily_sd_pct": 0.64,
+        "1d_p10_p50_p90_pct": [
+          -0.87,
+          0.0,
+          0.77
+        ],
+        "5d_p10_p50_p90_pct": [
+          -2.04,
+          0.08,
+          1.56
+        ],
+        "8d_p10_p50_p90_pct": [
+          -2.32,
+          -0.02,
+          1.76
+        ],
+        "20d_p10_p50_p90_pct": [
+          -4.2,
+          0.37,
+          3.55
+        ]
+      },
+      "012733": {
+        "days": 250,
+        "daily_sd_pct": 2.47,
+        "1d_p10_p50_p90_pct": [
+          -3.1,
+          0.03,
+          3.12
+        ],
+        "5d_p10_p50_p90_pct": [
+          -6.52,
+          -0.49,
+          6.07
+        ],
+        "8d_p10_p50_p90_pct": [
+          -7.45,
+          -0.8,
+          7.31
+        ],
+        "20d_p10_p50_p90_pct": [
+          -11.95,
+          -0.98,
+          15.02
+        ]
+      },
+      "012737": {
+        "days": 250,
+        "daily_sd_pct": 1.83,
+        "1d_p10_p50_p90_pct": [
+          -2.07,
+          -0.13,
+          2.26
+        ],
+        "5d_p10_p50_p90_pct": [
+          -4.07,
+          -0.79,
+          4.99
+        ],
+        "8d_p10_p50_p90_pct": [
+          -5.32,
+          -1.13,
+          6.8
+        ],
+        "20d_p10_p50_p90_pct": [
+          -8.38,
+          -1.99,
+          7.75
+        ]
+      },
+      "024430": {
+        "days": 250,
+        "daily_sd_pct": 0.93,
+        "1d_p10_p50_p90_pct": [
+          -1.17,
+          0.06,
+          1.07
+        ],
+        "5d_p10_p50_p90_pct": [
+          -2.53,
+          0.09,
+          2.42
+        ],
+        "8d_p10_p50_p90_pct": [
+          -2.78,
+          0.25,
+          2.89
+        ],
+        "20d_p10_p50_p90_pct": [
+          -3.96,
+          -0.32,
+          5.85
+        ]
+      }
+    },
+    "portfolio": {
+      "days": 250,
+      "basis": "当前各基金持有金额 × 历史日涨跌幅（不含未来调仓）",
+      "daily_sd_yuan": 174.0,
+      "1d_yuan": {
+        "p10": -236,
+        "p50": 3,
+        "p90": 214,
+        "worst": -594,
+        "best": 525
+      },
+      "5d_yuan": {
+        "p10": -426,
+        "p50": -8,
+        "p90": 415,
+        "worst": -825,
+        "best": 898
+      },
+      "8d_yuan": {
+        "p10": -523,
+        "p50": -35,
+        "p90": 515,
+        "worst": -973,
+        "best": 1018
+      },
+      "20d_yuan": {
+        "p10": -911,
+        "p50": -20,
+        "p90": 777,
+        "worst": -1795,
+        "best": 1690
+      }
+    }
+  },
+  "track_record": {
+    "registered": 20,
+    "resolved": 10,
+    "hits": 8,
+    "hit_rate_pct": 80.0,
+    "with_probability_resolved": 7,
+    "mean_brier": 0.1646,
+    "mean_stated_probability_pct": 60.1,
+    "pending": 10,
+    "issues": []
+  }
+}
