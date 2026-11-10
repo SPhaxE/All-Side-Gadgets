@@ -23,7 +23,8 @@
 | `portfolio_dossier_advisory_review.md` | 给真人投顾看的档案（10/19 版） | Gemini |
 | `fund_chokepoint_playbook.md` | Serenity(`@aleabitoreddit`)生产资料咽喉框架与1000+基金穿透精选20只备选库（供11/12重大决策调用） | Gemini |
 | `fund_universe_500plus.json` | 天天基金官方接口抓取的850只全品类独立基金净值与费率底座 | 脚本 |
-| `_backup/` | 修改前的归档 | — |
+| `_backup/` | 修改前的归档（不推送到 GitHub） | — |
+| `github_sync.py` | 把本目录同步到 GitHub `SPhaxE/All-Side-Gadgets` 仓库 `main` 分支 `money-maxxing/` 子目录 | 共用 |
 
 ## 每期工作流（「本地量化数据库 + 现实新闻检索子代理」双引擎闭环）
 
@@ -39,6 +40,7 @@
 5. 把新预测追加到 `predictions.json`，运行 `python fund_tracker.py grade`，确认记分卡的“问题”一栏为空。
 6. 运行 `python fund_tracker.py lint intelligence_archive.md --section "第 N 期"`，硬性问题为 0 才能发布。
 7. 需要计算赎回费时，运行 `python fund_tracker.py fees [--date YYYY-MM-DD]`。
+8. **每期收尾必做：同步到 GitHub**。运行 `python github_sync.py -m "第 N 期"`，把本目录（不含 `_backup/`）镜像到 `D:\All-Side-Gadgets\money-maxxing\` 并推送到 `SPhaxE/All-Side-Gadgets` 的 `main` 分支。只要数据有变动（含 `sync` 后、晚间净值补录后）都要跑一次；推送失败要告诉用户原因，不得跳过。
 
 ## 投资者画像（摘自 10/19 档案）
 

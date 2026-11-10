@@ -53,6 +53,8 @@
    - 运行 `python "d:\money maxxing\fund_tracker.py" lint "d:\money maxxing\intelligence_archive.md" --section "第 N 期"`，确保**硬性问题为 0**。
 7. **向用户输出通俗易懂的「人话版」今日线报**：
    - 清晰列出：① 昨天实打实到账多少、今天盘中/收盘大概赚亏多少（6 只基金挨个点名）；② 今天市场为什么这么走（把 `flash` 子代理查到的现实新闻用大白话讲透）；③ 记分卡开奖情况与双引擎新预测（带把握概率）；④ 今天操作指令与 `2026-11-12` 免手续费日倒计时。
+8. **同步到 GitHub（每期收尾必做，用户 `2026-11-10` 指令）**：
+   - 运行 `python "d:\money maxxing\github_sync.py" -m "第 N 期"`，把本目录（不含 `_backup/`）镜像到本地克隆 `D:\All-Side-Gadgets\money-maxxing\`，提交并推送到 `SPhaxE/All-Side-Gadgets` 的 `main` 分支；每次数据变动（含晚间净值补录）后都要跑，推送失败需向用户报告原因。
 
 ---
 

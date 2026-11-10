@@ -58,4 +58,7 @@ python fund_tracker.py fees --date 2026-11-12
 
 # 4. 对指定期数的线报执行措辞合规检查（确保硬性问题为 0）
 python fund_tracker.py lint intelligence_archive.md --section "第 19 期"
+
+# 5. 每期收尾：同步到 GitHub（SPhaxE/All-Side-Gadgets 的 main 分支 money-maxxing/ 子目录，不含 _backup/）
+python github_sync.py -m "第 N 期"
 ```
