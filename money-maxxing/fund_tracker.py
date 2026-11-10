@@ -1138,25 +1138,40 @@ def sync_all(full: bool = False):
     except Exception as e:
         latest_announcements.append({"error": str(e)})
 
-    # 1d. Fetch Sina 7x24 live macro & market telegraph
+    # 1d. Fetch Sina 7x24 live macro & market telegraph (multi-page + top focus tag_id=10)
     macro_telegraph = []
-    try:
-        sina_url = "https://zhibo.sina.com.cn/api/zhibo/feed?page=1&page_size=35&zhibo_id=152"
-        sina_data = fetch_json(sina_url, referer="https://finance.sina.com.cn/")
-        feed_list = (((sina_data.get("result") or {}).get("data") or {}).get("feed") or {}).get("list") or []
-        kw_re = re.compile(r"央行|逆回购|财政|人大|国债|美债|美联储|利率|汇率|人民币|A股|沪指|成交额|算力|芯片|半导体|光模块|人工智能|英伟达|创新药|医保|药明|百济|恒瑞|寒武纪|海光|旭创|新易盛")
-        for item_f in feed_list:
-            nid = str(item_f.get("id", ""))
-            ctime = item_f.get("create_time", "")
-            rtext = re.sub(r"<[^>]+>", "", item_f.get("rich_text", "")).strip()
-            if nid and rtext and kw_re.search(rtext):
-                cur.execute(
-                    "INSERT OR REPLACE INTO macro_news_archive VALUES (?, ?, ?, ?)",
-                    (nid, ctime, rtext[:300], now_str),
-                )
-                macro_telegraph.append({"time": ctime, "text": rtext[:200]})
-    except Exception as e:
-        macro_telegraph.append({"error": str(e)})
+    sina_urls = [
+        "https://zhibo.sina.com.cn/api/zhibo/feed?page=1&page_size=40&zhibo_id=152&tag_id=10",
+        "https://zhibo.sina.com.cn/api/zhibo/feed?page=1&page_size=40&zhibo_id=152",
+        "https://zhibo.sina.com.cn/api/zhibo/feed?page=2&page_size=40&zhibo_id=152",
+        "https://zhibo.sina.com.cn/api/zhibo/feed?page=3&page_size=40&zhibo_id=152",
+    ]
+    kw_re = re.compile(
+        r"央行|逆回购|财政|人大|国债|美债|美联储|利率|汇率|人民币|CPI|PPI|通胀|非农|社融|M2|进出口|海关|发改委|A股|沪指|成交额|算力|芯片|半导体|光模块|人工智能|英伟达|软银|Lumentum|Marvell|AMD|创新药|医保|商保|药明|百济|恒瑞|寒武纪|海光|旭创|新易盛"
+    )
+    seen_nids = set()
+    for sina_url in sina_urls:
+        try:
+            sina_data = fetch_json(sina_url, referer="https://finance.sina.com.cn/")
+            feed_list = (((sina_data.get("result") or {}).get("data") or {}).get("feed") or {}).get("list") or []
+            for item_f in feed_list:
+                nid = str(item_f.get("id", ""))
+                if not nid or nid in seen_nids:
+                    continue
+                seen_nids.add(nid)
+                ctime = item_f.get("create_time", "")
+                rtext = re.sub(r"<[^>]+>", "", item_f.get("rich_text", "")).strip()
+                if rtext and kw_re.search(rtext):
+                    cur.execute(
+                        "INSERT OR REPLACE INTO macro_news_archive VALUES (?, ?, ?, ?)",
+                        (nid, ctime, rtext[:400], now_str),
+                    )
+        except Exception:
+            continue
+    for ptime, rtext in cur.execute(
+        "SELECT pub_time, content FROM macro_news_archive ORDER BY pub_time DESC LIMIT 25"
+    ):
+        macro_telegraph.append({"time": ptime, "text": rtext[:240]})
 
     # 2. Fetch fund NAV history from Eastmoney（库里不足一年时先补全历史，供波动基准与预测打分使用）
     fund_nav_map = {}
@@ -1166,17 +1181,20 @@ def sync_all(full: bool = False):
         if full or have < 300:
             sync_full_history(cur, code)
         url = f"http://api.fund.eastmoney.com/f10/lsjz?fundCode={code}&pageIndex=1&pageSize=20"
-        data = fetch_json(url)
-        rows = data.get("Data", {}).get("LSJZList", [])
-        for r in rows:
-            nav_date = r["FSRQ"]
-            dwjz = float(r["DWJZ"]) if r.get("DWJZ") else 0.0
-            ljjz = float(r["LJJZ"]) if r.get("LJJZ") else dwjz
-            pct = float(r["JZZZL"]) if r.get("JZZZL") not in (None, "") else 0.0
-            cur.execute(
-                "INSERT OR REPLACE INTO fund_nav_history VALUES (?, ?, ?, ?, ?)",
-                (code, nav_date, dwjz, ljjz, pct),
-            )
+        try:
+            data = fetch_json(url)
+            rows = data.get("Data", {}).get("LSJZList", [])
+            for r in rows:
+                nav_date = r["FSRQ"]
+                dwjz = float(r["DWJZ"]) if r.get("DWJZ") else 0.0
+                ljjz = float(r["LJJZ"]) if r.get("LJJZ") else dwjz
+                pct = float(r["JZZZL"]) if r.get("JZZZL") not in (None, "") else 0.0
+                cur.execute(
+                    "INSERT OR REPLACE INTO fund_nav_history VALUES (?, ?, ?, ?, ?)",
+                    (code, nav_date, dwjz, ljjz, pct),
+                )
+        except Exception:
+            sync_full_history(cur, code)
         fund_nav_map[code] = {
             d: (dwjz, ljjz, pct)
             for d, dwjz, ljjz, pct in cur.execute(
@@ -1327,8 +1345,8 @@ def sync_all(full: bool = False):
         "indices": index_summary,
         "etfs_and_heavyweights": stock_etf_summary,
         "overnight_us_market": us_summary,
-        "latest_announcements": latest_announcements[:10],
-        "macro_telegraph": macro_telegraph[:10],
+        "latest_announcements": latest_announcements[:15],
+        "macro_telegraph": macro_telegraph[:25],
         "forecast_signals": signals,
         "holdings": portfolio_summary,
         "lots_if_redeemed": {
