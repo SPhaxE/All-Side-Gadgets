@@ -62,7 +62,7 @@ body.static .slide{animation:none!important;transition:none!important}
 .en{font-size:24px;font-weight:300;color:var(--green);letter-spacing:.3px;line-height:1}
 .cn{font-size:16px;font-weight:700;margin-top:6px}
 .base{font-size:15px;color:var(--g2);line-height:1.5}
-.big{font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.big{font-weight:700;line-height:1.12;font-variant-numeric:tabular-nums;letter-spacing:-1px}
 .gray{color:var(--g2)} .g3{color:var(--g3)} .grn{color:var(--green)} .red{color:var(--red)}
 .num{font-weight:300;color:var(--g3);font-size:44px;line-height:1}
 
@@ -121,7 +121,7 @@ svg.ov{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .col .v{position:absolute;left:7px;width:44px;background:#fff;text-align:center;font-size:13px;color:var(--g2);font-variant-numeric:tabular-nums}
 .xl{position:relative;height:40px;margin-top:6px}
 .xl div{position:absolute;width:58px;text-align:center;font-size:13px;line-height:1.3;color:var(--g2)}
-.xl div b{display:block;color:var(--ink);font-size:14px}
+.xl div b{display:block;color:var(--ink);font-size:13px;letter-spacing:-.3px}
 .hl{position:absolute;left:0;right:0;height:0;z-index:1}
 .hl.base0{border-top:1.5px dashed #888}
 .hl.avg{border-top:2.5px solid var(--green)}
@@ -129,7 +129,7 @@ svg.ov{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .bub{position:absolute;background:#fff;border:1px solid #BDBDBD;border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.45;color:#333;box-shadow:0 1px 6px rgba(0,0,0,.06)}
 .side{flex:1;display:flex;flex-direction:column;gap:12px}
 .side .card{flex:1;display:flex;align-items:center;gap:18px;padding:14px 20px}
-.side .big{font-size:42px;min-width:128px}
+.side .big{font-size:38px;min-width:150px}
 .side .tx{font-size:15px;line-height:1.5;color:#333}
 .side .tx b{display:block;font-size:16px;margin-bottom:2px}
 
@@ -191,11 +191,11 @@ svg.ov{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
       <div class="card kpi k1 a" style="--d:.35s">
         <div class="en">Hit rate</div><div class="cn">已判定预测命中率</div>
         <div class="big"><span class="cnt" data-to="85.7" data-dec="1" data-delay=".5">85.7</span><small>%</small></div>
-        <div class="base">12 / 14 条命中<br>声称概率均值 63.0%（仅 11 条带概率）</div>
+        <div class="base">12 / 14 条命中<br>带概率 11/11 · 旧线报量化 1/3</div>
       </div>
       <div class="card hi kpi k2 a" style="--d:.7s">
-        <div class="en">Brier score</div><div class="cn">校准得分（越低越好）</div>
-        <div class="big"><span class="old">0.25</span><span class="arr">→</span><span class="grn cnt" data-to="0.1442" data-dec="4" data-delay=".85">0.1442</span></div>
+        <div class="en">Brier score</div><div class="cn">校准得分 · 随机基准 0.25（越低越好）</div>
+        <div class="big"><span class="grn cnt" data-to="0.1442" data-dec="4" data-delay=".85">0.1442</span></div>
         <div class="scale"><i class="gx" style="--d:.95s"></i></div>
         <div class="scale-l"><span>0 最好</span><span>0.25 = 每次都说 50%</span></div>
         <div class="base" style="margin-top:8px">带概率已判定 11 条的平均值</div>
@@ -262,7 +262,7 @@ svg.ov{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
     </div>
     <div class="side">
       <div class="card a" style="--d:.9s"><div class="big grn">11/11</div><div class="tx"><b>带概率的预测全中</b>声称概率均值 63.0%，同口径命中率是 100%，不是 85.7%</div></div>
-      <div class="card a" style="--d:1.05s"><div class="big gray">1/3</div><div class="tx"><b>未给概率的预测只中 1 条</b>EP08-L1、EP10-L1 未中，也无法计 Brier</div></div>
+      <div class="card a" style="--d:1.05s"><div class="big gray">1/3</div><div class="tx"><b>旧线报量化的 3 条只中 1 条</b>原文没有概率，是事后量化的（legacy），EP08-L1、EP10-L1 未中，无法计 Brier</div></div>
       <div class="card a" style="--d:1.2s"><div class="big gray">0.1730</div><div class="tx"><b>一次 p=0.70 的失手</b>单条 Brier 0.49，把平均值从 0.1442 拉到 0.1730</div></div>
     </div>
   </div></div>
@@ -297,18 +297,18 @@ svg.ov{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 <!-- ================= P5 拍板 ================= -->
 <section class="slide" data-i="4">
   <div class="hdr"><div class="fw">DECISIONS NEEDED<small>- 需要您拍板</small></div><div class="pg">MONEY-MAXXING<b>005</b></div></div>
-  <h1 class="ttl a" style="--d:.1s">需要您拍板的 3 件项目层面的事：<em>概率怎么校准</em>、数据口径怎么统一、预测是否必须带概率</h1>
+  <h1 class="ttl a" style="--d:.1s">需要您拍板的 3 件项目层面的事：<em>概率怎么校准</em>、数据口径怎么统一、新旧预测是否分开记分</h1>
   <div class="body">
     <div class="p5">
-      <div class="dc d1 a" style="--d:.6s"><div class="num">01</div><h3>现在重校准概率，还是等样本？</h3>
-        <ul><li>现状：11 条全中，均值 63.0%，Brier 0.1442</li><li>A 维持现有"基准率锚定"，暂不调整</li><li>B 设最低样本数后再复盘（建议值 30 条，待您定）</li></ul>
-        <div class="ask">需要您决定：A 还是 B</div></div>
+      <div class="dc d1 a" style="--d:.6s"><div class="num">01</div><h3>概率调不调、何时复盘？</h3>
+        <ul><li>现状：11 条全中，均值 63.0%，Brier 0.1442</li><li>A 现在放宽概率（11 条全中，均值 63.0% 或偏保守）</li><li>B 维持"基准率锚定"，样本够了再复盘（建议值 30 条，待您定）</li></ul>
+        <div class="ask">需要您决定：A 还是 B，以及复盘样本数</div></div>
       <div class="dc d2 a" style="--d:.8s"><div class="num">02</div><h3>是否统一各处数据口径？</h3>
         <ul><li>README 仍是 20 条 / 80% / Brier 0.1646，记分卡是 24 条 / 85.7% / 0.1442</li><li>记分卡把 11 条均值与 14 条命中率相比，同口径应为 11/11</li><li>底库写作"850+"与"1,000+"，实际 850 只</li></ul>
         <div class="ask">需要您决定：是否安排修订</div></div>
-      <div class="dc d3 a" style="--d:1s"><div class="num">03</div><h3>未给概率的预测，是否不再登记？</h3>
-        <ul><li>未给概率 3 条只中 1 条，带概率 11 条全中</li><li>未给概率的无法计 Brier，也无法校准</li></ul>
-        <div class="ask">需要您决定：是否一律要求带概率</div></div>
+      <div class="dc d3 a" style="--d:1s"><div class="num">03</div><h3>记分卡是否把新旧预测分开汇报？</h3>
+        <ul><li>已判 14 条中 3 条是 legacy（原文无概率），命中 1/3</li><li>其余 11 条带概率登记，命中 11/11；合并成 85.7% 会混入两种口径</li></ul>
+        <div class="ask">需要您决定：合并汇报，还是分开汇报</div></div>
     </div>
     <div class="pend a" style="--d:1.3s"><span>待判定 10 条：</span><i><b>11/12</b> 收盘 5 条</i><i><b>11/13</b> 1 条</i><i><b>11/16</b> 2 条</i><i><b>11/17</b> 1 条</i><i><b>2027-04-30</b> 1 条</i></div>
   </div>
