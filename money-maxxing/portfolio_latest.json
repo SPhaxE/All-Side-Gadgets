@@ -1,259 +1,259 @@
 {
-  "updated_at": "2026-11-11T00:39:54",
-  "latest_market_date": "2026-11-10",
+  "updated_at": "2026-11-11T23:20:26",
+  "latest_market_date": "2026-11-11",
   "totals": {
     "total_principal": 25753.42,
-    "settled_total_amount": 24371.24,
-    "settled_total_profit": -1382.18,
-    "est_today_profit": 80.19,
-    "est_total_amount": 24371.24,
-    "est_total_profit": -1382.18,
-    "est_total_return_pct": -5.37
+    "settled_total_amount": 24504.32,
+    "settled_total_profit": -1249.1,
+    "est_today_profit": 133.08,
+    "est_total_amount": 24504.32,
+    "est_total_profit": -1249.1,
+    "est_total_return_pct": -4.85
   },
   "indices": [
     {
       "name": "上证指数",
-      "trade_date": "2026-11-10",
-      "close": 3663.72,
-      "pct": 0.08,
-      "amount_yi": 6739.52
+      "trade_date": "2026-11-11",
+      "close": 3680.64,
+      "pct": 0.46,
+      "amount_yi": 7361.55
     },
     {
       "name": "深证成指",
-      "trade_date": "2026-11-10",
-      "close": 11241.54,
-      "pct": 0.86,
-      "amount_yi": 8308.63
+      "trade_date": "2026-11-11",
+      "close": 11389.74,
+      "pct": 1.32,
+      "amount_yi": 9401.24
     },
     {
       "name": "沪深300",
-      "trade_date": "2026-11-10",
-      "close": 4059.11,
-      "pct": 0.07,
-      "amount_yi": 3800.9
+      "trade_date": "2026-11-11",
+      "close": 4075.71,
+      "pct": 0.41,
+      "amount_yi": 4421.28
     },
     {
       "name": "创业板指",
-      "trade_date": "2026-11-10",
-      "close": 2494.4,
-      "pct": 1.46,
-      "amount_yi": 4161.29
+      "trade_date": "2026-11-11",
+      "close": 2572.07,
+      "pct": 3.11,
+      "amount_yi": 4784.17
     },
     {
       "name": "科创50",
-      "trade_date": "2026-11-10",
-      "close": 1265.02,
-      "pct": 0.64,
-      "amount_yi": 660.16
+      "trade_date": "2026-11-11",
+      "close": 1300.38,
+      "pct": 2.8,
+      "amount_yi": 764.39
     },
     {
       "name": "中证转债",
-      "trade_date": "2026-11-10",
-      "close": 458.66,
-      "pct": 0.6,
-      "amount_yi": 695.45
+      "trade_date": "2026-11-11",
+      "close": 461.76,
+      "pct": 0.68,
+      "amount_yi": 760.05
     }
   ],
   "etfs_and_heavyweights": [
     {
       "code": "510310",
       "name": "沪深300ETF易方达",
-      "trade_date": "2026-11-10",
-      "close": 4.018,
-      "pct": 0.07,
-      "amount_yi": 11.66
+      "trade_date": "2026-11-11",
+      "close": 4.034,
+      "pct": 0.4,
+      "amount_yi": 14.52
     },
     {
       "code": "159819",
       "name": "人工智能ETF易方达",
-      "trade_date": "2026-11-10",
-      "close": 1.394,
-      "pct": 1.83,
-      "amount_yi": 2.46
+      "trade_date": "2026-11-11",
+      "close": 1.442,
+      "pct": 3.44,
+      "amount_yi": 4.23
     },
     {
       "code": "515120",
       "name": "创新药ETF广发",
-      "trade_date": "2026-11-10",
-      "close": 0.622,
-      "pct": 0.0,
-      "amount_yi": 2.64
+      "trade_date": "2026-11-11",
+      "close": 0.616,
+      "pct": -0.96,
+      "amount_yi": 3.17
     },
     {
       "code": "511260",
       "name": "十年国债ETF国泰",
-      "trade_date": "2026-11-10",
-      "close": 136.05,
-      "pct": -0.05,
-      "amount_yi": 48.06
+      "trade_date": "2026-11-11",
+      "close": 135.913,
+      "pct": -0.1,
+      "amount_yi": 16.17
     },
     {
       "code": "300308",
       "name": "中际旭创",
-      "trade_date": "2026-11-10",
-      "close": 471.0,
-      "pct": 4.2,
-      "amount_yi": 185.64
+      "trade_date": "2026-11-11",
+      "close": 542.0,
+      "pct": 15.07,
+      "amount_yi": 312.29
     },
     {
       "code": "300502",
       "name": "新易盛",
-      "trade_date": "2026-11-10",
-      "close": 183.8,
-      "pct": 4.43,
-      "amount_yi": 163.04
+      "trade_date": "2026-11-11",
+      "close": 215.0,
+      "pct": 16.97,
+      "amount_yi": 252.34
     },
     {
       "code": "688256",
       "name": "寒武纪",
-      "trade_date": "2026-11-10",
-      "close": 838.0,
-      "pct": -1.55,
-      "amount_yi": 78.18
+      "trade_date": "2026-11-11",
+      "close": 900.0,
+      "pct": 7.4,
+      "amount_yi": 101.13
     },
     {
       "code": "688041",
       "name": "海光信息",
-      "trade_date": "2026-11-10",
-      "close": 190.0,
-      "pct": -0.98,
-      "amount_yi": 27.48
+      "trade_date": "2026-11-11",
+      "close": 196.35,
+      "pct": 3.34,
+      "amount_yi": 31.97
     },
     {
       "code": "688521",
       "name": "芯原股份",
-      "trade_date": "2026-11-10",
-      "close": 110.74,
-      "pct": 2.22,
-      "amount_yi": 17.58
+      "trade_date": "2026-11-11",
+      "close": 117.35,
+      "pct": 5.97,
+      "amount_yi": 21.0
     },
     {
       "code": "002230",
       "name": "科大讯飞",
-      "trade_date": "2026-11-10",
-      "close": 38.53,
-      "pct": 1.5,
-      "amount_yi": 7.17
+      "trade_date": "2026-11-11",
+      "close": 38.13,
+      "pct": -1.04,
+      "amount_yi": 6.5
     },
     {
       "code": "000977",
       "name": "浪潮信息",
-      "trade_date": "2026-11-10",
-      "close": 55.55,
-      "pct": 0.02,
-      "amount_yi": 18.84
+      "trade_date": "2026-11-11",
+      "close": 56.56,
+      "pct": 1.82,
+      "amount_yi": 22.35
     },
     {
       "code": "688111",
       "name": "金山办公",
-      "trade_date": "2026-11-10",
-      "close": 224.98,
-      "pct": -0.27,
-      "amount_yi": 9.76
+      "trade_date": "2026-11-11",
+      "close": 221.8,
+      "pct": -1.41,
+      "amount_yi": 11.54
     },
     {
       "code": "603259",
       "name": "药明康德",
-      "trade_date": "2026-11-10",
-      "close": 150.3,
-      "pct": 0.01,
-      "amount_yi": 65.77
+      "trade_date": "2026-11-11",
+      "close": 148.7,
+      "pct": -1.06,
+      "amount_yi": 65.35
     },
     {
       "code": "600276",
       "name": "恒瑞医药",
-      "trade_date": "2026-11-10",
-      "close": 48.55,
-      "pct": -1.38,
-      "amount_yi": 23.07
+      "trade_date": "2026-11-11",
+      "close": 48.22,
+      "pct": -0.68,
+      "amount_yi": 18.18
     },
     {
       "code": "688235",
       "name": "百济神州",
-      "trade_date": "2026-11-10",
-      "close": 285.45,
-      "pct": 0.16,
-      "amount_yi": 11.88
+      "trade_date": "2026-11-11",
+      "close": 286.98,
+      "pct": 0.54,
+      "amount_yi": 9.18
     },
     {
       "code": "300759",
       "name": "康龙化成",
-      "trade_date": "2026-11-10",
-      "close": 45.19,
-      "pct": 1.55,
-      "amount_yi": 16.98
+      "trade_date": "2026-11-11",
+      "close": 44.2,
+      "pct": -2.19,
+      "amount_yi": 18.55
     }
   ],
   "overnight_us_market": [
     {
       "symbol": ".IXIC",
       "name": "纳斯达克",
-      "trade_date": "2026-11-10",
-      "close": 24972.21,
-      "pct": -1.11
+      "trade_date": "2026-11-11",
+      "close": 25374.6,
+      "pct": 1.23
     },
     {
       "symbol": ".INX",
       "name": "标普500",
-      "trade_date": "2026-11-10",
-      "close": 7490.8,
-      "pct": -0.78
+      "trade_date": "2026-11-11",
+      "close": 7580.43,
+      "pct": 0.79
     },
     {
       "symbol": ".DJI",
       "name": "道琼斯",
-      "trade_date": "2026-11-10",
-      "close": 52035.75,
-      "pct": -0.68
+      "trade_date": "2026-11-11",
+      "close": 52088.07,
+      "pct": -0.28
     },
     {
       "symbol": "SOXX.OQ",
       "name": "费城半导体ETF-iShares",
-      "trade_date": "2026-11-10",
-      "close": 144.99,
-      "pct": -1.21
+      "trade_date": "2026-11-11",
+      "close": 153.33,
+      "pct": 4.6
     },
     {
       "symbol": "NVDA.OQ",
       "name": "英伟达",
-      "trade_date": "2026-11-10",
-      "close": 168.3,
-      "pct": -5.81
+      "trade_date": "2026-11-11",
+      "close": 172.74,
+      "pct": 2.28
     },
     {
       "symbol": "AMD.OQ",
       "name": "超威半导体",
-      "trade_date": "2026-11-10",
-      "close": 517.44,
-      "pct": 1.74
+      "trade_date": "2026-11-11",
+      "close": 538.17,
+      "pct": 4.46
     },
     {
       "symbol": "SMCI.OQ",
       "name": "超微电脑",
-      "trade_date": "2026-11-10",
-      "close": 27.75,
-      "pct": -2.97
+      "trade_date": "2026-11-11",
+      "close": 29.89,
+      "pct": 7.56
     },
     {
       "symbol": "MRVL.OQ",
       "name": "迈威尔科技",
-      "trade_date": "2026-11-10",
-      "close": 153.45,
-      "pct": -0.74
+      "trade_date": "2026-11-11",
+      "close": 165.62,
+      "pct": 7.27
     },
     {
       "symbol": "LITE.OQ",
       "name": "Lumentum",
-      "trade_date": "2026-11-10",
-      "close": 592.25,
-      "pct": -0.66
+      "trade_date": "2026-11-11",
+      "close": 647.21,
+      "pct": 10.53
     },
     {
       "symbol": "LLY.N",
       "name": "礼来",
-      "trade_date": "2026-11-10",
-      "close": 1416.49,
-      "pct": 0.32
+      "trade_date": "2026-11-11",
+      "close": 1421.16,
+      "pct": -0.78
     }
   ],
   "latest_announcements": [
@@ -350,125 +350,125 @@
   ],
   "macro_telegraph": [
     {
-      "time": "2026-11-10 23:51:28",
-      "text": "达拉斯联储主席洛根：明确美联储至少还需加息两次，每次25个基点。"
+      "time": "2026-11-11 23:13:33",
+      "text": "【美元升至2025年5月以来最高 美联储加息押注升温】随着交易员为美联储下月恢复加息做准备，美元升至18个月高点，延续过去两个月来的强劲涨势。美元指数周三一度上涨0.4%，触及2025年5月以来最高水平，美元兑所有主要货币均走高。美元涨势周二进一步受到提振，当时美联储官员发表鹰派言论，同时数据显示消费者价格连续第三个月涨幅高于预期，交易员开始消化美联储12月加息50个基点的小概率预期，推动短期国债收益率飙升。"
     },
     {
-      "time": "2026-11-10 23:51:18",
-      "text": "达拉斯联储主席洛根表示，今年冬季可能比美联储迄今的加息步伐更快地提高利率。"
+      "time": "2026-11-11 23:09:56",
+      "text": "英国财政大臣希利谈财政空间：需要时动用，有能力时重建。"
     },
     {
-      "time": "2026-11-10 23:50:39",
-      "text": "达拉斯联储主席洛根：债券市场利率上升表明货币政策仍有工作要做，但这并非经济活动的独立助力。"
+      "time": "2026-11-11 23:07:19",
+      "text": "哥伦比亚财政部长：将研究削减刚性支出的途径。"
     },
     {
-      "time": "2026-11-10 23:50:32",
-      "text": "达拉斯联储主席洛根：美联储政策利率至少比适度限制性水平低50个基点。"
+      "time": "2026-11-11 23:04:39",
+      "text": "英国财政大臣希利：结束中东战争将是对英国最大的经济利好。"
     },
     {
-      "time": "2026-11-10 23:50:25",
-      "text": "达拉斯联储主席洛根：宽松政策正在加大通胀压力；数据显示，实际联邦基金利率为78个基点。"
+      "time": "2026-11-11 22:59:29",
+      "text": "英国财政大臣希利：准备对不带来任何益处数据中心说不。"
     },
     {
-      "time": "2026-11-10 23:42:52",
-      "text": "【软银在亏损 70 亿美元后释放出人工智能投资放缓信号】在季度亏损 70 亿美元后，软银正考虑收敛激进的人工智能投资步伐。首席财务官后藤义光承认投资策略转向谨慎：“眼下大家讨论先观望一段时间、看看局势发展，这是很自然的事。”这番表态意味着，随着人工智能交易行情承压，软银的人工智能大举投资热潮或将暂停，其中也包括其对 OpenAI 的相关布局。作为人工智能领域最重要的投资方之一，软银此举表明，即便是激进投资者，也可能需要放慢脚步。"
+      "time": "2026-11-11 22:58:39",
+      "text": "【CoreWeave CEO：不担心中期选举结果对公司产生影响】尽管上周民主党在大选大胜之后，CoreWeave股价遭遇大幅抛售，但首席执行官迈克·英特拉托（Mike Intrator）表示，公司并不担心即将到来的政治变局。 周二晚间，在公司财报电话会议上，被问及大选带来的新压力时，英特拉托回应：“我们预计这场重大监管转向不会对我们产生影响。我们认为，这次选举结果传递的是该如何建设算力设施的导向。我们坚持负责任地建设。” 摩根大通资产管理公司在大选后发布报告称：2028年及以"
     },
     {
-      "time": "2026-11-10 23:30:20",
-      "text": "英国债务管理办公室表示，将于2026年11月17日通过拍卖发行32.5亿英镑、票面利率5.250%的2041年期国债。"
+      "time": "2026-11-11 22:58:36",
+      "text": "英国财政大臣希利：不希望数据中心出现美国式的无序竞争。"
     },
     {
-      "time": "2026-11-10 00:02:39",
-      "text": "【费城半导体指数日内涨7%】费城半导体指数日内涨7.01%，现报10048.08点。英伟达跌3.98%，博通涨9.24%，美光涨7.70%，英特尔涨5.02%，AMD涨12.09%，高通涨6.38%，台积电涨4.96%，阿斯麦涨6.56%。"
+      "time": "2026-11-11 22:50:01",
+      "text": "CoreWeave首席执行官表示，英伟达并非一人之力；英伟达将继续是我们重要的合作伙伴。"
     },
     {
-      "time": "2026-11-09 14:59:13",
-      "text": "联博集团分析师Stacy Rasgon维持英伟达买入评级，并将目标价从275美元上调至400美元。"
+      "time": "2026-11-11 22:49:52",
+      "text": "【英伟达：去年美国超大规模云计算企业至少占企业清洁能源采购量的75%】英伟达可持续发展主管Josh Parker表示，在用于训练和运行人工智能模型的芯片供应领域占据主导地位的英伟达，“一直专注于创新”。这意味着把重点放在能够提升“数据中心可持续性”的领域，尤其是能源效率，同时也包括节水等方面。Parker表示，去年美国超大规模云计算企业（Hyperscalers）至少占企业清洁能源采购量的75%。“这些投资最终会得到回报，”他说。而这些企业“目前释放出的需求信号”是，“我们需"
     },
     {
-      "time": "2026-11-09 14:58:56",
-      "text": "【东方证券：维持中国重汽“买入”评级，重卡出口份额进一步提升】东方证券研报指出，中国重汽毛利率同环比改善，重卡出口份额进一步提升。前三季度归母净利润14.41亿元，同比增长37.2%；三季度归母净利润4.68亿元，同比增长22.8%，环比减少9.6%。三季度重卡行业销量同比略有回落，公司增速优于行业平均。新能源重卡加速放量，三季度海外市场占比进一步提升。公司稳居行业出口第一地位，借助重汽国际实现出口销量占总销量一半以上，三季度出口占比较上半年进一步提升，后续将持续推进本土化以"
+      "time": "2026-11-11 22:48:11",
+      "text": "【英伟达：数据中心“应当是社区的资产”，应以社区认可的方式推进】英伟达表示，建设数据中心的企业需要以能够获得当地社区认可的方式推进项目。英伟达可持续发展主管Josh Parker周三在土耳其COP31期间的彭博绿色论坛上表示：“我们对人工智能，尤其是数据中心的看法是，数据中心可以、而且应该成为社区的一项资产。”“建设数据中心有不好的方式，但也有很多很多好的方式，”他说。"
     },
     {
-      "time": "2026-11-09 14:57:09",
-      "text": "【“木头姐”对美股波动不以为意：往往预示着牛市会更加持久】华尔街明星基金经理、方舟投资（Ark Invest）的掌门人凯茜•伍德（Cathie Wood）对上周的市场波动不以为意，她甚至表示，投资者的担忧实际上增强了她对未来进一步上涨的乐观情绪。“我经历过科技和电信泡沫，你知道，当时人们根本没怎么担心，”她说：“那是上世纪八九十年代，正值牛市，人们都以为相关行业会一路飙升，但事实并非如此。”“木头姐”进一步解释说，而现在，“从一开始，许多投资者就关注企业在人工智能开发上的投入"
+      "time": "2026-11-11 22:45:20",
+      "text": "英国财政大臣希利：英国政府支持希思罗机场建设第三条跑道。"
     },
     {
-      "time": "2026-11-09 14:52:31",
-      "text": "【摩根士丹利策略师：欧洲盈利增速几乎追上美国】摩根士丹利策略师称，本季度欧洲企业盈利增速加快，几乎追平美国，财报季表现强于预期的信号进一步增多。由雷吉亚内·山形为首的团队在研报中写道，当前盈利同比增幅达28%，美国为30%；上市公司财报推动分析师继续上调盈利预期。超预期个股占比加权偏向28%，远期盈利预测上调的偏向为8%。财报出炉后，科技硬件、公用事业、高性能计算板块的盈利上调幅度居前；半导体与科技硬件板块也是盈利修正上调的主力。"
+      "time": "2026-11-11 22:34:52",
+      "text": "英国财政大臣约翰·希利向议员小组作证。"
     },
     {
-      "time": "2026-11-09 14:51:59",
-      "text": "【花旗：重申阿里为覆盖范围内领先人工智能标的之一，维持“买入”评级】花旗发表报告指，阿里巴巴旗下Qwen周末发布宣传海报，显示下一代Qwen4模型系列即将推出。若旗舰级别确实扩展至超过3万亿参数，该行预期基准测试表现将有显著跃升。该行指出，初步流出的GameFeel Benchmark分数已显示，高效变体Qwen4-Flash及Qwen4-27B在较低推理成本下可媲美甚至超越全球前沿基准，印证可能的结构性架构进展。该行认为，是次推出进一步展示阿里朝向SOTA基础模型的持续执行"
+      "time": "2026-11-11 22:34:19",
+      "text": "英国财政大臣希利表示，他计划在明年超越增长预期。"
     },
     {
-      "time": "2026-11-09 14:51:49",
-      "text": "【英伟达、SK 电信、Rebellions 将联合搭建 AI 异构计算系统】韩国科学技术部表示，英伟达、SK 电信以及韩国本土 AI 芯片初创企业 Rebellions 于周一达成合作，三方将整合各自技术优势，共建一套 AI 异构计算系统。根据这份三方谅解备忘录（MOU），三家企业将合作搭建异构 AI 计算系统：把英伟达 GPU 与 Rebellions 自研 NPU（神经网络处理器）打通，这套系统将部署在 SK 电信的 AI 数据中心。科技部补充，本次合作依托英伟达的 NV"
+      "time": "2026-11-11 22:31:07",
+      "text": "英伟达股价开盘上涨3.1%。"
     },
     {
-      "time": "2026-11-09 14:51:30",
-      "text": "韩国科技部副部长：关注美国人工智能数据中心投资转向韩国的可能性。"
+      "time": "2026-11-11 22:30:50",
+      "text": "【美股光通信股开盘普涨】Lumentum涨9.94%，康宁涨6.28%，Coherent涨8.90%，应用光电涨8.03%，Ciena涨8.10%，博通涨6.06%，迈威尔科技涨8.10%。"
     },
     {
-      "time": "2026-11-09 14:50:56",
-      "text": "【黄仁勋婚外情事件继续发酵，英伟达夜盘跌幅扩大至近6%】11月9日，英伟达在目前的夜盘交易中进一步跳水，目前跌幅扩大至近6%，报175.74美元。消息面上，11月8日，英伟达内部发给员工的邮件草案显示，黄仁勋在信中坦承自己存在婚外情。"
+      "time": "2026-11-11 22:30:50",
+      "text": "【美股算力云相关股票盘初普涨】甲骨文涨6.38%，CoreWeave涨16.38%，Nebius涨14.49%，IREN涨10.16%，Applied Digital涨9.13%。"
     },
     {
-      "time": "2026-11-09 14:48:09",
-      "text": "韩国财政部长：专家表示，与股票市场不同，实体经济中的人工智能投资依然强劲。"
+      "time": "2026-11-11 22:30:48",
+      "text": "【美股开盘：三大股指齐涨】道指涨0.19%，标普500指数涨0.95%，纳指涨1.56%。CoreWeave涨16.25%，NBIS涨14.19%，BE涨9.93%，Lumentum Holdings Inc.涨9.56%，戴尔涨9.32%，闪迪涨8.82%。“七姐妹”方面：英伟达涨2.65%，特斯拉涨2.31%，亚马逊涨1.40%，谷歌涨0.91%，苹果涨0.66%，Meta Platforms涨0.45%，微软跌0.33%。"
     },
     {
-      "time": "2026-11-09 14:48:06",
-      "text": "【华泰证券完成第三批SFISF项下质押式回购融资和股票买入操作】华泰证券第三批“证券、基金、保险公司互换便利（SFISF）”业务已完成回购融资，并完成股票买入操作。华泰证券表示，坚定看好中国经济长期发展前景和资本市场长期投资价值。下一步，公司将用好用足互换便利融入资金，持续加大对A股股票及股票ETF的配置力度，充分发挥政策资金的合力，不断增加资本市场的长期投资力量，助力资本市场平稳健康发展。"
+      "time": "2026-11-11 22:30:22",
+      "text": "【费城半导体指数日内涨4%】费城半导体指数日内涨4.71%，现报10469.04点。英伟达涨2.49%，博通涨5.85%，美光涨7.17%，英特尔涨6.73%，AMD涨4.23%，高通涨2.44%，台积电涨4.50%，阿斯麦涨1.91%。"
     },
     {
-      "time": "2026-11-09 14:45:52",
-      "text": "韩国产业部长表示，不认为美国中期选举会导致人工智能投资放缓。"
+      "time": "2026-11-11 22:28:27",
+      "text": "英国财政大臣希利：在预算公布前的会议中，未与银行讨论任何银行税变更事宜。"
     },
     {
-      "time": "2026-11-09 14:43:19",
-      "text": "【需求侧仍在验证高景气，机构看好AI产业趋势，创业板算力ETF华夏（158041）值得关注】11月9日，创业板算力ETF华夏（158041）盘中涨超2.5%，截止发稿涨0.57%，成交额3亿元。消息面上，北美四大科技巨头延续AI基础设施投入，第三季度现金购置物业与设备支出环比均有增长，服务器、网络设备与数据中心成为重点方向。需求端，谷歌、亚马逊与微软剩余履约义务持续扩大，企业通过多年期合同提前锁定算力，为后续产能建设提供需求支撑，Meta则通过模型迭代、内容推荐与广告提效推动"
+      "time": "2026-11-11 22:24:58",
+      "text": "英国财政部高级官员鲍勒：彭博社知道银行税是临时性的且低于8%，这不太可能是巧合。"
     },
     {
-      "time": "2026-11-09 14:42:15",
-      "text": "【东阳光成立科技公司 含智能机器人的研发业务】企查查APP显示，近日，东阳光未来（深圳）实验室科技有限公司成立，法定代表人为潘阳军，注册资本为2000万元，经营范围包含：人工智能应用软件开发；人工智能理论与算法软件开发；智能机器人的研发；工业机器人制造等。企查查股权穿透显示，该公司由东阳光间接全资持股。"
+      "time": "2026-11-11 22:24:51",
+      "text": "英国财政大臣希利：我对泄密事件的发生感到沮丧。"
     },
     {
-      "time": "2026-11-09 14:38:57",
-      "text": "【瑞银：大幅下调江西铜业目标价至38港元，下调盈利预测】瑞银发表报告指，将江西铜业目标价由65港元大幅下调至38港元，维持“买入”评级。该行将铜业务目标市盈率由12倍下调至2027年预测的8倍，并分别下调2026年及2027年盈利预测5%及15%，主要反映硫酸平均售价及长期合约加工费假设更趋保守，以及盈利能见度下降。该行覆盖范围内，较偏好洛阳钼业的估值及高品位资源，以及紫金矿业的黄金敞口，对江西铜业盈利能见度则相对审慎。该行指，对铜价的建设性看法维持不变，认为电气化、电网投资"
+      "time": "2026-11-11 22:20:23",
+      "text": "英国财政部高级官员：彭博社发布银行税务信息后，市场出现波动。我们需要对泄密事件的发生方式进行适当调查。"
     },
     {
-      "time": "2026-11-09 14:34:23",
-      "text": "【伯恩斯坦警告黄仁勋风波或加大英伟达监管与管理风险，但维持英伟达400美元目标价】11月9日，伯恩斯坦表示，英伟达首席执行官黄仁勋近期面临的私人关系相关指控，虽然不太可能直接影响公司AI芯片需求，但可能加大监管和政治压力。伯恩斯坦认为，此次事件轻则严重分散管理层注意力，重则为美国两党议员加强审查英伟达提供理由。此外，该机构还警告英伟达面临“关键人物风险”。黄仁勋长期主导公司战略及重大经营决策，据称拥有约60名直接汇报的下属，公司管理体系高度依赖其个人领导，一旦黄仁勋无法继续履"
+      "time": "2026-11-11 22:17:46",
+      "text": "eBay推出人工智能驱动的以摄像头为先的商品上架技术，以简化销售流程。"
     },
     {
-      "time": "2026-11-09 14:33:14",
-      "text": "交易平台Tradegate行情显示，英伟达较周五美股收盘下跌4.5%。"
+      "time": "2026-11-11 22:17:14",
+      "text": "【中国银行董事长葛海蛟会见托克集团首席执行官霍瑞德】据中国银行消息，11月11日，中国银行董事长葛海蛟在中国银行总行大厦会见托克集团首席执行官霍瑞德一行，围绕强化贸易融资合作、拓展人民币国际使用场景等话题深入交流。双方将以此次会见为契机，在熊猫债、循环信贷银团、结构化融资等领域加强互动，持续拓宽合作维度。"
     },
     {
-      "time": "2026-11-08 22:24:01",
-      "text": "【国泰海通： 我们判断美联储12月或将加息25个基点 】国泰海通发布研报指出，10月美国新增非农就业16.5万人，远超市场预期的7万人，主要由专业和商业服务、教育和保健服务拉动。失业率回落至4.1%，同时劳动参与率连续三个月回升，说明劳动需求仍较稳健。就业已不构成美联储维持观望的理由，叠加通胀仍明显高于目标，我们判断美联储12月或将加息25个基点。"
+      "time": "2026-11-11 22:06:06",
+      "text": "超微电脑： 现已推出搭载第 6 代 AMD EPYC™ 9006 系列处理器的下一代服务器，专为云计算、高性能计算（HPC）和智能体 AI 工作负载设计。  H15服务器产品组合现已开始出货。"
     }
   ],
   "forecast_signals": {
     "a_share_turnover": {
-      "sh_amount_yi": 6739.52,
-      "sz_amount_yi": 8308.63,
-      "total_amount_yi": 15048.15,
-      "prev_day_total_yi": 14826.13,
-      "ma20_total_yi": 16399.57,
-      "volume_ratio_vs_ma20": 0.92
+      "sh_amount_yi": 7361.55,
+      "sz_amount_yi": 9401.24,
+      "total_amount_yi": 16762.79,
+      "prev_day_total_yi": 15048.15,
+      "ma20_total_yi": 16314.02,
+      "volume_ratio_vs_ma20": 1.03
     },
     "sector_thermometer": {
-      "ai_cpo_avg_pct": 4.31,
-      "ai_chip_soft_avg_pct": 0.16,
-      "ai_internal_divergence_pct": -4.15,
-      "pharma_cxo_avg_pct": 0.78,
-      "pharma_innov_avg_pct": -0.61,
-      "bond_10y_etf_pct": -0.05,
-      "convertible_bond_index_pct": 0.6,
-      "us_soxx_pct": -1.21,
-      "us_ixic_pct": -1.11
+      "ai_cpo_avg_pct": 16.02,
+      "ai_chip_soft_avg_pct": 2.68,
+      "ai_internal_divergence_pct": -13.34,
+      "pharma_cxo_avg_pct": -1.62,
+      "pharma_innov_avg_pct": -0.07,
+      "bond_10y_etf_pct": -0.1,
+      "convertible_bond_index_pct": 0.68,
+      "us_soxx_pct": 4.6,
+      "us_ixic_pct": 1.23
     },
     "ols_valuation_calibration": {
       "110027": {
@@ -479,12 +479,12 @@
           "159819(AI)"
         ],
         "weights": [
-          0.199,
+          0.163,
           0.21,
-          0.074,
-          0.198
+          0.067,
+          0.201
         ],
-        "mae_bps_60d": 16.5
+        "mae_bps_60d": 16.7
       },
       "024430": {
         "proxies": [
@@ -493,33 +493,33 @@
           "603259(药明)"
         ],
         "weights": [
-          0.761,
+          0.76,
           0.067,
-          0.032
+          0.033
         ],
-        "mae_bps_60d": 41.2
+        "mae_bps_60d": 41.4
       }
     },
     "fund_signals": {
       "014437": {
         "latest_settled_1d_pct": 0.0,
-        "5d_settled_pct": 0.03,
+        "5d_settled_pct": 0.0,
         "20d_settled_pct": 0.12,
-        "ma20_gap_pct": 0.05,
+        "ma20_gap_pct": 0.04,
         "trend_zone": "near_ma20",
         "regime_on_last_settled": "normal_p10_p90",
-        "sample_count": 200,
-        "cond_3d_at_up_winrate_pct": 90.0,
-        "cond_3d_at_flat_or_down_winrate_pct": 10.0,
+        "sample_count": 199,
+        "cond_3d_at_up_winrate_pct": 89.9,
+        "cond_3d_at_flat_or_down_winrate_pct": 10.1,
         "cond_3d_hold_above_minus_1_5sd_winrate_pct": 99.0,
         "cond_5d_any_plus_0_5pct_winrate_pct": 0.0,
         "event_impact_score": null
       },
       "110020": {
-        "latest_settled_1d_pct": 0.07,
-        "5d_settled_pct": 1.25,
-        "20d_settled_pct": -4.55,
-        "ma20_gap_pct": -0.61,
+        "latest_settled_1d_pct": 0.39,
+        "5d_settled_pct": -0.55,
+        "20d_settled_pct": -2.93,
+        "ma20_gap_pct": -0.07,
         "trend_zone": "near_ma20",
         "regime_on_last_settled": "normal_p10_p90",
         "sample_count": 106,
@@ -530,38 +530,38 @@
         "event_impact_score": null
       },
       "110027": {
-        "latest_settled_1d_pct": 0.4,
-        "5d_settled_pct": 2.43,
-        "20d_settled_pct": -4.68,
-        "ma20_gap_pct": -0.96,
+        "latest_settled_1d_pct": 0.97,
+        "5d_settled_pct": 1.18,
+        "20d_settled_pct": -2.72,
+        "ma20_gap_pct": 0.14,
         "trend_zone": "near_ma20",
-        "regime_on_last_settled": "normal_p10_p90",
-        "sample_count": 124,
-        "cond_3d_at_up_winrate_pct": 55.6,
-        "cond_3d_at_flat_or_down_winrate_pct": 44.4,
-        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 88.7,
-        "cond_5d_any_plus_0_5pct_winrate_pct": 55.6,
+        "regime_on_last_settled": "surge_gt_p90",
+        "sample_count": 13,
+        "cond_3d_at_up_winrate_pct": 46.2,
+        "cond_3d_at_flat_or_down_winrate_pct": 53.8,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 84.6,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 61.5,
         "event_impact_score": null
       },
       "012733": {
-        "latest_settled_1d_pct": 1.62,
-        "5d_settled_pct": 6.51,
-        "20d_settled_pct": -9.78,
-        "ma20_gap_pct": -2.04,
-        "trend_zone": "oversold_below_ma20",
-        "regime_on_last_settled": "normal_p10_p90",
-        "sample_count": 69,
-        "cond_3d_at_up_winrate_pct": 50.7,
-        "cond_3d_at_flat_or_down_winrate_pct": 49.3,
-        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 84.1,
-        "cond_5d_any_plus_0_5pct_winrate_pct": 72.5,
+        "latest_settled_1d_pct": 3.33,
+        "5d_settled_pct": 2.97,
+        "20d_settled_pct": -3.56,
+        "ma20_gap_pct": 1.41,
+        "trend_zone": "near_ma20",
+        "regime_on_last_settled": "surge_gt_p90",
+        "sample_count": 23,
+        "cond_3d_at_up_winrate_pct": 43.5,
+        "cond_3d_at_flat_or_down_winrate_pct": 56.5,
+        "cond_3d_hold_above_minus_1_5sd_winrate_pct": 73.9,
+        "cond_5d_any_plus_0_5pct_winrate_pct": 60.9,
         "event_impact_score": 53.6
       },
       "012737": {
-        "latest_settled_1d_pct": -0.13,
-        "5d_settled_pct": 4.87,
-        "20d_settled_pct": 1.16,
-        "ma20_gap_pct": 2.49,
+        "latest_settled_1d_pct": -0.84,
+        "5d_settled_pct": -0.95,
+        "20d_settled_pct": 1.45,
+        "ma20_gap_pct": 1.55,
         "trend_zone": "overbought_above_ma20",
         "regime_on_last_settled": "normal_p10_p90",
         "sample_count": 40,
@@ -572,10 +572,10 @@
         "event_impact_score": 9.8
       },
       "024430": {
-        "latest_settled_1d_pct": 1.01,
-        "5d_settled_pct": 2.29,
-        "20d_settled_pct": 1.01,
-        "ma20_gap_pct": 1.65,
+        "latest_settled_1d_pct": 0.08,
+        "5d_settled_pct": 0.65,
+        "20d_settled_pct": 1.29,
+        "ma20_gap_pct": 1.67,
         "trend_zone": "overbought_above_ma20",
         "regime_on_last_settled": "normal_p10_p90",
         "sample_count": 55,
@@ -595,12 +595,12 @@
       "principal": 7503.42,
       "shares": 6805.21,
       "cost_nav": 1.1026,
-      "settled_date": "2026-11-10",
+      "settled_date": "2026-11-11",
       "settled_nav": 1.1056,
       "settled_amount": 7523.84,
       "settled_profit": 20.42,
       "settled_return_pct": 0.27,
-      "est_date": "2026-11-10",
+      "est_date": "2026-11-11",
       "est_daily_pct": 0.0,
       "est_nav": 1.1056,
       "est_daily_profit": 0.0,
@@ -616,18 +616,18 @@
       "principal": 7500.0,
       "shares": 3955.96,
       "cost_nav": 1.8959,
-      "settled_date": "2026-11-10",
-      "settled_nav": 1.6824,
-      "settled_amount": 6655.51,
-      "settled_profit": -844.49,
-      "settled_return_pct": -11.26,
-      "est_date": "2026-11-10",
-      "est_daily_pct": 0.07,
-      "est_nav": 1.6824,
-      "est_daily_profit": 4.35,
-      "est_amount": 6655.51,
-      "est_profit": -844.49,
-      "est_return_pct": -11.26,
+      "settled_date": "2026-11-11",
+      "settled_nav": 1.689,
+      "settled_amount": 6681.62,
+      "settled_profit": -818.38,
+      "settled_return_pct": -10.91,
+      "est_date": "2026-11-11",
+      "est_daily_pct": 0.39,
+      "est_nav": 1.689,
+      "est_daily_profit": 26.11,
+      "est_amount": 6681.62,
+      "est_profit": -818.38,
+      "est_return_pct": -10.91,
       "trigger_rule": "亏超-1000元从014437转4000元抄底；回本(+0元以上)减仓2500元"
     },
     {
@@ -637,18 +637,18 @@
       "principal": 4500.0,
       "shares": 2000.18,
       "cost_nav": 2.2498,
-      "settled_date": "2026-11-10",
-      "settled_nav": 2.0933,
-      "settled_amount": 4186.98,
-      "settled_profit": -313.02,
-      "settled_return_pct": -6.96,
-      "est_date": "2026-11-10",
-      "est_daily_pct": 0.4,
-      "est_nav": 2.0933,
-      "est_daily_profit": 16.6,
-      "est_amount": 4186.98,
-      "est_profit": -313.02,
-      "est_return_pct": -6.96,
+      "settled_date": "2026-11-11",
+      "settled_nav": 2.1137,
+      "settled_amount": 4227.78,
+      "settled_profit": -272.22,
+      "settled_return_pct": -6.05,
+      "est_date": "2026-11-11",
+      "est_daily_pct": 0.97,
+      "est_nav": 2.1137,
+      "est_daily_profit": 40.8,
+      "est_amount": 4227.78,
+      "est_profit": -272.22,
+      "est_return_pct": -6.05,
       "trigger_rule": "11月12日满30天(0.1%费率)后，亏损缩至-50元内卖出3000元转014437"
     },
     {
@@ -658,18 +658,18 @@
       "principal": 2500.0,
       "shares": 1381.07,
       "cost_nav": 1.8102,
-      "settled_date": "2026-11-10",
-      "settled_nav": 1.6269,
-      "settled_amount": 2246.86,
-      "settled_profit": -253.14,
-      "settled_return_pct": -10.13,
-      "est_date": "2026-11-10",
-      "est_daily_pct": 1.62,
-      "est_nav": 1.6269,
-      "est_daily_profit": 35.91,
-      "est_amount": 2246.86,
-      "est_profit": -253.14,
-      "est_return_pct": -10.13,
+      "settled_date": "2026-11-11",
+      "settled_nav": 1.681,
+      "settled_amount": 2321.58,
+      "settled_profit": -178.42,
+      "settled_return_pct": -7.14,
+      "est_date": "2026-11-11",
+      "est_daily_pct": 3.33,
+      "est_nav": 1.681,
+      "est_daily_profit": 74.72,
+      "est_amount": 2321.58,
+      "est_profit": -178.42,
+      "est_return_pct": -7.14,
       "trigger_rule": "11月12日满30天(0.10%费率，满180天才为0)后，红字盈利达+150元(+6%)卖出1000元落袋"
     },
     {
@@ -679,18 +679,18 @@
       "principal": 1250.0,
       "shares": 2108.96,
       "cost_nav": 0.5927,
-      "settled_date": "2026-11-10",
-      "settled_nav": 0.5918,
-      "settled_amount": 1248.08,
-      "settled_profit": -1.92,
-      "settled_return_pct": -0.15,
-      "est_date": "2026-11-10",
-      "est_daily_pct": -0.13,
-      "est_nav": 0.5918,
-      "est_daily_profit": -1.69,
-      "est_amount": 1248.08,
-      "est_profit": -1.92,
-      "est_return_pct": -0.15,
+      "settled_date": "2026-11-11",
+      "settled_nav": 0.5868,
+      "settled_amount": 1237.54,
+      "settled_profit": -12.46,
+      "settled_return_pct": -1.0,
+      "est_date": "2026-11-11",
+      "est_daily_pct": -0.84,
+      "est_nav": 0.5868,
+      "est_daily_profit": -10.54,
+      "est_amount": 1237.54,
+      "est_profit": -12.46,
+      "est_return_pct": -1.0,
       "trigger_rule": "11月12日满30天(0费率)后，红字盈利达+75元(+6%)卖出500元落袋"
     },
     {
@@ -700,25 +700,25 @@
       "principal": 2500.0,
       "shares": 2214.35,
       "cost_nav": 1.129,
-      "settled_date": "2026-11-10",
-      "settled_nav": 1.1335,
-      "settled_amount": 2509.97,
-      "settled_profit": 9.97,
-      "settled_return_pct": 0.4,
-      "est_date": "2026-11-10",
-      "est_daily_pct": 1.01,
-      "est_nav": 1.1335,
-      "est_daily_profit": 25.02,
-      "est_amount": 2509.97,
-      "est_profit": 9.97,
-      "est_return_pct": 0.4,
+      "settled_date": "2026-11-11",
+      "settled_nav": 1.1344,
+      "settled_amount": 2511.96,
+      "settled_profit": 11.96,
+      "settled_return_pct": 0.48,
+      "est_date": "2026-11-11",
+      "est_daily_pct": 0.08,
+      "est_nav": 1.1344,
+      "est_daily_profit": 1.99,
+      "est_amount": 2511.96,
+      "est_profit": 11.96,
+      "est_return_pct": 0.48,
       "trigger_rule": "长期核心底仓保留，满30天0赎回费，盈利超+375元(+15%)再考虑分批止盈"
     }
   ],
   "lots_if_redeemed": {
-    "redeem_day": "2026-11-11",
+    "redeem_day": "2026-11-12",
     "note": "按先进先出逐笔计；持有天数=赎回日-份额确认日，未计节假日，实际费率以支付宝卖出页为准",
-    "total_fee_yuan": 79.91,
+    "total_fee_yuan": 39.96,
     "lots": [
       {
         "code": "014437",
@@ -727,7 +727,7 @@
         "shares": 6805.21,
         "principal": 7503.42,
         "value": 7523.84,
-        "days_held": 71,
+        "days_held": 72,
         "fee_pct": 0.0,
         "fee_yuan": 0.0,
         "next_fee_change": null
@@ -738,10 +738,10 @@
         "confirm_date": "2026-09-01",
         "shares": 3955.96,
         "principal": 7500.0,
-        "value": 6655.51,
-        "days_held": 71,
+        "value": 6681.62,
+        "days_held": 72,
         "fee_pct": 0.5,
-        "fee_yuan": 33.28,
+        "fee_yuan": 33.41,
         "next_fee_change": {
           "date": "2027-09-01",
           "days_held": 365,
@@ -754,10 +754,10 @@
         "confirm_date": "2026-09-01",
         "shares": 1087.47,
         "principal": 2500.0,
-        "value": 2276.4,
-        "days_held": 71,
+        "value": 2298.59,
+        "days_held": 72,
         "fee_pct": 0.1,
-        "fee_yuan": 2.28,
+        "fee_yuan": 2.3,
         "next_fee_change": {
           "date": "2027-09-01",
           "days_held": 365,
@@ -770,15 +770,11 @@
         "confirm_date": "2026-10-13",
         "shares": 2214.35,
         "principal": 2500.0,
-        "value": 2509.97,
-        "days_held": 29,
-        "fee_pct": 0.5,
-        "fee_yuan": 12.55,
-        "next_fee_change": {
-          "date": "2026-11-12",
-          "days_held": 30,
-          "fee_pct": 0.0
-        }
+        "value": 2511.96,
+        "days_held": 30,
+        "fee_pct": 0.0,
+        "fee_yuan": 0.0,
+        "next_fee_change": null
       },
       {
         "code": "012733",
@@ -786,14 +782,14 @@
         "confirm_date": "2026-10-13",
         "shares": 1381.07,
         "principal": 2500.0,
-        "value": 2246.86,
-        "days_held": 29,
-        "fee_pct": 0.5,
-        "fee_yuan": 11.23,
+        "value": 2321.58,
+        "days_held": 30,
+        "fee_pct": 0.1,
+        "fee_yuan": 2.32,
         "next_fee_change": {
-          "date": "2026-11-12",
-          "days_held": 30,
-          "fee_pct": 0.1
+          "date": "2027-04-11",
+          "days_held": 180,
+          "fee_pct": 0.0
         }
       },
       {
@@ -802,15 +798,11 @@
         "confirm_date": "2026-10-13",
         "shares": 2108.96,
         "principal": 1250.0,
-        "value": 1248.08,
-        "days_held": 29,
-        "fee_pct": 0.5,
-        "fee_yuan": 6.24,
-        "next_fee_change": {
-          "date": "2026-11-12",
-          "days_held": 30,
-          "fee_pct": 0.0
-        }
+        "value": 1237.54,
+        "days_held": 30,
+        "fee_pct": 0.0,
+        "fee_yuan": 0.0,
+        "next_fee_change": null
       },
       {
         "code": "110027",
@@ -818,46 +810,25 @@
         "confirm_date": "2026-10-13",
         "shares": 912.71,
         "principal": 2000.0,
-        "value": 1910.58,
-        "days_held": 29,
-        "fee_pct": 0.75,
-        "fee_yuan": 14.33,
+        "value": 1929.2,
+        "days_held": 30,
+        "fee_pct": 0.1,
+        "fee_yuan": 1.93,
         "next_fee_change": {
-          "date": "2026-11-12",
-          "days_held": 30,
-          "fee_pct": 0.1
+          "date": "2027-10-13",
+          "days_held": 365,
+          "fee_pct": 0.05
         }
       }
     ]
   },
   "fee_calendar": [
     {
-      "date": "2026-11-12",
-      "code": "024430",
-      "lot_confirm_date": "2026-10-13",
-      "from_pct": 0.5,
-      "to_pct": 0.0
-    },
-    {
-      "date": "2026-11-12",
+      "date": "2027-04-11",
       "code": "012733",
       "lot_confirm_date": "2026-10-13",
-      "from_pct": 0.5,
-      "to_pct": 0.1
-    },
-    {
-      "date": "2026-11-12",
-      "code": "012737",
-      "lot_confirm_date": "2026-10-13",
-      "from_pct": 0.5,
+      "from_pct": 0.1,
       "to_pct": 0.0
-    },
-    {
-      "date": "2026-11-12",
-      "code": "110027",
-      "lot_confirm_date": "2026-10-13",
-      "from_pct": 0.75,
-      "to_pct": 0.1
     },
     {
       "date": "2027-09-01",
@@ -870,6 +841,13 @@
       "date": "2027-09-01",
       "code": "110027",
       "lot_confirm_date": "2026-09-01",
+      "from_pct": 0.1,
+      "to_pct": 0.05
+    },
+    {
+      "date": "2027-10-13",
+      "code": "110027",
+      "lot_confirm_date": "2026-10-13",
       "from_pct": 0.1,
       "to_pct": 0.05
     }
@@ -916,7 +894,7 @@
         ],
         "8d_p10_p50_p90_pct": [
           -3.44,
-          -0.5,
+          -0.47,
           2.53
         ],
         "20d_p10_p50_p90_pct": [
@@ -931,17 +909,17 @@
         "1d_p10_p50_p90_pct": [
           -0.87,
           0.0,
-          0.76
+          0.77
         ],
         "5d_p10_p50_p90_pct": [
           -2.04,
-          0.09,
+          0.1,
           1.57
         ],
         "8d_p10_p50_p90_pct": [
           -2.32,
-          -0.04,
-          1.76
+          -0.02,
+          1.91
         ],
         "20d_p10_p50_p90_pct": [
           -4.47,
@@ -954,17 +932,17 @@
         "daily_sd_pct": 2.47,
         "1d_p10_p50_p90_pct": [
           -3.1,
-          0.03,
+          0.04,
           3.12
         ],
         "5d_p10_p50_p90_pct": [
-          -6.52,
-          -0.49,
+          -6.42,
+          -0.45,
           6.36
         ],
         "8d_p10_p50_p90_pct": [
           -7.45,
-          -0.8,
+          -0.7,
           7.31
         ],
         "20d_p10_p50_p90_pct": [
@@ -975,9 +953,9 @@
       },
       "012737": {
         "days": 250,
-        "daily_sd_pct": 1.83,
+        "daily_sd_pct": 1.82,
         "1d_p10_p50_p90_pct": [
-          -2.07,
+          -2.02,
           -0.13,
           2.26
         ],
@@ -988,7 +966,7 @@
         ],
         "8d_p10_p50_p90_pct": [
           -5.32,
-          -1.12,
+          -1.1,
           6.8
         ],
         "20d_p10_p50_p90_pct": [
@@ -1002,22 +980,22 @@
         "daily_sd_pct": 0.93,
         "1d_p10_p50_p90_pct": [
           -1.17,
-          0.06,
+          0.07,
           1.07
         ],
         "5d_p10_p50_p90_pct": [
           -2.53,
-          0.09,
+          0.1,
           2.42
         ],
         "8d_p10_p50_p90_pct": [
           -2.78,
           0.25,
-          2.89
+          2.9
         ],
         "20d_p10_p50_p90_pct": [
           -3.96,
-          -0.28,
+          -0.25,
           5.85
         ]
       }
@@ -1025,46 +1003,46 @@
     "portfolio": {
       "days": 250,
       "basis": "当前各基金持有金额 × 历史日涨跌幅（不含未来调仓）",
-      "daily_sd_yuan": 175.0,
+      "daily_sd_yuan": 177.0,
       "1d_yuan": {
-        "p10": -237,
+        "p10": -241,
         "p50": 4,
-        "p90": 215,
-        "worst": -598,
-        "best": 529
+        "p90": 219,
+        "worst": -604,
+        "best": 535
       },
       "5d_yuan": {
-        "p10": -430,
-        "p50": 1,
-        "p90": 425,
-        "worst": -832,
-        "best": 904
+        "p10": -440,
+        "p50": 7,
+        "p90": 431,
+        "worst": -844,
+        "best": 917
       },
       "8d_yuan": {
-        "p10": -526,
-        "p50": -33,
-        "p90": 518,
-        "worst": -980,
-        "best": 1025
+        "p10": -531,
+        "p50": -28,
+        "p90": 539,
+        "worst": -993,
+        "best": 1039
       },
       "20d_yuan": {
-        "p10": -918,
-        "p50": -20,
-        "p90": 783,
-        "worst": -1807,
-        "best": 1703
+        "p10": -934,
+        "p50": -19,
+        "p90": 793,
+        "worst": -1832,
+        "best": 1728
       }
     }
   },
   "track_record": {
-    "registered": 22,
-    "resolved": 11,
-    "hits": 9,
-    "hit_rate_pct": 81.8,
-    "with_probability_resolved": 8,
-    "mean_brier": 0.1519,
-    "mean_stated_probability_pct": 62.0,
-    "pending": 11,
+    "registered": 24,
+    "resolved": 14,
+    "hits": 12,
+    "hit_rate_pct": 85.7,
+    "with_probability_resolved": 11,
+    "mean_brier": 0.1442,
+    "mean_stated_probability_pct": 63.0,
+    "pending": 10,
     "issues": []
   }
 }

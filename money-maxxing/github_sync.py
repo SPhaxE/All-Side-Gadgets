@@ -52,7 +52,8 @@ def mirror():
         dst.parent.mkdir(parents=True, exist_ok=True)
         if src.suffix.lower() == ".md":
             text = src.read_text(encoding="utf-8")
-            dst.write_text(LINK_RE.sub("", text), encoding="utf-8", newline="")
+            with open(dst, "w", encoding="utf-8", newline="") as f:
+                f.write(LINK_RE.sub("", text))
         else:
             shutil.copy2(src, dst)
     for p in sorted(dst_root.rglob("*"), reverse=True):
