@@ -9,6 +9,16 @@ description: 按小红书账号 iceppt（nerdy 风 PPT）2026 年笔记提炼的
 
 **先读这条：** 所有 hex、字号、间距都是作者图片的目测估算，没有实测值；各章节里标了"分歧"和"推算"的地方不要当事实。
 
+## 先看图，再看字
+
+复刻版式或画图表时，**第一步是到 [catalog/](catalog/README.md) 找原图**：312 页单页裁图，按图形类型、版式、配色体系打了标签，颜色是像素实测值。
+
+1. 确定要画的图形 → Read `catalog/sheets/<类型>.jpg` 看这类图形的最佳范例总览。
+2. 选 1 张范例 → Read `catalog/slides/<tid>.jpg`，照它的版块比例和强调落点做。
+3. 做完把范例图和自己的截图拼在一起对比，对不上就改。
+
+下面的文字规则用来解释"为什么这么做"，不能代替看图。类型清单和字段说明见 [catalog/README.md](catalog/README.md)。
+
 ## 怎么用这个 skill
 
 1. 动手前先确认场景和听众：汇报 / 述职 / 周会 / 面试 case / 商赛 / 单页改稿。
@@ -30,7 +40,7 @@ description: 按小红书账号 iceppt（nerdy 风 PPT）2026 年笔记提炼的
 
 **视觉**（详见 [01-visual-system](references/01-visual-system.md)）
 - 作者 2026 年有两套体系：06 月底起的**绿色 nerdy 体系**（下面规则的主体，样本最多），和 01–06 月的**酒红咨询体系**（面包屑导航、粗体标题、2–3pt 黑通栏线、酒红 + 鼠尾草绿 + 灰，正文 10–14pt 更适合投屏）。用户没指定时默认绿色体系；要酒红体系时读 [01-visual-system](references/01-visual-system.md) 第 9 节。
-- 绿色体系下，全页只用黑、白、灰 + 一个绿色色相。深绿 `#0E7C66`（沉稳版 `#1F5C46`，整套只选一种）。实心绿面积 ≤10%，含浅绿底 ≤25%，灰与白 ≥75%。
+- 绿色体系下，全页只用黑、白、灰 + 一个绿色色相。深绿 `#0E7C66`（沉稳版 `#1F5C46`，整套只选一种）。实心绿面积 ≤10%，含浅绿底 ≤25%，灰与白 ≥75%。（图库实测：深色强调面积中位数只有约 0.2%，九成页面不到 1.3%，按 ≤2% 做更接近原图，见 catalog/README.md。）
 - 一页只让 1 个对象拿最强强调（深绿描边或实心块），其余全部降灰。
 - 红色只做否定或警示，面积 <2%，如定义框里框架名下的红下划线、✗、风险标记。推荐 `#D0312D`。
 - 信息分三层灰度：主信息 `#1A1A1A`、次级 `#777777`、补充 `#AAAAAA`；层级靠字重、灰度、位置，不靠加字号或加颜色。
@@ -88,5 +98,6 @@ description: 按小红书账号 iceppt（nerdy 风 PPT）2026 年笔记提炼的
 | [03-story-structure.md](references/03-story-structure.md) | 汇报叙事、标题公式、导航、场景页清单 | 搭汇报结构时 |
 | [04-thinking-models.md](references/04-thinking-models.md) | 思维模型与框架查表及页面化方式 | 选框架做页时 |
 | [05-workflow-craft.md](references/05-workflow-craft.md) | 做 PPT 的工作流、模块化、可编辑性、从空白页到成稿的步骤 | 开工前 |
+| [catalog/](catalog/README.md) | 312 页单页原图、按图形类型的总览图和清单、实测颜色、可筛选的 index.html | 每次复刻前先看 |
 | [design-tokens.json](references/design-tokens.json) | 色板、字号、间距参数 | 生成文件时 |
 | [sources.md](references/sources.md) | 61 篇来源与剔除清单 | 溯源时 |
