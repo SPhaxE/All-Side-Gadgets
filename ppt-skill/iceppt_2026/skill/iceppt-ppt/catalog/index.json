@@ -5923,7 +5923,8 @@
    "tint_area": 6.4,
    "white_area": 75.6
   },
-  "file": "slides/0710-6845-05-2.jpg"
+  "file": "slides/0710-6845-05-2.jpg",
+  "structure": "structure/0710-6845-05-2.md"
  },
  {
   "tid": "0710-6845-05-3",
@@ -10397,7 +10398,8 @@
    "tint_area": 1.4,
    "white_area": 81.6
   },
-  "file": "slides/0821-c9c4-01-2.jpg"
+  "file": "slides/0821-c9c4-01-2.jpg",
+  "structure": "structure/0821-c9c4-01-2.md"
  },
  {
   "tid": "0821-c9c4-01-3",
@@ -10535,7 +10537,8 @@
    "tint_area": 1.1,
    "white_area": 75.3
   },
-  "file": "slides/0821-c9c4-03-2.jpg"
+  "file": "slides/0821-c9c4-03-2.jpg",
+  "structure": "structure/0821-c9c4-03-2.md"
  },
  {
   "tid": "0825-9b38-01-1",
@@ -10951,7 +10954,8 @@
    "tint_area": 1.0,
    "white_area": 70.9
   },
-  "file": "slides/0904-5e77-03-r1.jpg"
+  "file": "slides/0904-5e77-03-r1.jpg",
+  "structure": "structure/0904-5e77-03-r1.md"
  },
  {
   "tid": "0907-4116-01-1",
@@ -11260,7 +11264,8 @@
    "tint_area": 8.6,
    "white_area": 57.5
   },
-  "file": "slides/0915-e7ee-01-1.jpg"
+  "file": "slides/0915-e7ee-01-1.jpg",
+  "structure": "structure/0915-e7ee-01-1.md"
  },
  {
   "tid": "0915-e7ee-01-2",
@@ -11307,7 +11312,8 @@
    "tint_area": 2.0,
    "white_area": 71.0
   },
-  "file": "slides/0915-e7ee-01-2.jpg"
+  "file": "slides/0915-e7ee-01-2.jpg",
+  "structure": "structure/0915-e7ee-01-2.md"
  },
  {
   "tid": "0915-e7ee-01-3",
@@ -11490,7 +11496,8 @@
    "tint_area": 2.0,
    "white_area": 67.9
   },
-  "file": "slides/0915-e7ee-02-3.jpg"
+  "file": "slides/0915-e7ee-02-3.jpg",
+  "structure": "structure/0915-e7ee-02-3.md"
  },
  {
   "tid": "0915-e7ee-03-2",
@@ -11671,7 +11678,8 @@
    "tint_area": 2.0,
    "white_area": 72.2
   },
-  "file": "slides/0915-e7ee-04-2.jpg"
+  "file": "slides/0915-e7ee-04-2.jpg",
+  "structure": "structure/0915-e7ee-04-2.md"
  },
  {
   "tid": "0915-e7ee-04-3",
@@ -11849,7 +11857,8 @@
    "tint_area": 2.3,
    "white_area": 57.7
   },
-  "file": "slides/0915-e7ee-06-3.jpg"
+  "file": "slides/0915-e7ee-06-3.jpg",
+  "structure": "structure/0915-e7ee-06-3.md"
  },
  {
   "tid": "0920-e4dd-01-1",
@@ -12169,7 +12178,8 @@
    "tint_area": 1.8,
    "white_area": 73.9
   },
-  "file": "slides/1008-f632-02-2.jpg"
+  "file": "slides/1008-f632-02-2.jpg",
+  "structure": "structure/1008-f632-02-2.md"
  },
  {
   "tid": "1009-c515-04-3",

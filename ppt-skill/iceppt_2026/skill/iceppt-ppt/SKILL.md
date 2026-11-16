@@ -33,8 +33,8 @@ description: 按小红书账号 iceppt（nerdy 风 PPT）2026 年笔记提炼的
 
 复刻版式或画图表时，**第一步是到 [catalog/](catalog/README.md) 找原图**：312 页单页裁图，按图形类型、版式、配色体系打了标签，颜色是像素实测值。
 
-1. 确定要画的图形 → Read `catalog/sheets/<类型>.jpg` 看这类图形的最佳范例总览。
-2. 选 1 张范例 → Read `catalog/slides/<tid>.jpg`，照它的版块比例和强调落点做。
+1. 先看 [catalog/structure/](catalog/structure/README.md)：10 张高分页的结构卡，写明每页有哪几个版块、各在什么位置、每块里有什么文字和小元素，还有共用的页头、字号、颜色规格。有合适的就按结构卡做。
+2. 没有合适的结构卡时 → Read `catalog/sheets/<类型>.jpg` 看这类图形的范例总览，选 1 张 → Read `catalog/slides/<tid>.jpg`，自己先照结构卡的格式把它拆成版块，再做。
 3. 做完把范例图和自己的截图拼在一起对比，对不上就改。
 
 下面的文字规则用来解释"为什么这么做"，不能代替看图。类型清单和字段说明见 [catalog/README.md](catalog/README.md)。
@@ -69,7 +69,7 @@ description: 按小红书账号 iceppt（nerdy 风 PPT）2026 年笔记提炼的
 - 大数字为正文的 3–5 倍，一张卡只放一个，下面一行灰色口径。
 - 容器：圆角卡、线宽 ≤1pt、浅灰或浅绿底、默认无投影（只给 1 张重点卡加）。实线框表事实，虚线框表假设或待验证。
 - 页面底用白色，不要铺青灰；拼图外底 `#BFD8D8` 只用于封面或预览。
-- **两种页型**：高密度速查页可参考作者 7–10pt 正文；汇报现场页正文取 ≥10–12pt，只保留"结论句 + 3 栏 + 大数字"。这是作者自己多次提醒的，要投屏就用后者。
+- **默认按原图密度做**：正文 12–13px（1280 宽画布，约 9–10pt），一页 3–5 个版块。只有用户说明要现场投屏、嫌字小时，才放大到 ≥10–12pt 并减少版块。
 
 **标题与结论**
 - 标题写结论句，不写名词：对象 + 动作 + 结果，尽量含数字，一到两行（约 25–70 字）。副标题式用"● 粗体结论句"，不要混用多种格式。
@@ -120,5 +120,6 @@ description: 按小红书账号 iceppt（nerdy 风 PPT）2026 年笔记提炼的
 | [04-thinking-models.md](references/04-thinking-models.md) | 思维模型与框架查表及页面化方式 | 选框架做页时 |
 | [05-workflow-craft.md](references/05-workflow-craft.md) | 做 PPT 的工作流、模块化、可编辑性、从空白页到成稿的步骤 | 开工前 |
 | [catalog/](catalog/README.md) | 312 页单页原图、按图形类型的总览图和清单、实测颜色、可筛选的 index.html | 每次复刻前先看 |
+| [catalog/structure/](catalog/structure/README.md) | 10 张高分页的结构卡 + 共用的页头、字号、颜色、细节元素规格 | 动手搭页面时 |
 | [design-tokens.json](references/design-tokens.json) | 色板、字号、间距参数 | 生成文件时 |
 | [sources.md](references/sources.md) | 61 篇来源与剔除清单 | 溯源时 |
