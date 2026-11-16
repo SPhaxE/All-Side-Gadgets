@@ -22,8 +22,8 @@ const {chromium}=require('playwright');const path=require('path');const fs=requi
       const d=g.getImageData(0,0,640,360).data;let white=0,edge=0,prev=0;
       for(let y=0;y<360;y++)for(let x=0;x<640;x++){const k=(y*640+x)*4,l=Math.round(.299*d[k]+.587*d[k+1]+.114*d[k+2]);if(l>=245)white++;if(x>0&&Math.abs(l-prev)>40)edge++;prev=l}
       return {white:white/230400*100,edge:edge/(639*360)*100}},png.toString('base64'));
-    const thin=r.edge<4.0||r.white>79;if(thin)low++;
-    console.log(`第 ${i} 页　留白 ${r.white.toFixed(1)}%（原图 60–79）　细节密度 ${r.edge.toFixed(1)}（原图 4.0–6.6）　汉字 ${cjk}　${thin?'偏空':'在范围内'}`);
+    const thin=r.edge<4.0||r.white>79, dense=r.edge>6.6||r.white<60;if(thin||dense)low++;
+    console.log(`第 ${i} 页　留白 ${r.white.toFixed(1)}%（原图 60–79）　细节密度 ${r.edge.toFixed(1)}（原图 4.0–6.6）　汉字 ${cjk}　${thin?"偏空":dense?"偏密":"在范围内"}`);
     await p.addStyleTag({content:'html{filter:blur(9px)}'});await p.screenshot({path:path.join(out,`p${i}-blur.png`)});
   }
   if(errs.length)console.log('页面报错：',errs);

@@ -3,191 +3,539 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>money-maxxing 五页汇报</title>
+<title>money-maxxing 预测记分汇报</title>
 <style>
-/* 第四版，从空白重做。规则：ppt-skill/…/iceppt-ppt/SKILL.md「版式先说话」——每页一个图形占主体，标题 ≤20 汉字，正文 ≤40 汉字。
-   图形骨架取自图库范例（每页注释里写明），文字不照抄范例密度。 */
-:root{
-  --ink:#16181B; --g1:#5E6368; --g2:#9AA0A6; --g3:#C9CDD1; --g4:#E7E9EB; --g5:#F3F4F5;
-  --acc:#12365C; --acc2:#5F82A8; --tint:#C9D7E6; --tint2:#E9EFF5;
-  --font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC","WenQuanYi Zen Hei",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --num:"Helvetica Neue",Arial,system-ui,sans-serif; --serif:Georgia,"Times New Roman",serif;
-}
+:root{--g:#1F7A66;--gd:#14604F;--gl:#D9EBE5;--gl2:#E8F3EF;--b1:#F3F3F1;--b2:#EDEDEB;--t1:#1A1A1A;--t2:#555;--t3:#999;--ln:#D9D9D9;--pu:#7B3FA0;--be:#EFE9DC;--bn:#8A7F66;--red:#C0392B}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#DFE2E5;overflow:hidden;font-family:var(--font);color:var(--ink)}
-#stage{position:absolute;left:0;top:0;width:1280px;height:720px;background:#fff;transform-origin:0 0;overflow:hidden}
-section{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .3s}
-section.on{opacity:1;visibility:visible}
-@media (prefers-reduced-motion:reduce){section{transition:none}}
-svg{position:absolute;left:0;top:0;font-family:var(--font)}
-.kick{position:absolute;left:64px;top:40px;font:700 12px var(--num);letter-spacing:3px;color:var(--g2)}
-.no{position:absolute;right:64px;top:34px;font:700 22px var(--num);color:var(--g3)}
-.ttl{position:absolute;left:64px;top:62px;font-size:36px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
-.ttl b{color:var(--acc)}
-#nav{position:absolute;left:64px;bottom:22px;display:flex;gap:6px}
-#nav i{width:22px;height:3px;background:var(--g4);cursor:pointer}#nav i.on{background:var(--acc)}
+html,body{width:100%;height:100%;overflow:hidden;background:#EEF1EF}
+body{font-family:-apple-system,"Segoe UI",Arial,"PingFang SC","Microsoft YaHei","Noto Sans SC","WenQuanYi Zen Hei",sans-serif;color:var(--t1);font-size:12px;line-height:1.5}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;background:#fff;overflow:hidden}
+.pg{position:absolute;left:0;top:0;width:1280px;height:720px;background:#fff;opacity:0;pointer-events:none}
+.ready .pg{transition:opacity .25s ease}
+.pg.on{opacity:1;pointer-events:auto}
+.a{position:absolute}
+.frame{position:absolute;left:32px;top:11px;width:1216px;height:698px;border:1px solid var(--ln);border-radius:22px}
+.tbar{position:absolute;left:51px;top:25px;width:1184px;height:50px;border:1px solid #CFCFCF;border-radius:14px;display:flex;align-items:center;padding:0 20px 0 26px;white-space:nowrap}
+.fn{font-size:27px;font-weight:700;letter-spacing:-.2px}
+.sfx{font-size:19px;margin-left:12px;color:#222}
+.brand{margin-left:auto;font-family:Georgia,"Times New Roman",serif;letter-spacing:3px;color:var(--g);font-size:15px}
+.pn{font-size:29px;font-weight:700;margin-left:16px}
+.concl{position:absolute;left:68px;top:84px;width:1150px;display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:700;white-space:nowrap}
+.concl i{flex:none;width:17px;height:17px;border-radius:50%;background:#000}
+b,.lead{font-weight:700;color:var(--t1)}
+.concl span,.tbar .sfx{-webkit-text-stroke:.35px currentColor}
+
+.gray{color:var(--t2)}.lt{color:var(--t3)}
+.cap{display:inline-block;border:1px solid var(--ln);background:#fff;border-radius:999px;font-size:11.5px;padding:1px 13px;color:var(--t2);line-height:1.5}
+.cap.g{background:var(--b1)}
+.strip{background:var(--b1);padding:3px 8px;border-radius:3px;color:var(--t2);font-size:12px}
+.strip.gr{background:#E4F0EA}.strip.pu{background:#EFE9F4}
+ul.bl{list-style:none}
+ul.bl li{position:relative;padding-left:14px;color:var(--t2);font-size:12px;line-height:1.5;margin-bottom:3px}
+ul.bl li:before{content:"";position:absolute;left:3px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--g)}
+ul.bl.sm li{font-size:10.5px;margin-bottom:1px}
+ul.bl.sm li:before{top:6px;width:4px;height:4px}
+.circ{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--g);color:#fff;font-weight:700}
+.shadow{box-shadow:2px 5px 12px rgba(0,0,0,.13)}
+.card{background:#fff;border:1px solid #E2E2E0;border-radius:10px;box-shadow:2px 5px 12px rgba(0,0,0,.10)}
+.note{position:absolute;background:#fff;border:1px solid #BDBDBD;border-radius:8px;padding:4px 8px;font-size:11px;line-height:1.45;color:#777}
+.note b{color:#222}
+.eng{font-weight:300;color:var(--g);font-size:21px;letter-spacing:.2px}
+.thin{font-weight:300;color:var(--g)}
+.hl{border-bottom:1.5px solid var(--t1)}
+svg text{font-family:inherit}
+#mb svg,#gt svg,#db svg,#rl svg{display:block}
+/* P1 */
+.ch{position:absolute;display:flex;gap:8px;align-items:center}
+.ch .circ{width:26px;height:26px;font-size:14px}
+.ch b{font-size:12.5px;display:block;line-height:1.25}
+.ch span.q{font-size:10.5px;color:var(--t3);display:block;line-height:1.25}
+.vl{position:absolute;width:1px;background:#E0E0DE}
+.kt{width:100%;border-collapse:collapse;font-size:12px}
+.kt td{padding:4px 8px;border-bottom:1px solid #C9DDD6}
+.kt td:last-child{text-align:right;font-weight:700}
+.ct{width:100%;border-collapse:collapse;font-size:10.5px;color:#444}
+.ct th{background:var(--b2);font-weight:400;padding:3px 5px;text-align:center;color:#666}
+.ct td{padding:4px 5px;border-bottom:1px solid #E4E4E2;text-align:center}
+.ct td:first-child{text-align:left}
+.ct td.r{color:var(--red);font-weight:700}
+.ct td.k{color:var(--gd);font-weight:700}
+.scard{background:var(--b1);border-radius:6px;padding:6px 8px 5px 34px;position:absolute;width:280px}
+.scard .no{position:absolute;left:8px;top:7px;width:18px;height:18px;background:#fff;border:1px solid #D4D4D2;border-radius:3px;text-align:center;font-size:11px;color:#888;line-height:16px}
+.scard b{font-size:11.5px;display:block;margin-bottom:1px}
+.bigno{display:flex;gap:8px;align-items:baseline;margin-bottom:5px;font-size:12.5px;line-height:1.4}
+.bigno em{font-style:normal;color:var(--g);font-size:18px;font-weight:300;flex:none;width:18px}
+.act{display:flex;gap:7px;margin-bottom:5px;font-size:12px;color:#444;line-height:1.4}
+.act .circ{flex:none;width:17px;height:17px;font-size:10px;margin-top:1px;background:#fff;color:var(--gd);border:1px solid var(--g)}
+.band{position:absolute;left:62px;top:626px;width:1176px;height:72px;border-top:2px solid var(--g)}
+.band .bt{position:absolute;left:18px;top:24px;font-size:13px;font-weight:700;line-height:1.3}
+.band .bt small{display:block;font-weight:400;font-size:10.5px;color:var(--t3)}
+.bg{position:absolute;top:14px;display:flex;gap:10px;align-items:center;width:230px}
+.bg .ic{flex:none;width:40px;height:40px;border:1px solid #CFCFCF;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}
+.bg .n{font-size:15px;font-weight:700;line-height:1.2}
+.bg .d{font-size:10.5px;color:var(--t2);line-height:1.35}
+/* P2 */
+.def{position:absolute;left:62px;top:116px;width:1156px;height:70px;border:1px solid #CFCFCF;border-radius:14px;padding:6px 18px}
+.def .h{font-size:13.5px;font-weight:700}
+.def .h u{text-decoration:none;border-bottom:2px solid var(--red);padding-bottom:1px}
+.def p{font-size:11.5px;color:var(--t2);line-height:1.55;margin-top:2px}
+.chev{position:absolute;top:226px;width:240px;height:70px}
+.chev .sh{position:absolute;inset:0;background:linear-gradient(180deg,#EFEFEE,#DEDEDC);clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,8% 50%)}
+.chev.first .sh{clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%)}
+.chev .ltr{position:absolute;left:0;right:0;top:-34px;text-align:center;font-family:"Songti SC","Noto Serif SC",Georgia,"WenQuanYi Zen Hei",serif;font-style:italic;font-weight:700;font-size:56px;line-height:62px;color:var(--g)}
+.chev .en{position:absolute;left:0;right:0;top:32px;text-align:center;font-size:11px;color:#777}
+.chev .qq{position:absolute;left:0;right:0;top:48px;text-align:center;font-size:11px;font-weight:700;color:#222}
+.col2{position:absolute;top:322px;width:224px;height:284px;padding:0 4px}
+.col2.hi{border:1.5px solid var(--g);background:var(--gl2);padding:6px 8px;top:322px;width:232px;height:288px;margin-left:-4px;margin-top:-4px;margin-bottom:-4px}
+.col2 h5{font-size:12px;font-weight:700;margin-bottom:2px;position:relative;padding-left:12px}
+.col2 h5:before{content:"";position:absolute;left:1px;top:7px;width:4px;height:4px;border-radius:50%;background:#333}
+.col2 p{font-size:12.5px;color:var(--t2);line-height:1.5;margin-bottom:6px;padding-left:12px}
+.col2 .ck{display:flex;gap:5px;font-size:12px;color:var(--t2);line-height:1.45;margin:0 0 3px 12px}
+.col2 .ck:before{content:"";flex:none;width:9px;height:9px;border:1.2px solid #555;border-radius:2px;margin-top:3px;background:linear-gradient(135deg,transparent 45%,#555 46%,#555 56%,transparent 57%)}
+.col2 .dv{margin:0 0 0 12px;border:1px solid #CFCFCF;border-radius:10px;padding:3px 9px;font-size:11.5px;color:var(--t2);line-height:1.45;background:#fff}
+.col2.hi .dv{color:var(--gd);border-color:var(--g)}
+.col2 .num{margin:7px 0 0 12px;font-size:11px;color:var(--g);font-weight:700;border-top:1px dashed #CFCFCF;padding-top:5px}
+.sep{position:absolute;top:316px;width:1px;height:290px;background:#E0E0DE}
+.tri{position:absolute;left:624px;top:612px;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:9px solid #C8C8C6}
+.sum{position:absolute;left:62px;top:624px;width:1156px;height:66px;background:var(--b1);border-radius:6px;padding:8px 22px;text-align:center;font-size:12px;color:var(--t2);line-height:1.7}
+/* P3 */
+.stepcard{position:absolute;left:614px;width:602px;padding:16px 14px 8px}
+.stepcard .cap{position:absolute;left:12px;top:-11px}
+.stepcard h6{font-size:12.5px;font-weight:700;margin:2px 0 3px}
+.ck2{display:flex;gap:7px;margin-bottom:9px;font-size:12.5px;color:var(--t2);line-height:1.5}
+.ck2 svg{flex:none;margin-top:3px}
+/* P4 */
+.lab{position:absolute;background:var(--gl2);border-bottom:2px solid var(--g);text-align:center}
+.vdots{position:absolute;width:4px}
+.vdots i{display:block;width:4px;height:4px;border-radius:50%;background:var(--g);margin-bottom:5px}
+.legend{position:absolute;display:flex;gap:16px;font-size:10px;color:var(--t3);align-items:center}
+.legend i{display:inline-block;width:12px;height:8px;margin-right:4px;vertical-align:middle;border:1px solid transparent}
+.acard{position:absolute;top:619px;width:380px;height:80px;background:var(--b1);border-radius:6px;padding:8px 14px 6px 62px}
+.acard .big{position:absolute;left:12px;top:12px;font-size:25px;font-weight:300;color:#C9C9C7;width:44px;text-align:center;line-height:1.2}
+.acard b{font-size:12.5px;display:block}
+.acard p{font-size:11.5px;color:var(--t2);line-height:1.45}
+.acard p b{display:inline;font-size:11px}
+/* P5 */
+.vsbox{position:absolute;left:64px;top:140px;width:440px;height:178px;background:var(--gl2);border-radius:6px}
+.vsg{position:absolute;top:10px;width:180px;text-align:center;font-size:10.5px;color:var(--t2);line-height:1.4}
+.vsg .nn{font-size:27px;font-weight:300;color:var(--g);line-height:1.2;margin-top:1px}
+.vsg .nn small{font-size:14px}
+.vs{position:absolute;left:197px;top:40px;width:46px;text-align:center;font-size:24px;font-weight:300;color:#888}
+.acc{position:absolute;left:64px;width:440px}
+.acc .row{display:flex;gap:8px;align-items:center}
+.acc .row .nu{color:var(--g);font-size:15px;font-weight:300;width:18px}
+.acc .row .strip{flex:1;font-size:12px;padding:2px 8px}
+.acc p{margin:3px 0 0 26px;font-size:11px;color:var(--t2);line-height:1.5}
+.tstrip{position:absolute;left:550px;top:116px;width:653px;height:30px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.13);text-align:center;font-size:12px;font-weight:700;line-height:30px}
+.foot{position:absolute;font-size:10px;color:var(--t3)}
 </style>
 </head>
 <body>
 <div id="stage">
-<section><div class="kick">MONEY-MAXXING · 11/13</div><div class="no">01</div><div class="ttl">20 条开奖，<b>15 条命中</b></div><svg id="s1" width="1280" height="720"></svg></section>
-<section><div class="kick">HOW IT WORKS</div><div class="no">02</div><div class="ttl">先登记，后判分</div><svg id="s2" width="1280" height="720"></svg></section>
-<section><div class="kick">CALIBRATION</div><div class="no">03</div><div class="ttl">说 64%，<b>中了 82%</b></div><svg id="s3" width="1280" height="720"></svg></section>
-<section><div class="kick">ACCOUNT</div><div class="no">04</div><div class="ttl">亏 1,580 元，<b>近六成在一只基金</b></div><svg id="s4" width="1280" height="720"></svg></section>
-<section><div class="kick">DECISION</div><div class="no">05</div><div class="ttl">样本才 17 条，<b>攒到 30 条再调概率</b></div><svg id="s5" width="1280" height="720"></svg></section>
-<div id="nav"></div>
+
+<!-- ============ P1 Executive Summary ============ -->
+<section class="pg" id="p1">
+  <div class="frame"></div>
+  <div class="tbar"><span class="fn">Executive Summary</span><span class="sfx">- CASE STUDY：money-maxxing 个人基金预测记分系统</span><span class="brand">MONEY-MAXXING</span><span class="pn">001</span></div>
+  <div class="concl"><i></i><span>已判定 20 条预测命中 15 条（75.0%），带概率的 17 条平均 Brier 为 0.1932、低于随机基准 0.25；账户累计盈亏 −1,580.06 元（−6.14%）</span></div>
+
+  <!-- col 1 -->
+  <div class="ch" style="left:62px;top:116px"><span class="circ">1</span><div><b>背景与核心问题</b><span class="q">这个系统在做什么？</span></div></div>
+  <div class="a" style="left:62px;top:158px;width:280px">
+    <div style="font-weight:700;margin-bottom:3px">系统背景</div>
+    <ul class="bl">
+      <li>个人支付宝基金账户，本金 25,753.42 元，6 只基金</li>
+      <li><b>Gemini</b> 写主线：同步数据、检索新闻、写线报、登记预测</li>
+      <li><b>Claude</b> 做侧评审：核算术、费率、事实、措辞，只批注不改写</li>
+      <li>判分由脚本 <b>fund_tracker.py grade</b> 完成</li>
+    </ul>
+    <div style="font-weight:700;margin:8px 0 3px">核心问题</div>
+    <ul class="bl">
+      <li>每条预测写明标的、阈值、截止日、概率和证伪条件</li>
+      <li>盘中估值不得用来判命中，只认官方净值或收盘价</li>
+      
+    </ul>
+  </div>
+  <div class="a" style="left:62px;top:446px;width:280px;height:160px;background:#E4F0EA;border-radius:10px;padding:8px 12px">
+    <div style="font-weight:700;font-size:12.5px;margin-bottom:4px">记分卡指标（截至 11/13 结算）</div>
+    <table class="kt">
+      <tr><td>已登记</td><td>28 条</td></tr>
+      <tr><td>已判定（命中）</td><td>20 条（15 条）</td></tr>
+      <tr><td>带概率已判定（命中）</td><td>17 条（14 条）</td></tr>
+      <tr><td style="border:0">待判定</td><td style="border:0">8 条</td></tr>
+    </table>
+  </div>
+  <div class="vl" style="left:350px;top:116px;height:490px"></div>
+
+  <!-- col 2 -->
+  <div class="ch" style="left:360px;top:116px"><span class="circ">2</span><div><b>关键发现与结论</b><span class="q">记分卡显示了什么？</span></div></div>
+  <div class="a" style="left:360px;top:158px;width:282px">
+    <div style="font-weight:700;margin-bottom:5px">核心结论</div>
+    <div class="bigno"><em>1.</em><span>20 条已判定命中 15 条，命中率 <b>75.0%</b></span></div>
+    <div class="bigno"><em>2.</em><span>17 条带概率预测命中 14 条，命中率 <b>82.4%</b></span></div>
+    <div class="bigno"><em>3.</em><span>平均 Brier <b>0.1932</b>，低于随机基准 0.25</span></div>
+    <table class="ct" style="margin-top:8px">
+      <tr><th style="width:80px">指标</th><th style="width:44px">当前</th><th>对照</th><th style="width:52px">差距</th></tr>
+      <tr><td>17 条命中率</td><td>82.4%</td><td>声称均值 63.9%</td><td class="k">+18.5pp</td></tr>
+      <tr><td>20 条命中率</td><td>75.0%</td><td>17 条 82.4%</td><td class="r">−7.4pp</td></tr>
+      <tr><td>平均 Brier</td><td>0.1932</td><td>随机 0.25</td><td class="k">−0.057</td></tr>
+      <tr><td>Brier 走势</td><td>0.1932</td><td>11/11 0.1442</td><td class="r">+0.049</td></tr>
+    </table>
+    <div style="text-align:center;margin-top:12px"><span class="cap g">口径差异</span></div>
+    <div style="text-align:center;margin:2px 0 0;color:#B5B5B3;font-size:14px;line-height:1">&#9660;</div>
+    <div class="strip" style="margin-top:4px;line-height:1.5;padding:5px 8px">声称 63.9%、实际 82.4%，看起来偏保守；但样本只有 17 条，3 条未中就让 Brier 变了约 0.05。</div>
+  </div>
+  <div class="vl" style="left:650px;top:116px;height:490px"></div>
+
+  <!-- col 3 -->
+  <div class="ch" style="left:658px;top:116px"><span class="circ">3</span><div><b>记分方法上的问题</b><span class="q">哪些口径需要说明？</span></div></div>
+  <div class="scard" style="left:658px;top:158px"><span class="no">1</span><b>样本偏小</b><ul class="bl sm"><li>带概率已判定只有 17 条</li><li>3 条未中就让 Brier 变了约 0.05</li></ul></div>
+  <div class="scard" style="left:658px;top:236px"><span class="no">2</span><b>口径混用</b><ul class="bl sm"><li>声称均值 63.9% 取自 17 条</li><li>命中率 75.0% 取自 20 条，二者放在一起比</li></ul></div>
+  <div class="scard" style="left:658px;top:314px"><span class="no">3</span><b>文档不一致</b><ul class="bl sm"><li>README 仍写旧的 20 条 / 80% / 0.1646</li><li>底库有的地方写 850+，有的写 1,000+，实际 850 只</li></ul></div>
+  <div class="a" style="left:658px;top:420px;font-weight:700;font-size:12.5px">平均 Brier（越低越好）</div>
+  <div class="a" id="mb" style="left:658px;top:440px;width:280px;height:166px"></div>
+  <div class="vl" style="left:948px;top:116px;height:490px"></div>
+
+  <!-- col 4 -->
+  <div class="ch" style="left:956px;top:116px"><span class="circ">4</span><div><b>待判定与判分</b><span class="q">接下来会发生什么？</span></div></div>
+  <div class="a" style="left:956px;top:158px;width:280px">
+    <div style="font-weight:700;margin-bottom:5px">待判定清单（8 条）</div>
+    <div class="act"><span class="circ">1</span><span>11/16 到期 2 条：EP21-01、EP21-02</span></div>
+    <div class="act"><span class="circ">2</span><span>11/17 到期 2 条：EP20-02、EP22-02</span></div>
+    <div class="act"><span class="circ">3</span><span>11/18 到期 2 条：EP23-01、EP23-02</span></div>
+    <div class="act"><span class="circ">4</span><span>11/19 到期 1 条 EP22-01；2027-04-30 到期 1 条 EP10-L3（组合扭亏）</span></div>
+    <div style="font-weight:700;margin:10px 0 2px">到期时间表（每格 1 条）</div>
+  </div>
+  <div class="a" id="gt" style="left:956px;top:322px;width:280px;height:176px"></div>
+  <div class="a" style="left:956px;top:512px;width:280px;height:92px;border-top:1px solid #E4E4E2;padding-top:10px;display:flex;gap:12px;align-items:center">
+    <svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="27" fill="#F3F3F1"/><circle cx="28" cy="21" r="9" fill="#C9C9C7"/><path d="M10 48c1-10 8-15 18-15s17 5 18 15" fill="#C9C9C7"/></svg>
+    <div style="font-size:11px;color:var(--t2);line-height:1.5"><b style="font-size:12px">判分执行</b><br>fund_tracker.py grade 脚本<br>只用官方净值或收盘价</div>
+  </div>
+
+  <!-- impact band -->
+  <div class="band">
+    <div class="bt">账面现状<small>截至 11/13 官方结算</small></div>
+    <div class="bg" style="left:150px"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F7A66" stroke-width="1.6"><path d="M3 18l5-6 4 3 8-9"/><path d="M3 21h18"/></svg></div><div><div class="n">−1,580.06 元</div><div class="d">累计盈亏，收益率 −6.14%</div></div></div>
+    <div class="bg" style="left:420px"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F7A66" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 12V3M12 12l6 6"/></svg></div><div><div class="n">57.7%</div><div class="d">110020 一只占净亏损的比例</div></div></div>
+    <div class="bg" style="left:690px"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F7A66" stroke-width="1.6"><rect x="4" y="12" width="3" height="8"/><rect x="10" y="7" width="3" height="13"/><rect x="16" y="3" width="3" height="17"/></svg></div><div><div class="n">−5,150 元</div><div class="d">项目自设的最大回撤容忍线</div></div></div>
+    <div class="bg" style="left:930px;width:240px"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F7A66" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a1.7 1.7 0 010 3.4H9.5a1.7 1.7 0 000 3.4H15"/></svg></div><div><div class="n">40.68 元</div><div class="d">赎回费降幅；同期 1 日区间 −236～+214 元</div></div></div>
+  </div>
+</section>
+
+<!-- ============ P2 Pipeline ============ -->
+<section class="pg" id="p2">
+  <div class="frame"></div>
+  <div class="tbar"><span class="fn">Scoring Pipeline</span><span class="sfx">- CASE STUDY：五步预测记分流水线</span><span class="brand">MONEY-MAXXING</span><span class="pn">002</span></div>
+  <div class="concl"><i></i><span>五步流水线把每条预测从登记走到判分全程留痕：判分只认官方净值或收盘价，盘中估值不得用来判命中</span></div>
+  <div class="def">
+    <div class="h"><u>Scoring Pipeline</u>（预测记分流水线）- 把“写预测”变成可被官方数据证伪、可被脚本判分的五步流程。</div>
+    <p>双模型分工：Gemini 写主线（同步数据、检索新闻、写线报、登记预测），Claude 做侧评审（只批注不改写），判分由脚本完成。前三步产出估值与信号，第四步结构化登记，第五步只用官方数据判分并算 Brier。</p>
+  </div>
+
+  <div class="chev first" style="left:62px"><div class="sh"></div><div class="ltr">同</div><div class="en">Sync | 多源同步</div><div class="qq">“数据都进来了吗？”</div></div>
+  <div class="chev" style="left:300px"><div class="sh"></div><div class="ltr">校</div><div class="en">Calibrate | 回归校准</div><div class="qq">“盘中估值有多可信？”</div></div>
+  <div class="chev" style="left:538px"><div class="sh"></div><div class="ltr">信</div><div class="en">Signal | 条件胜率</div><div class="qq">“历史上这种情形多常见？”</div></div>
+  <div class="chev" style="left:776px"><div class="sh"></div><div class="ltr">登</div><div class="en">Register | 结构化登记</div><div class="qq">“怎样才算说错了？”</div></div>
+  <div class="chev" style="left:1014px;width:204px"><div class="sh" style="background:linear-gradient(180deg,#E3F0EB,#CBE3DA)"></div><div class="ltr">判</div><div class="en">Grade | 官方判分</div><div class="qq">“到期后命中了吗？”</div></div>
+
+  <div class="col2" style="left:66px"><h5>核心任务：</h5><p>把净值、指数、ETF、美股、公告和快讯多源同步进系统，作为估值、信号和预测的共同输入。</p><h5>关键动作：</h5><div class="ck">同步净值、指数与 ETF 数据</div><div class="ck">同步美股、公告与快讯</div><h5 style="margin-top:6px">交付物：</h5><div class="dv">多源数据底表，供估值、信号和登记预测共同引用</div></div>
+  <div class="sep" style="left:296px"></div>
+  <div class="col2" style="left:304px"><h5>核心任务：</h5><p>用 60 日窗口做 OLS 回归，校准盘中估值与官方数据之间的偏差。</p><h5>关键动作：</h5><div class="ck">60 日窗口 OLS 回归，校准盘中估值</div><div class="ck">盘中估值只作参考，不得用来判命中</div><h5 style="margin-top:6px">交付物：</h5><div class="dv">带标注的盘中估值：仅供参考，不进入判分</div></div>
+  <div class="sep" style="left:534px"></div>
+  <div class="col2" style="left:542px"><h5>核心任务：</h5><p>在 250 日窗口内计算条件胜率信号，给出 p10 / p50 / p90 三个分位。</p><h5>关键动作：</h5><div class="ck">250 日窗口条件胜率，给出 p10 / p50 / p90</div><div class="ck">组合常态区间：1 日 −236 ～ +214 元</div><h5 style="margin-top:6px">交付物：</h5><div class="dv">概率与波动区间的参照，供登记预测时对照</div></div>
+  <div class="sep" style="left:772px"></div>
+  <div class="col2" style="left:780px"><h5>核心任务：</h5><p>把每条预测写成结构化条目，使它到期后能被事实证伪。</p><h5>关键动作：</h5><div class="ck">登记标的、阈值、截止日和声称概率</div><div class="ck">写明证伪条件，并用 SHA-1 防篡改</div><h5 style="margin-top:6px">交付物：</h5><div class="dv">28 条已登记预测，其中 8 条待判定</div></div>
+  <div class="sep" style="left:1010px"></div>
+  <div class="col2 hi" style="left:1022px;width:206px"><h5>核心任务：</h5><p>到期后只用官方净值或收盘价自动判分，并为带概率的预测计算 Brier。</p><h5>关键动作：</h5><div class="ck">运行 fund_tracker.py grade 自动判分</div><div class="ck">记分卡：20 条已判定，命中 15 条（75.0%）</div><h5 style="margin-top:6px">交付物：</h5><div class="dv">17 条带概率预测：命中 14 条，平均 Brier 0.1932</div></div>
+
+  <div class="tri"></div>
+  <div class="sum">纪律只有一条，贯穿五步：<span class="hl" style="color:#222;font-weight:700">盘中估值不得用来判命中，判分只用官方净值或收盘价。</span><br>判分由脚本完成；Claude 侧评审只批注不改写，也不手改记分卡。</div>
+</section>
+
+<!-- ============ P3 Dumbbell ============ -->
+<section class="pg" id="p3">
+  <div class="frame"></div>
+  <div class="tbar"><span class="fn">Dumbbell Chart (Gap Chart)</span><span class="sfx">- CASE STUDY：17 条带概率预测的声称与结果</span><span class="brand">MONEY-MAXXING</span><span class="pn">003</span></div>
+  <div class="concl"><i></i><span>17 条带概率预测命中 14 条（82.4%），声称概率均值 63.9%；新判的 6 条里 3 条未中，平均 Brier 从 0.1442 升到 0.1932</span></div>
+  <div class="a" id="db" style="left:64px;top:106px;width:525px;height:572px"></div>
+
+  <div class="card stepcard" style="top:120px;height:160px"><span class="cap g">Step 1：怎么读这张图</span>
+    <h6>单条 Brier 的算法</h6>
+    <div class="strip" style="margin-bottom:6px">Brier = （声称概率 − 结果）²，命中记 1、未中记 0；每次都说 50% 的 Brier 是 0.25，作为随机基准。</div>
+    <h6>两个端点之间的距离</h6>
+    <ul class="bl"><li>紫点是登记时的声称概率，绿点是结果：命中落在 100%，未中落在 0%；距离越近，这一条的 Brier 越小。</li><li>每行中间的数字就是该条 Brier；17 条之和 3.2842，除以 17 得 0.1932。</li></ul>
+  </div>
+  <div class="card stepcard" style="top:296px;height:176px"><span class="cap g">Step 2：三条未中</span>
+    <div class="strip pu" style="margin-bottom:5px"><b>EP20-01（110027）：</b>净值需 ≥ 2.0732，11/13 收 2.0689；声称 0.78，Brier 0.6084。</div>
+    <div class="strip gr" style="margin-bottom:5px"><b>EP15-03（012737）：</b>需 11/12 前任一日触及 0.6101，最高未到，11/12 收 0.5859；声称 0.65，Brier 0.4225。</div>
+    <div class="strip" style="margin-bottom:6px"><b>EP14-02（012737）：</b>持有收益需 ≥ 0，11/12 为 −14.36 元；声称 0.52，Brier 0.2704。</div>
+    <div style="display:flex;align-items:center;gap:10px"><svg width="34" height="20" viewBox="0 0 34 20"><path d="M0 6h20V0l14 10-14 10v-6H0z" fill="#C9C9C7"/></svg><b style="font-size:12px">11/11 时 11 条全中（0.1442）；之后新判 6 条、3 条未中，升到 0.1932</b></div>
+  </div>
+  <div class="card stepcard" style="top:492px;height:196px"><span class="cap g">Step 3：记分方法上的三个问题</span>
+    <div class="ck2"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1F7A66" stroke-width="1.8"><path d="M2 7.5l3.5 3.5L12 3"/></svg><span><b>样本偏小：</b>带概率已判定只有 17 条，3 条未中就让 Brier 变了约 0.05，每多一条未中都会明显改变均值。</span></div>
+    <div class="ck2"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1F7A66" stroke-width="1.8"><path d="M2 7.5l3.5 3.5L12 3"/></svg><span><b>口径混用：</b>记分卡把 17 条的声称均值 63.9% 和 20 条的命中率 75.0% 放在一起比较；同为 17 条口径的命中率是 82.4%。</span></div>
+    <div class="ck2"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1F7A66" stroke-width="1.8"><path d="M2 7.5l3.5 3.5L12 3"/></svg><span><b>文档不一致：</b>README 还写着旧的 20 条 / 80% / 0.1646；底库有的地方写 850+，有的写 1,000+，实际是 850 只。</span></div>
+  </div>
+</section>
+
+<!-- ============ P4 Waterfall ============ -->
+<section class="pg" id="p4">
+  <div class="frame"></div>
+  <div class="tbar"><span class="fn">Waterfall Chart</span><span class="sfx">- CASE STUDY：瀑布图拆解本金到市值的 −1,580.06 元</span><span class="brand">MONEY-MAXXING</span><span class="pn">004</span></div>
+  <div class="concl"><i></i><span>6 只基金里 110020 一只亏 912.14 元、占净亏损的 57.7%，把本金 25,753.42 元拉到市值 24,173.36 元（−6.14%）</span></div>
+  <div class="lab" style="left:64px;top:112px;width:206px;height:42px"><span class="eng" style="line-height:40px">Background</span></div>
+  <div class="vdots" style="left:164px;top:160px"><i></i><i></i><i></i></div>
+  <ul class="bl a" style="left:292px;top:108px;width:930px;font-size:12.5px">
+    <li><b>背景：</b>个人支付宝基金账户，本金 25,753.42 元分布在 6 只基金；同业存单 014437 本金 7,503.42 元，沪深300 110020 本金 7,500.00 元。</li>
+    <li><b>结果：</b>截至 11/13 官方结算，市值 24,173.36 元，累计盈亏 −1,580.06 元，收益率 −6.14%；只有 014437 为正（+20.42 元）。</li>
+    <li><b>分析任务：</b>把总亏损拆回每只基金，回答“亏损落在哪几只基金上、占了多少”。</li>
+  </ul>
+  <div class="legend" style="left:540px;top:196px"><span><i style="background:#fff;border-color:#888"></i>汇总</span><span><i style="background:var(--gl);border-color:var(--g)"></i>增加</span><span><i style="background:var(--g)"></i>减少</span></div>
+  <div class="a" id="wf" style="left:50px;top:210px;width:1190px;height:372px"></div>
+
+  <div class="lab" style="left:1040px;top:590px;width:176px;height:28px"><span class="eng" style="line-height:28px;font-size:19px">Facts</span></div>
+  <div class="acard" style="left:62px"><span class="big">#1</span><b>1 日 / 5 日常态区间</b><p>组合常态波动（p10–p90）：1 日 <b>−236 ～ +214 元</b>，5 日 <b>−430 ～ +422 元</b>；11/12 单日 −146.49，11/13 单日 −184.46，都在 1 日区间内。</p></div>
+  <div class="acard" style="left:454px"><span class="big">#2</span><b>回撤容忍线</b><p>项目自己设的最大回撤容忍线是 <b>−5,150 元</b>；截至 11/13 累计 −1,580.06 元，约为该线的 <b>31%</b>。</p></div>
+  <div class="acard" style="left:846px;width:372px"><span class="big">#3</span><b>官方已结累计盈亏</b><p>11/03 −1,816.84；11/06 −1,470.27；11/10 −1,382.18；11/11 −1,249.10；11/12 −1,395.59；<b>11/13 −1,580.06</b>。</p></div>
+</section>
+
+<!-- ============ P5 Bridge ============ -->
+<section class="pg" id="p5">
+  <div class="frame"></div>
+  <div class="tbar"><span class="fn">Bridge Chart</span><span class="sfx">- CASE STUDY：赎回费降幅与同期账面变动并列</span><span class="brand">MONEY-MAXXING</span><span class="pn">005</span></div>
+  <div class="concl"><i></i><span>第 2 批 4 笔份额满 30 天后赎回费少了 40.68 元，同期账面变动 −330.96 元约为其 8 倍，两个单日变动都在 1 日常态区间内</span></div>
+  <div class="a" style="left:64px;top:114px;font-weight:700;font-size:13px">The Fee Issue | 赎回费与波动并列</div>
+  <div class="vsbox">
+    <div class="vsg" style="left:12px">赎回费降幅（4 笔份额）<br>44.83 → 4.15 元，11/11 → 11/13 口径<div class="nn">40.68<small> 元</small></div></div>
+    <div class="vs">VS</div>
+    <div class="vsg" style="left:248px">同期账面变动（两个交易日）<br>累计盈亏 −1,249.10 → −1,580.06 元<div class="nn">−330.96<small> 元</small></div></div>
+    <div class="a" id="rl" style="left:0;top:86px;width:440px;height:90px"></div>
+  </div>
+  <div class="a" style="left:64px;top:332px;font-weight:700;font-size:13px">Facts &amp; Rules | 基于图表的事实归纳</div>
+  <div class="acc" style="top:352px"><div class="row"><span class="nu">1.</span><div class="strip">降费来自第 2 批 4 笔份额 11/12 满 30 天</div></div><p>024430、012737 的赎回费降到 0；012733 与 110027 第 2 批降到 0.10%，分别是 2.26 元和 1.89 元，合计 4.15 元。</p></div>
+  <div class="acc" style="top:428px"><div class="row"><span class="nu">2.</span><div class="strip">两个单日变动都在 1 日常态区间内</div></div><p>11/12 单日 −146.49 元，11/13 单日 −184.46 元；组合常态波动（p10–p90）：1 日 −236 ～ +214 元，5 日 −430 ～ +422 元。</p></div>
+  <div class="acc" style="top:504px"><div class="row"><span class="nu">3.</span><div class="strip">项目规则：手续费节省必须和波动区间并列展示</div></div><p>降费后两个交易日账面变动 −330.96 元，是省下费用的约 8 倍，所以本页把二者放在同一把尺上，并且只陈述记录。</p></div>
+  <div class="a" style="left:64px;top:584px;width:440px;height:108px;padding:6px 10px;border:1px dashed #9DBFB4;border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5"><b style="font-size:12px;color:var(--gd)">需要拍板（记分口径，不涉及买卖）</b><br>1. 命中率对比统一按 17 条还是 20 条口径？<br>2. README 里的旧值（20 条 / 80% / 0.1646）是否更新？<br>3. 底库数量统一写 850 只，还是保留 850+ / 1,000+ 的写法？<br><span class="lt" style="font-size:10px">仅陈述记录与规则，不构成买卖、持有或调仓建议；个人决策请找持牌投顾。</span></div>
+
+  <div class="tstrip">指标：官方已结累计盈亏（元），11/06 – 11/13</div>
+  <div class="a" id="br" style="left:512px;top:158px;width:722px;height:540px"></div>
+</section>
+
 </div>
 
 <script>
+/* ---------------- 数据（全部来自数据简报） ---------------- */
+const PRED=[
+ ["EP12-01","110020",.65,1,.1225],["EP12-02","012733",.45,1,.3025],["EP13-01","012737",.60,1,.1600],
+ ["EP13-02","组合",.60,1,.1600],["EP14-01","012733",.55,1,.2025],["EP15-01","012733",.68,1,.1024],
+ ["EP17-02","012733",.68,1,.1024],["EP15-02","024430",.75,1,.0625],["EP16-01","012733",.72,1,.0784],
+ ["EP17-03","024430",.70,1,.0900],["EP19-01","110020",.55,1,.2025],["EP12-03","组合",.48,1,.2704],
+ ["EP14-02","012737",.52,0,.2704],["EP15-03","012737",.65,0,.4225],["EP16-02","组合",.72,1,.0784],
+ ["EP17-01","110020",.78,1,.0484],["EP20-01","110027",.78,0,.6084]];
+const ACC=[["014437","同业存单",7503.42,7523.84,20.42],["110020","沪深300",7500,6587.86,-912.14],["110027","安心回报",4500,4138.17,-361.83],
+ ["012733","人工智能",2500,2258.60,-241.40],["012737","创新药",1250,1215.60,-34.40],["024430","东方红",2500,2449.29,-50.71]];
+const CUM=[["11/03",-1816.84],["11/06",-1470.27],["11/10",-1382.18],["11/11",-1249.10],["11/12",-1395.59],["11/13",-1580.06]];
+const sum=a=>a.reduce((s,x)=>s+x,0), near=(a,b,t=.011)=>Math.abs(a-b)<=t;
+
+/* ---------------- 与简报核对 ---------------- */
 (function(){
-  var $=function(s){return document.querySelector(s)}, $$=function(s){return [].slice.call(document.querySelectorAll(s))};
-  var C={ink:'#16181B',g1:'#5E6368',g2:'#9AA0A6',g3:'#C9CDD1',g4:'#E7E9EB',g5:'#F3F4F5',acc:'#12365C',acc2:'#5F82A8',tint:'#C9D7E6',tint2:'#E9EFF5'};
-  var NUM='"Helvetica Neue",Arial,system-ui,sans-serif', SERIF='Georgia,"Times New Roman",serif';
-
-  /* ================= 数据：origin/main 的 prediction_scorecard.md、STATUS.md（2026-11-13 结算） ================= */
-  var REG=28, PENDING=8, LEGACY_J=3, LEGACY_HIT=1;
-  // 17 条带概率且已判定的预测：[声称概率, 是否命中]
-  var P=[[.65,1],[.45,1],[.48,1],[.60,1],[.60,1],[.55,1],[.52,0],[.68,1],[.75,1],[.65,0],[.72,1],[.72,1],[.78,1],[.68,1],[.70,1],[.55,1],[.78,0]];
-  // 6 只基金的累计盈亏（元）
-  var F=[['110020','沪深300',-912.14],['110027','安心回报',-361.83],['012733','人工智能',-241.40],['024430','东方红',-50.71],['012737','创新药',-34.40],['014437','同业存单',20.42]];
-  var sum=function(a){return a.reduce(function(x,y){return x+y},0)}, avg=function(a){return sum(a)/a.length};
-  var hitsP=sum(P.map(function(r){return r[1]})), JUDGED=P.length+LEGACY_J, HITS=hitsP+LEGACY_HIT, MISS=JUDGED-HITS;
-  var claim=avg(P.map(function(r){return r[0]})), actual=hitsP/P.length, brier=avg(P.map(function(r){return Math.pow(r[0]-r[1],2)}));
-  var pnl=sum(F.map(function(f){return f[2]})), PRINCIPAL=25753.42;
-  console.assert(JUDGED===20&&HITS===15&&MISS===5&&JUDGED+PENDING===REG,'counts');
-  console.assert((claim*100).toFixed(1)==='63.9'&&(actual*100).toFixed(1)==='82.4'&&brier.toFixed(4)==='0.1932','calibration '+claim+' '+actual+' '+brier);
-  console.assert(pnl.toFixed(2)==='-1580.06'&&(pnl/PRINCIPAL*100).toFixed(2)==='-6.14','pnl '+pnl);
-  window.__deckCheck={judged:JUDGED,hits:HITS,claim:+(claim*100).toFixed(1),actual:+(actual*100).toFixed(1),brier:+brier.toFixed(4),pnl:+pnl.toFixed(2),share:+(F[0][2]/pnl*100).toFixed(1)};
-
-  function T(x,y,s,o){o=o||{};return '<text x="'+x+'" y="'+y+'" font-size="'+(o.fs||16)+'" fill="'+(o.c||C.g1)+'" text-anchor="'+(o.a||'start')+'" font-weight="'+(o.w||400)+'"'+(o.f?' font-family=\''+o.f+'\'':'')+(o.i?' font-style="italic"':'')+(o.ls?' letter-spacing="'+o.ls+'"':'')+'>'+s+'</text>'}
-  function fmt(v,d){return (v<0?'−':'')+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
-
-  /* ---------- 01 桑基图 · 骨架取自 catalog/slides/0915-e7ee-04-3.jpg ---------- */
-  (function(){
-    var u=15, x1=150, x2=540, x3=920, w=16, top=190, gap=40, h='';
-    var yJ=top, yP=top+JUDGED*u;                                   // 左柱内：已判 / 待判 的分界
-    var y2P=top+JUDGED*u+gap;                                       // 中柱：待判块下移一个间隔
-    var y3H=top-20, y3M=y3H+HITS*u+gap;                             // 右柱：命中 / 未中
-    function band(xa,ya,xb,yb,ht,fill,extra){var m=(xa+xb)/2;return '<path d="M'+xa+' '+ya+' C'+m+' '+ya+' '+m+' '+yb+' '+xb+' '+yb+' L'+xb+' '+(yb+ht)+' C'+m+' '+(yb+ht)+' '+m+' '+(ya+ht)+' '+xa+' '+(ya+ht)+' Z" fill="'+fill+'" '+(extra||'')+'/>'}
-    h+=band(x1+w,yJ,x2,yJ,JUDGED*u,C.g4);
-    h+=band(x1+w,yP,x2,y2P,PENDING*u,'#fff','stroke="'+C.g3+'" stroke-width="1.5" stroke-dasharray="6 5"');
-    h+=band(x2+w,yJ,x3,y3H,HITS*u,C.tint);
-    h+=band(x2+w,yJ+HITS*u,x3,y3M,MISS*u,C.g5);
-    h+='<rect x="'+x1+'" y="'+top+'" width="'+w+'" height="'+REG*u+'" fill="'+C.g2+'"/>';
-    h+='<rect x="'+x2+'" y="'+yJ+'" width="'+w+'" height="'+JUDGED*u+'" fill="'+C.g1+'"/>';
-    h+='<rect x="'+x2+'" y="'+y2P+'" width="'+w+'" height="'+PENDING*u+'" fill="#fff" stroke="'+C.g2+'" stroke-width="1.5"/>';
-    h+='<rect x="'+x3+'" y="'+y3H+'" width="'+w+'" height="'+HITS*u+'" fill="'+C.acc+'"/>';
-    h+='<rect x="'+x3+'" y="'+y3M+'" width="'+w+'" height="'+MISS*u+'" fill="'+C.g3+'"/>';
-    h+=T(x1-18,top+REG*u/2+8,REG,{fs:52,c:C.g1,a:'end',w:700,f:NUM})+T(x1-18,top+REG*u/2+40,'登记',{fs:18,a:'end'});
-    h+=T(x2+w+18,yJ+50,JUDGED,{fs:44,c:C.ink,w:700,f:NUM})+T(x2+w+20,yJ+78,'开奖',{fs:18});
-    h+=T(x2+w+18,y2P+PENDING*u/2+4,PENDING,{fs:36,c:C.g2,w:700,f:NUM})+T(x2+w+20,y2P+PENDING*u/2+32,'待判',{fs:18,c:C.g2});
-    h+=T(x3+w+22,y3H+HITS*u/2+44,HITS,{fs:150,c:C.acc,w:800,f:NUM})+T(x3+w+206,y3H+HITS*u/2-18,'命中',{fs:22,c:C.acc,w:700})+T(x3+w+206,y3H+HITS*u/2+34,(HITS/JUDGED*100).toFixed(0)+'%',{fs:40,c:C.acc,w:300,f:NUM});
-    h+=T(x3+w+22,y3M+MISS*u/2+16,MISS,{fs:48,c:C.g2,w:700,f:NUM})+T(x3+w+66,y3M+MISS*u/2+12,'未中',{fs:18,c:C.g2});
-    $('#s1').innerHTML=h;
-  })();
-
-  /* ---------- 02 箭头轴 · 骨架取自 catalog/slides/0915-e7ee-03-3.jpg ---------- */
-  (function(){
-    var y=400, h='';
-    h+='<rect x="800" y="190" width="416" height="440" fill="'+C.tint2+'"/>';
-    h+='<rect x="64" y="'+(y-8)+'" width="1116" height="16" fill="'+C.acc+'"/><path d="M1172 '+(y-26)+' L1216 '+y+' L1172 '+(y+26)+' Z" fill="'+C.acc+'"/>';
-    var N=[[230,'Write','Gemini 写','概率 · 阈值 · 截止日',1],[560,'Check','Claude 核','算术 · 费率 · 措辞',-1],[900,'Grade','脚本判','只认官方净值',1]];
-    N.forEach(function(n){
-      var x=n[0], d=n[4];                                           // d=1：大字在线上方、说明在下方；d=-1 反过来
-      h+='<line x1="'+x+'" y1="'+y+'" x2="'+x+'" y2="'+(y+d*104)+'" stroke="'+C.g2+'" stroke-width="1.5"/>';
-      h+='<circle cx="'+x+'" cy="'+y+'" r="17" fill="#fff" stroke="'+C.g2+'" stroke-width="2"/>';
-      h+=T(x+34,d>0?y-34:y+66,n[1],{fs:46,c:C.acc2,w:300,f:NUM});
-      h+=T(x+18,d>0?y+122:y-146,n[2],{fs:26,c:C.ink,w:800});
-      h+=T(x+18,d>0?y+156:y-112,n[3],{fs:17,c:C.g1});
-    });
-    $('#s2').innerHTML=h;
-  })();
-
-  /* ---------- 03 斜率图 · 骨架取自 catalog/slides/0709-cdc1-06-2.jpg ---------- */
-  (function(){
-    var xa=430, xb=850, Y=function(p){return 640-(p-.4)/.6*430}, h='';
-    var B=[['p &lt; 0.60',function(p){return p<.6}],['0.60 – 0.69',function(p){return p>=.6&&p<.7}],['p ≥ 0.70',function(p){return p>=.7}]];
-    h+='<line x1="'+xa+'" y1="200" x2="'+xa+'" y2="650" stroke="'+C.g3+'"/><line x1="'+xb+'" y1="200" x2="'+xb+'" y2="650" stroke="'+C.g3+'"/>';
-    h+=T(xa,182,'声称概率',{fs:18,a:'middle'})+T(xb,182,'实际命中',{fs:18,a:'middle'});
-    // 参照：若报得准，线是平的
-    h+='<line x1="'+xa+'" y1="'+Y(claim)+'" x2="'+xb+'" y2="'+Y(claim)+'" stroke="'+C.g2+'" stroke-width="1.5" stroke-dasharray="5 5"/>'+T(xb+16,Y(claim)+6,'平线 = 报得准',{fs:15,c:C.g2});
-    var ends={};
-    B.forEach(function(b){
-      var L=P.filter(function(r){return b[1](r[0])}), c=avg(L.map(function(r){return r[0]})), a=sum(L.map(function(r){return r[1]}))/L.length;
-      h+='<line x1="'+xa+'" y1="'+Y(c)+'" x2="'+xb+'" y2="'+Y(a)+'" stroke="'+C.g3+'" stroke-width="2.5"/><circle cx="'+xa+'" cy="'+Y(c)+'" r="5.5" fill="'+C.g2+'"/><circle cx="'+xb+'" cy="'+Y(a)+'" r="5.5" fill="'+C.g2+'"/>';
-      h+=T(xa-18,Y(c)+6,b[0]+'　'+(c*100).toFixed(0)+'%',{fs:16,c:C.g1,a:'end',f:NUM});
-      var k=(a*100).toFixed(0); ends[k]=(ends[k]||0)+1; if(ends[k]===1) h+=T(xb+16,Y(a)+(a>actual?-4:20),k+'%',{fs:16,c:C.g1,f:NUM});
-    });
-    h+='<line x1="'+xa+'" y1="'+Y(claim)+'" x2="'+xb+'" y2="'+Y(actual)+'" stroke="'+C.acc+'" stroke-width="6" stroke-linecap="round"/><circle cx="'+xa+'" cy="'+Y(claim)+'" r="9" fill="'+C.acc+'"/><circle cx="'+xb+'" cy="'+Y(actual)+'" r="9" fill="'+C.acc+'"/>';
-    h+=T(xa-200,Y(claim)-56,(claim*100).toFixed(0)+'%',{fs:56,c:C.acc,a:'end',w:300,f:NUM});
-    h+=T(xb+110,Y(actual)+34,(actual*100).toFixed(0)+'%',{fs:120,c:C.acc,w:800,f:NUM});
-    h+=T(xb+118,Y(actual)+72,'14 / 17',{fs:24,c:C.acc2,f:NUM});
-    $('#s3').innerHTML=h;
-  })();
-
-  /* ---------- 04 瀑布图 · 骨架取自 catalog/slides/1008-f632-02-2.jpg ---------- */
-  (function(){
-    var y0=236, k=.222, W=98, G=44, x0=96, h='', run=0, Y=function(v){return y0-v*k};
-    h+='<line x1="64" y1="'+y0+'" x2="1216" y2="'+y0+'" stroke="'+C.g2+'"/>'+T(64,y0-10,'0',{fs:14,c:C.g2,f:NUM});
-    F.forEach(function(f,i){
-      var x=x0+i*(W+G), a=Y(run), b=Y(run+f[2]), top=Math.min(a,b), ht=Math.max(Math.abs(b-a),2), hi=i===0;
-      h+='<rect x="'+x+'" y="'+top+'" width="'+W+'" height="'+ht+'" fill="'+(hi?C.acc:C.g4)+'"/>';
-      if(hi) h+=T(x+W/2,top+ht/2+12,fmt(f[2],0),{fs:30,c:'#fff',a:'middle',w:700,f:NUM});
-      else h+=T(x+W/2,f[2]<0?b+26:top-10,(f[2]>0?'+':'')+fmt(f[2],0),{fs:20,c:C.g1,a:'middle',f:NUM});
-      h+='<line x1="'+(x+W)+'" y1="'+b+'" x2="'+(x+W+G)+'" y2="'+b+'" stroke="'+C.g2+'" stroke-dasharray="3 4"/>';
-      h+=T(x+W/2,646,f[1],{fs:17,c:hi?C.ink:C.g1,a:'middle',w:hi?800:400})+T(x+W/2,668,f[0],{fs:13,c:C.g2,a:'middle',f:NUM});
-      run+=f[2];
-    });
-    var xt=x0+6*(W+G);
-    h+='<rect x="'+xt+'" y="'+y0+'" width="'+W+'" height="'+(-pnl*k)+'" fill="#fff" stroke="'+C.ink+'" stroke-width="2"/>';
-    h+=T(xt+W/2,Y(pnl)-52,fmt(pnl,0),{fs:26,c:C.ink,a:'middle',w:800,f:NUM})+T(xt+W/2,Y(pnl)-22,fmt(pnl/PRINCIPAL*100,2)+'%',{fs:18,c:C.g1,a:'middle',f:NUM});
-    h+=T(xt+W/2,646,'合计',{fs:17,c:C.ink,a:'middle',w:800});
-    // 唯一的大数字：最大一块占净亏损的比例
-    h+=T(x0+W+G+4,Y(0)+150,(F[0][2]/pnl*100).toFixed(0)+'%',{fs:120,c:C.acc,w:800,f:NUM})+T(x0+W+G+10,Y(0)+186,'占净亏损',{fs:20,c:C.acc2});
-    $('#s4').innerHTML=h;
-  })();
-
-  /* ---------- 05 大数字卡 + 两个选项 + 三步 · 骨架取自 catalog/slides/0709-cdc1-02-2.jpg ---------- */
-  (function(){
-    var h='<defs><filter id="sh" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="3" dy="5" stdDeviation="4" flood-opacity=".22"/></filter></defs>';
-    // 主卡：17 / 30
-    h+='<rect x="64" y="176" width="300" height="250" rx="10" fill="'+C.tint2+'" stroke="'+C.acc2+'" stroke-width="1.5" filter="url(#sh)"/>';
-    h+='<rect x="236" y="162" width="118" height="30" fill="'+C.g3+'"/>'+T(295,183,'带概率样本',{fs:15,c:C.ink,a:'middle'});
-    h+=T(92,330,P.length,{fs:150,c:C.acc,w:400,f:SERIF,i:1})+T(268,330,'/ 30',{fs:34,c:C.acc2,f:SERIF,i:1});
-    h+='<rect x="92" y="372" width="244" height="10" rx="5" fill="#fff"/><rect x="92" y="372" width="'+(244*P.length/30)+'" height="10" rx="5" fill="'+C.acc+'"/>';
-    // 分叉到两个选项
-    h+='<path d="M214 426 V452 M124 452 H304 M124 452 V474 M304 452 V474" fill="none" stroke="'+C.g2+'" stroke-width="1.5"/>';
-    h+='<rect x="64" y="474" width="120" height="118" rx="8" fill="'+C.g5+'" stroke="'+C.g3+'" filter="url(#sh)"/>'+T(124,524,'A',{fs:34,c:C.g2,a:'middle',w:700,f:NUM})+T(124,560,'现在调',{fs:18,c:C.g1,a:'middle'});
-    h+='<rect x="244" y="474" width="120" height="118" rx="8" fill="#fff" stroke="'+C.acc+'" stroke-width="2.5" filter="url(#sh)"/>'+T(304,524,'B',{fs:34,c:C.acc,a:'middle',w:800,f:NUM})+T(304,560,'满 30 条再调',{fs:17,c:C.acc,a:'middle',w:700});
-    h+='<rect x="276" y="462" width="56" height="24" rx="12" fill="'+C.acc+'"/>'+T(304,479,'建议',{fs:14,c:'#fff',a:'middle'});
-    h+=T(214,632,'由您决定',{fs:16,c:C.g2,a:'middle',ls:4});
-    // 副卡：Brier
-    h+='<rect x="404" y="176" width="220" height="416" rx="10" fill="'+C.g5+'" filter="url(#sh)"/>';
-    h+=T(514,224,'Brier',{fs:24,c:C.g1,a:'middle',f:NUM})+T(514,330,brier.toFixed(4),{fs:54,c:C.acc,a:'middle',f:SERIF,i:1});
-    h+='<line x1="444" y1="390" x2="584" y2="390" stroke="'+C.g3+'"/>'+T(514,462,'0.25',{fs:40,c:C.g2,a:'middle',f:SERIF,i:1})+T(514,498,'基准',{fs:17,c:C.g2,a:'middle'});
-    // 分隔与右侧三步
-    h+='<line x1="664" y1="160" x2="664" y2="640" stroke="'+C.g2+'" stroke-dasharray="2 6" stroke-width="1.5"/>';
-    [['01','新旧分开记分'],['02','统一口径'],['03','满 30 条复盘']].forEach(function(s,i){
-      var y=250+i*140;
-      h+=T(704,y,s[0],{fs:76,c:C.g3,w:800,f:NUM})+'<path d="M840 '+(y-28)+' l10 10 l18 -22" fill="none" stroke="'+C.acc+'" stroke-width="3"/>'+T(884,y-16,s[1],{fs:26,c:C.ink,w:700});
-      if(i<2) h+='<line x1="704" y1="'+(y+44)+'" x2="1216" y2="'+(y+44)+'" stroke="'+C.g4+'" stroke-width="2"/>';
-    });
-    $('#s5').innerHTML=h;
-  })();
-
-  /* ---------- 翻页 ---------- */
-  var S=$$('section'), nav=$('#nav'), cur=-1, stage=$('#stage');
-  function fit(){var s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='scale('+s+')';stage.style.left=((innerWidth-1280*s)/2)+'px';stage.style.top=((innerHeight-720*s)/2)+'px'}
-  addEventListener('resize',fit);fit();
-  S.forEach(function(_,i){var d=document.createElement('i');d.onclick=function(e){e.stopPropagation();go(i)};nav.appendChild(d)});
-  function go(n){n=Math.max(0,Math.min(S.length-1,n));if(n===cur)return;S.forEach(function(s,i){s.classList.toggle('on',i===n)});$$('#nav i').forEach(function(d,i){d.classList.toggle('on',i===n)});cur=n;try{history.replaceState(null,'','#'+(n+1))}catch(e){}}
-  addEventListener('keydown',function(e){var k=e.key;if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){e.preventDefault();go(cur+1)}else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||k==='Backspace'){e.preventDefault();go(cur-1)}else if(/^[1-5]$/.test(k))go(+k-1)});
-  stage.addEventListener('click',function(e){go(e.clientX>innerWidth/2?cur+1:cur-1)});
-  var tx=null;addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
-  addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>50)go(cur+(dx<0?1:-1))});
-  function fromHash(){var h=parseInt((location.hash||'').slice(1),10);go(h>=1&&h<=S.length?h-1:0)}
-  addEventListener('hashchange',fromHash);fromHash();
+  const n=PRED.length, hit=sum(PRED.map(r=>r[3])), meanP=sum(PRED.map(r=>r[2]))/n, br=sum(PRED.map(r=>r[4]));
+  console.assert(n===17,"带概率已判定应为 17 条");
+  console.assert(hit===14&&(hit/n*100).toFixed(1)==="82.4","命中 14 条 / 82.4%");
+  console.assert((meanP*100).toFixed(1)==="63.9","声称概率均值 63.9%: "+meanP);
+  console.assert(br.toFixed(4)==="3.2842"&&(br/n).toFixed(4)==="0.1932","平均 Brier 0.1932: "+br/n);
+  console.assert((sum(PRED.slice(0,11).map(r=>r[4]))/11).toFixed(4)==="0.1442","前 11 条 Brier 0.1442");
+  console.assert(PRED.slice(0,11).every(r=>r[3]===1)&&PRED.slice(11).filter(r=>!r[3]).length===3,"前 11 条全中，后 6 条 3 条未中");
+  console.assert(PRED.every(r=>Math.abs((r[2]-r[3])**2-r[4])<1e-4),"单条 Brier = (p-结果)^2 与简报逐条一致");
+  console.assert(15/20===.75&&28===20+8&&17+3===20&&15===14+1,"20 条命中 15 条 75.0%，28=20+8，14+1=15");
+  console.assert(+(82.4-63.9).toFixed(1)===18.5&&+(75.0-82.4).toFixed(1)===-7.4&&+(0.1932-0.25).toFixed(3)===-0.057&&+(0.1932-0.1442).toFixed(3)===0.049,"P1 对比表差值");
+  console.assert(near(sum(ACC.map(r=>r[2])),25753.42)&&near(sum(ACC.map(r=>r[3])),24173.36),"本金/市值合计");
+  console.assert(near(sum(ACC.map(r=>r[4])),-1580.06),"盈亏合计 -1580.06");
+  console.assert(ACC.every(r=>near(r[3]-r[2],r[4])),"每只基金 市值-本金=盈亏");
+  console.assert((912.14/1580.06*100).toFixed(1)==="57.7","110020 占净亏损 57.7%（净亏损口径）: "+(912.14/1580.06*100));
+  console.assert((1580.06/5150*100).toFixed(0)==="31","累计 -1580.06 约为回撤线 31%");
+  console.assert(near(CUM[5][1]-CUM[3][1],-330.96,.011),"11/11→11/13 累计差 -330.96");
+  console.assert(near(CUM[1][1]+88.09+133.08-146.49-184.46,CUM[5][1],.02),"桥图 5 个变动合到 -1580.06（容差 0.02）");
+  console.assert(near(CUM[1][1]+88.09,CUM[2][1])&&near(CUM[2][1]+133.08,CUM[3][1])&&near(CUM[3][1]-146.49,CUM[4][1]),"累计序列与单日变动逐步吻合");
+  console.assert(near(44.83-4.15,40.68)&&near(2.26+1.89,4.15)&&(330.96/40.68).toFixed(0)==="8","赎回费 44.83→4.15 少 40.68；330.96 约 8 倍");
+  console.assert(-236<=-146.49&&-184.46>=-236&&-146.49<=214,"两个单日变动在 1 日区间内");
+  console.assert(2+2+2+1+1===8,"待判定 8 条");
+  console.assert(near(88.09+133.08,221.17),"11/10+11/11 回升 221.17");
 })();
+
+/* ---------------- 小工具 ---------------- */
+const NS="http://www.w3.org/2000/svg";
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.fs||10}" fill="${o.c||'#888'}" text-anchor="${o.a||'start'}" ${o.w?`font-weight="${o.w}"`:''} ${o.dy?`dy="${o.dy}"`:''}>${s}</text>`;
+const fmt=(v,d=2)=>v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sgn=(v,d=2)=>(v<0?'−':'+')+fmt(Math.abs(v),d);
+
+/* P1：Brier 迷你柱 */
+(function(){
+  const W=280,H=166,x0=34,base=122,top=26,sc=(base-top)/0.30;
+  const Y=v=>base-v*sc;
+  let s=`<svg width="${W}" height="${H}">`;
+  [0,.1,.2,.3].forEach(v=>{s+=T(x0-6,Y(v)+3,v.toFixed(1),{a:'end',fs:9,c:'#AAA'})});
+  s+=`<line x1="${x0}" x2="${W-6}" y1="${base}" y2="${base}" stroke="#BBB"/>`;
+  const bars=[["11/11",.1442,"#D6D6D3","11 条",0],["11/13",.1932,"#1F7A66","17 条",1],["随机基准",.25,"url(#hat)","每次说 50%",2]];
+  s+=`<defs><pattern id="hat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#F3F3F1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#C9C9C7" stroke-width="2"/></pattern></defs>`;
+  bars.forEach((b,i)=>{const cx=x0+36+i*80,h=b[1]*sc;
+    s+=`<rect x="${cx-24}" y="${base-h}" width="48" height="${h}" fill="${b[2]}" ${i==2?'stroke="#BBB" stroke-dasharray="3 2"':''}/>`;
+    s+=T(cx,base-h-5,b[1].toFixed(b[1]==.25?2:4),{a:'middle',fs:12,w:700,c:i==1?'#14604F':'#555'});
+    s+=T(cx,base+14,b[0],{a:'middle',fs:10.5,c:'#555'});s+=T(cx,base+27,b[3],{a:'middle',fs:9.5,c:'#AAA'});});
+  s+=`<path d="M${x0+36+24+3} ${Y(.1442)-2} L${x0+36+80-24-3} ${Y(.1932)-2}" stroke="#C0392B" stroke-width="0" />`;
+  s+=T(x0+36+40,Y(.1932)-22,"+0.049",{a:'middle',fs:10.5,c:'#C0392B',w:700});
+  s+=`</svg>`;document.getElementById('mb').innerHTML=s;
+})();
+
+/* P1：到期点阵 */
+(function(){
+  const rows=[["11/16","EP21-01 · EP21-02",2],["11/17","EP20-02 · EP22-02",2],["11/18","EP23-01 · EP23-02",2],["11/19","EP22-01",1],["2027-04-30","EP10-L3 组合扭亏",1]];
+  let s=`<svg width="280" height="176">`;
+  s+=`<line x1="82" x2="82" y1="4" y2="152" stroke="#E0E0DE"/>`;
+  rows.forEach((r,i)=>{const y=14+i*27+(i==4?12:0);
+    s+=T(0,y+10,r[0],{fs:11,c:'#555',w:i==4?700:400});
+    for(let k=0;k<r[2];k++)s+=`<rect x="${92+k*22}" y="${y}" width="18" height="14" rx="2" fill="${i==4?'#D6D6D3':'#1F7A66'}"/>`;
+    if(i==4)s+=T(92+r[2]*22+6,y+11,'EP10-L3 组合扭亏',{fs:10,c:'#888'});else s+=T(92+r[2]*22+6,y+11,r[2]+' 条',{fs:10,c:'#888'});});
+  
+  document.getElementById('gt').innerHTML=s+`</svg>`;
+})();
+
+/* P3：哑铃图 */
+(function(){
+  const W=525,x0=100,x1=508,rh=27,y0=66,P=v=>x0+(x1-x0)*v;
+  const H=y0+PRED.length*rh+54;
+  let s=`<svg width="${W}" height="${H}">`;
+  const mp=.6388,hr=14/17;
+  s+=`<rect x="${P(mp)-14}" y="50" width="28" height="${PRED.length*rh+14}" fill="#7B3FA0" opacity=".07"/><rect x="${P(hr)-14}" y="50" width="28" height="${PRED.length*rh+14}" fill="#1F7A66" opacity=".08"/>`;
+  s+=`<line x1="${P(mp)}" x2="${P(mp)}" y1="50" y2="${y0+PRED.length*rh}" stroke="#7B3FA0" stroke-width="1.5"/><line x1="${P(hr)}" x2="${P(hr)}" y1="50" y2="${y0+PRED.length*rh}" stroke="#1F7A66" stroke-width="1.5"/>`;
+  s+=`<text x="${x0-4}" y="18" font-size="17" font-weight="300" fill="#7B3FA0" text-anchor="start">Claimed</text><text x="${x0+62}" y="18" font-size="11" fill="#7B3FA0">声称概率</text>`;
+  s+=`<text x="${x1+6}" y="18" font-size="17" font-weight="300" fill="#1F7A66" text-anchor="end">Outcome</text><text x="${x1-62}" y="18" font-size="11" fill="#1F7A66" text-anchor="end" dx="-4">实际结果</text>`;
+  s+=T(P(mp)-3,40,"声称均值 63.9%",{a:'end',fs:10,c:'#7B3FA0',w:700});s+=T(P(hr)+3,40,"命中率 82.4%",{fs:10,c:'#1F7A66',w:700});
+  PRED.forEach((r,i)=>{const y=y0+i*rh+rh/2,a=P(r[2]),b=P(r[3]),miss=!r[3];
+    if(i%2==0)s+=`<rect x="0" y="${y-rh/2}" width="${W}" height="${rh}" fill="#F2F2F0" />`;
+  });
+  s+=`<g>`;
+  PRED.forEach((r,i)=>{const y=y0+i*rh+rh/2,a=P(r[2]),b=P(r[3]),miss=!r[3];
+    s+=T(0,y+3,r[0],{fs:9.5,c:miss?'#C0392B':'#777',w:miss?700:400});s+=T(52,y+3,r[1],{fs:9,c:'#BBB'});
+    s+=`<line x1="${a}" x2="${b}" y1="${y}" y2="${y}" stroke="#E1E1DF" stroke-width="6" stroke-linecap="round"/>`;
+    s+=`<text x="${(a+b)/2}" y="${y-6}" font-size="9" fill="${miss?'#C0392B':'#777'}" text-anchor="middle" font-weight="${miss?700:400}" stroke="#fff" stroke-width="3" paint-order="stroke">${(miss?'✗ ':'')+r[4].toFixed(4)}</text>`;
+    s+=`<circle cx="${a}" cy="${y}" r="4.8" fill="#7B3FA0"/><circle cx="${b}" cy="${y}" r="4.8" fill="#1F7A66"/>`;
+    s+=T(a,y+14,'',{});
+  });
+  s+=`</g>`;
+  const ya=y0+PRED.length*rh+8;
+  s+=`<line x1="${x0}" x2="${x1}" y1="${ya}" y2="${ya}" stroke="#CCC"/>`;
+  [0,.2,.4,.6,.8,1].forEach(v=>{s+=`<line x1="${P(v)}" x2="${P(v)}" y1="${ya}" y2="${ya+4}" stroke="#CCC"/>`+T(P(v),ya+15,Math.round(v*100)+'%',{a:'middle',fs:9.5})});
+  s+=T(x0,ya+31,"横轴：概率；右端点命中 = 100%，未中 = 0%；行序 = 判定日先后，中间数字 = 该条 Brier",{fs:9.5,c:'#AAA'});
+  s+=T(x0,ya+44,"平均 Brier = 3.2842 ÷ 17 = 0.1932",{fs:10.5,c:'#14604F',w:700});
+  document.getElementById('db').innerHTML=s+`</svg>`;
+})();
+
+/* P4：瀑布图 */
+(function(){
+  const W=1190,H=380,x0=76,sw=138,bw=92,top=24,bot=300,lo=23500,hi=26000;
+  const Y=v=>bot-(v-lo)/(hi-lo)*(bot-top);
+  let s=`<svg width="${W}" height="${H}" style="position:absolute;left:0;top:0">`;
+  [23500,24000,24500,25000,25500,26000].forEach(v=>{s+=T(x0-10,Y(v)+3,fmt(v,0),{a:'end',fs:10,c:'#999'})+`<line x1="${x0-6}" x2="${x0}" y1="${Y(v)}" y2="${Y(v)}" stroke="#CCC"/>`});
+  s+=`<line x1="${x0}" x2="${x0}" y1="${top-8}" y2="${bot}" stroke="#CCC"/><line x1="${x0}" x2="${W-10}" y1="${bot}" y2="${bot}" stroke="#BBB"/>`;
+  s+=T(10,top+4,"元",{fs:10,c:'#999'});
+  s+=`<path d="M${x0-6} ${bot-8} l12 -3 M${x0-6} ${bot-3} l12 -3" stroke="#999" stroke-width="1.5" fill="none"/>`;
+  s+=T(x0+4,bot+38,"纵轴自 23,500 元起，已截断",{fs:9.5,c:'#AAA'});
+  const names=[["本金","合计"],...ACC.map(r=>[r[0],r[1]]),["市值","合计"]];
+  let run=25753.42;const bars=[];
+  bars.push({i:0,t:'tot',a:run,b:0,v:run,lbl:fmt(run)});
+  ACC.forEach((r,k)=>{const nx=run+r[4];bars.push({i:k+1,t:r[4]>=0?'up':'dn',a:run,b:nx,v:r[4]});run=nx});
+  bars.push({i:7,t:'tot',a:run,b:0,v:run});
+  const geo=[];
+  bars.forEach((b,k)=>{const cx=x0+(b.i+.5)*sw,x=cx-bw/2;let yt=Y(Math.max(b.a,b.b)),yb=b.t=='tot'?bot:Y(Math.min(b.a,b.b));
+    let h=Math.max(yb-yt,2);
+    if(b.t=='tot')s+=`<rect x="${x}" y="${yt}" width="${bw}" height="${h}" fill="#fff" stroke="#777" stroke-width="1.5"/>`+T(cx,yt+h/2+5,fmt(b.v),{a:'middle',fs:14,c:'#222',w:700});
+    else if(b.t=='up')s+=`<rect x="${x}" y="${yt}" width="${bw}" height="${h}" fill="#D9EBE5" stroke="#1F7A66" stroke-width="1.5"/>`+T(cx,yt-6,'+ '+fmt(b.v),{a:'middle',fs:13,c:'#1F7A66',w:700});
+    else{s+=`<rect x="${x}" y="${yt}" width="${bw}" height="${h}" fill="#1F7A66"/>`;
+      if(h>=26)s+=T(cx,yt+h/2+5,'− '+fmt(-b.v),{a:'middle',fs:13,c:'#fff',w:700});else s+=T(cx,yt-5,'− '+fmt(-b.v),{a:'middle',fs:12.5,c:'#1F7A66',w:700});}
+    geo.push({cx,x,yt,yb:yt+h});
+    // 接平线
+    if(k<bars.length-1){const lvl=Y(b.t=='tot'?b.a:b.b);s+=`<line x1="${cx+bw/2}" x2="${cx+sw-bw/2}" y1="${lvl}" y2="${lvl}" stroke="#BBB" stroke-width="1"/>`;}
+    // 横轴分类（两行错开）
+    const nm=names[b.i],yy=bot+(b.i%2?34:18);
+    s+=T(cx,bot+(b.i%2?36:19)+ (b.i%2?0:0),(b.i==0||b.i==7)?nm[0]+(b.i==0?'（合计）':'（11/13 官方结算）'):nm[0]+' '+nm[1],{a:'middle',fs:10,c:'#777'});
+  });
+  s+=`<rect x="${x0-4}" y="${bot+46}" width="${W-10-x0+4}" height="31" rx="4" fill="#F3F3F1"/>`;
+  s+=T(10,bot+56,"本金（元）",{fs:9.5,c:'#999'});s+=T(10,bot+72,"收益率",{fs:9.5,c:'#999'});
+  ACC.forEach((r,k)=>{const cx=x0+(k+1.5)*sw;
+    s+=T(cx,bot+56,fmt(r[2]),{a:'middle',fs:10.5,c:'#777'});
+    s+=T(cx,bot+72,(r[4]<0?'−':'+')+fmt(Math.abs(r[4]/r[2]*100))+'%',{a:'middle',fs:10.5,c:r[4]<0?'#14604F':'#14604F',w:700});});
+  
+  s+=`</svg>`;
+  // 批注
+  const note=(l,t,w,html,x1,y1,x2,y2)=>`<div class="note" style="left:${l}px;top:${t}px;width:${w}px">${html}</div><svg style="position:absolute;left:0;top:0;overflow:visible" width="1" height="1"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#AAA"/><circle cx="${x2}" cy="${y2}" r="3" fill="#888"/></svg>`;
+  const g2=geo[2],g3=geo[3],g4=geo[4];
+  s+=note(g2.cx-185,Y(24750)+14,205,"<b>110020 沪深300</b>：本金 7,500.00 元，累计 −912.14 元（−12.16%），一只就占净亏损的 <b>57.7%</b>。",g2.cx-20,Y(24750)+14,g2.cx-20,g2.yb);
+  s+=note(g3.cx-55,g3.yb+56,205,"<b>110027 安心回报</b>：本金 4,500.00 元，累计 −361.83 元（−8.04%）；EP20-01 未中的标的就是它。",g3.cx,g3.yb+56,g3.cx,g3.yb);
+  s+=note(g4.cx+30,Y(25650),220,"<b>012733 人工智能</b>：本金 2,500.00 元，累计 −241.40 元（−9.66%）；6 只里收益率比它低的只有 110020。",g4.cx+40,Y(25650)+56,g4.cx+40,g4.yt);
+  document.getElementById('wf').innerHTML=s;
+})();
+
+/* P5：桥图 + 标尺 */
+(function(){
+  const W=722,H=540,x0=66,sw=106,bw=74,top=50,sc=0.2333,base=top; // 0 在顶部
+  const Y=v=>top-v*sc; // v 为负数，向下
+  let s=`<svg width="${W}" height="${H}" style="position:absolute;left:0;top:0">`;
+  // 主要责任区色带
+  const cx=i=>x0+(i+.5)*sw;
+  s+=`<rect x="${cx(4)-bw/2-6}" y="22" width="${bw+12}" height="${Y(-1800)-22}" fill="#EFE9DC" opacity=".75"/>`+T(cx(4),42,"单日降幅最大",{a:'middle',fs:14,c:'#8A7F66'});
+  [0,-300,-600,-900,-1200,-1500,-1800].forEach(v=>{s+=T(x0-10,Y(v)+3,v==0?'0':'−'+fmt(-v,0),{a:'end',fs:10,c:'#999'})});
+  s+=`<line x1="${x0}" x2="${W-10}" y1="${Y(0)}" y2="${Y(0)}" stroke="#BBB"/><line x1="${x0}" x2="${x0}" y1="${Y(0)}" y2="${Y(-1800)}" stroke="#CCC"/><line x1="${x0}" x2="${W-10}" y1="${Y(-1800)}" y2="${Y(-1800)}" stroke="#BBB"/>`;
+  const start=-1470.27,d=[88.09,133.08,-146.49,-184.46],end=-1580.06;
+  // 起点柱
+  s+=`<rect x="${cx(0)-bw/2}" y="${Y(0)}" width="${bw}" height="${Y(start)-Y(0)}" fill="#F3F3F1" stroke="#CCC"/>`+T(cx(0),(Y(0)+Y(start))/2+5,'−1,470.27',{a:'middle',fs:14,c:'#555',w:700});
+  let run=start;const pos=[];
+  d.forEach((v,k)=>{const nx=run+v,yt=Y(Math.max(run,nx)),yb=Y(Math.min(run,nx)),i=k+1;
+    if(v>0)s+=`<rect x="${cx(i)-bw/2}" y="${yt}" width="${bw}" height="${yb-yt}" fill="#D9EBE5"/>`+T(cx(i),yt-5,sgn(v),{a:'middle',fs:13.5,c:'#1F7A66',w:700});
+    else s+=`<rect x="${cx(i)-bw/2}" y="${yt}" width="${bw}" height="${yb-yt}" fill="#E2DACA"/>`+T(cx(i),yb+16,sgn(v),{a:'middle',fs:13.5,c:'#333',w:700});
+    pos.push({cx:cx(i),yt,yb});run=nx;
+    // 与下一块上/下沿对齐的短参考线
+    s+=`<line x1="${cx(i)+bw/2}" x2="${cx(i+1)-bw/2}" y1="${Y(nx)}" y2="${Y(nx)}" stroke="#CFCFCF" stroke-dasharray="2 2"/>`;
+  });
+  s+=`<line x1="${cx(0)+bw/2}" x2="${cx(1)-bw/2}" y1="${Y(start)}" y2="${Y(start)}" stroke="#CFCFCF" stroke-dasharray="2 2"/>`;
+  s+=`<rect x="${cx(5)-bw/2}" y="${Y(0)}" width="${bw}" height="${Y(end)-Y(0)}" fill="#F3F3F1" stroke="#CCC"/>`+T(cx(5),(Y(0)+Y(end))/2+5,'−1,580.06',{a:'middle',fs:14,c:'#555',w:700});
+  [["11/06 累计"],["11/09–11/10"],["11/11 变动"],["11/12 变动"],["11/13 变动"],["11/13 累计"]].forEach((n,i)=>{s+=T(cx(i),Y(-1800)+18,n[0],{a:'middle',fs:10.5,c:'#777'})});
+  s+=T(x0,Y(-1800)+38,"纵轴自 0 起，未截断；累计盈亏为负，向下延伸",{fs:9.5,c:'#AAA'});
+  s+=`</svg>`;
+  const note=(l,t,w,html,x1,y1,x2,y2)=>`<div class="note" style="left:${l}px;top:${t}px;width:${w}px">${html}</div><svg style="position:absolute;left:0;top:0;overflow:visible" width="1" height="1"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#AAA"/><circle cx="${x2}" cy="${y2}" r="3" fill="#888"/></svg>`;
+  s+=note(cx(0)+56,Y(-520),190,"<b>11/09–11/11：</b>三个交易日累计盈亏回升 +221.17 元，从 −1,470.27 到 −1,249.10 元，之后两日回落。",cx(2)+30,Y(-520)+56,cx(2)+30,pos[1].yt);
+  s+=note(cx(2)+8,Y(-170),200,"<b>11/12 单日 −146.49：</b>第 2 批 4 笔份额当天满 30 天，赎回费从 44.83 元（11/11 口径）降到 4.15 元（11/13 口径）；该日变动在 1 日区间内。",cx(3),Y(-170)+84,cx(3),pos[2].yt);
+  s+=note(cx(4)-60,Y(-660),120,"<b>11/13 −184.46：</b>仍在 1 日区间内；两日合计 −330.96 元，约为降费额的 8 倍。",cx(4),Y(-660)+104,cx(4),pos[3].yt);
+  document.getElementById('br').innerHTML=s;
+})();
+
+/* P5：同一把尺（−450 ～ +450 元） */
+(function(){
+  const W=440,x0=20,x1=420,sc=(x1-x0)/900,X=v=>x0+(v+450)*sc;
+  let s=`<svg width="${W}" height="90">`;
+  const band=(a,b,y,fill,lab,col)=>`<rect x="${X(a)}" y="${y}" width="${X(b)-X(a)}" height="12" rx="3" fill="${fill}"/>`+T(X(b)+4,y+10,lab,{fs:9.5,c:col||'#666'});
+  s+=band(-236,214,16,"#BFDCD2","",'');
+  s+=T(X(-236)-4,26,"1 日 −236",{a:'end',fs:9.5,c:'#14604F',w:700})+T(X(214)+4,26,"+214",{fs:9.5,c:'#14604F',w:700});
+  s+=band(-430,422,34,"#DCEBE6","",'');
+  s+=T(X(-430)+2,43,"5 日 −430",{fs:9.5,c:'#14604F'})+T(X(422)-2,43,"+422",{a:'end',fs:9.5,c:'#14604F'});
+  s+=`<line x1="${X(0)}" x2="${X(0)}" y1="8" y2="66" stroke="#888" stroke-dasharray="3 2"/>`;
+  s+=`<circle cx="${X(-330.96)}" cy="58" r="5" fill="#555"/>`+T(X(-330.96)+8,61,"−330.96 账面",{fs:9.5,c:'#333',w:700});
+  s+=`<circle cx="${X(40.68)}" cy="58" r="5" fill="#1F7A66"/>`+T(X(40.68)+8,61,"+40.68 降费",{fs:9.5,c:'#14604F',w:700});
+  s+=`<line x1="${x0}" x2="${x1}" y1="70" y2="70" stroke="#BBB"/>`;
+  [-400,-200,0,200,400].forEach(v=>{s+=`<line x1="${X(v)}" x2="${X(v)}" y1="70" y2="74" stroke="#BBB"/>`+T(X(v),84,(v>0?'+':v<0?'−':'')+Math.abs(v),{a:'middle',fs:9,c:'#999'})});
+  document.getElementById('rl').innerHTML=s+`</svg>`;
+})();
+
+/* ---------------- 舞台缩放与翻页 ---------------- */
+const stage=document.getElementById('stage'),pages=[...document.querySelectorAll('.pg')];
+function fit(){const w=innerWidth,h=innerHeight,s=Math.min(w/1280,h/720);stage.style.transform=`translate(${(w-1280*s)/2}px,${(h-720*s)/2}px) scale(${s})`}
+function go(n,push){n=Math.max(1,Math.min(pages.length,n));pages.forEach((p,i)=>p.classList.toggle('on',i===n-1));if(push)history.replaceState(null,'','#'+n);cur=n}
+let cur=1;
+const fromHash=()=>{const m=location.hash.match(/#(\d+)/);return m?+m[1]:1};
+addEventListener('resize',fit);addEventListener('hashchange',()=>go(fromHash(),false));
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')go(cur+1,true);else if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1,true)});
+fit();go(fromHash(),false);
+requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('ready')));
 </script>
 </body>
 </html>
