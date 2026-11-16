@@ -5,323 +5,187 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>money-maxxing 五页汇报</title>
 <style>
-/* 版式逐页对照 ppt-skill/iceppt_2026/skill/iceppt-ppt/catalog/slides/ 里的范例页复刻（见每页注释）。
-   配色：深海军蓝为唯一强调色（面积按图库实测控制在约 2% 以内），浅蓝灰做底，金色只标"对照区"，红只标未中。 */
+/* 第四版，从空白重做。规则：ppt-skill/…/iceppt-ppt/SKILL.md「版式先说话」——每页一个图形占主体，标题 ≤20 汉字，正文 ≤40 汉字。
+   图形骨架取自图库范例（每页注释里写明），文字不照抄范例密度。 */
 :root{
-  --navy:#0B2A4A; --navy2:#3E6A99; --tint:#E6EDF5; --tint2:#F1F5F9;
-  --gold:#B8862F; --goldbg:#F6EFE0; --warn:#B03A2E;
-  --ink:#1A1A1A; --g2:#6B6B6B; --g3:#A0A0A0; --bar:#D3D3D3; --line:#D0D0D0; --panel:#F0F1F1;
+  --ink:#16181B; --g1:#5E6368; --g2:#9AA0A6; --g3:#C9CDD1; --g4:#E7E9EB; --g5:#F3F4F5;
+  --acc:#12365C; --acc2:#5F82A8; --tint:#C9D7E6; --tint2:#E9EFF5;
   --font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC","WenQuanYi Zen Hei",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --serif:Georgia,"Times New Roman",serif;
+  --num:"Helvetica Neue",Arial,system-ui,sans-serif; --serif:Georgia,"Times New Roman",serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#E7E9EC;overflow:hidden;font-family:var(--font);color:var(--ink)}
-#stage{position:absolute;left:0;top:0;width:1280px;height:720px;background:#fff;transform-origin:0 0;overflow:hidden;box-shadow:0 2px 24px rgba(0,0,0,.1)}
-svg{display:block;overflow:visible;font-family:var(--font)}
-.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
-.slide.on{opacity:1;visibility:visible;transition-delay:0s}
-@media (prefers-reduced-motion:reduce){.slide{transition:none}}
-.abs{position:absolute}
-
-/* ---- 统一页头：圆角标题栏 + 黑圆点结论句 ---- */
-.cap{position:absolute;left:44px;top:20px;width:1192px;height:46px;border:1px solid #C9C9C9;border-radius:13px;display:flex;align-items:baseline;padding:7px 18px 0}
-.cap b{font-size:25px;font-weight:800;letter-spacing:.2px}
-.cap span{font-size:18px;margin-left:10px;color:#222}
-.cap i{margin-left:auto;font-style:normal;font-size:12px;letter-spacing:3px;color:var(--navy2);font-family:var(--serif);font-weight:700}
-.cap em{font-style:normal;font-size:25px;font-weight:800;margin-left:10px}
-.dot{position:absolute;left:62px;top:78px;font-size:15px;font-weight:700;display:flex;align-items:center;white-space:nowrap}
-.dot::before{content:"";width:16px;height:16px;border-radius:50%;background:#111;margin-right:12px}
-.sh{box-shadow:0 2px 8px rgba(0,0,0,.22)}
-#nav{position:absolute;left:592px;bottom:7px;display:flex;gap:6px}
-#nav i{display:block;width:16px;height:3px;border-radius:2px;background:#DADADA;cursor:pointer}
-#nav i.on{background:var(--navy)}
-
-/* ---- P1 · 范例 0427-37ae-04-3 ---- */
-.h1{position:absolute;font-size:22px;font-weight:800;color:var(--navy);text-align:center}
-.k{position:absolute;top:168px;width:176px;text-align:center}
-.k .n{font-size:40px;font-weight:800;color:#7A7A7A;line-height:1.1;font-variant-numeric:tabular-nums}
-.k .d{font-size:16px;font-weight:700;margin-top:8px;padding-bottom:8px;border-bottom:2px solid var(--navy)}
-.k .l{font-size:16px;line-height:1.3;margin-top:10px;color:#222}
-.ms{position:absolute;left:60px;top:470px;width:560px;list-style:none}
-.ms li{margin-bottom:16px;padding-left:22px;position:relative;font-size:16px;color:#333}
-.ms li::before{content:"•";position:absolute;left:0}
-.ms b{display:block;font-size:17px;color:var(--ink)}
-.oc{position:absolute;top:478px;width:122px;height:106px;background:var(--tint2);display:flex;align-items:center;justify-content:center;text-align:center;font-size:17px;line-height:1.3}
-.oc.big{font-size:30px;font-weight:300}
-.oc.hi{background:var(--tint)}
-.ol{position:absolute;top:596px;width:122px;text-align:center;font-size:15px;line-height:1.3}
-
-/* ---- P2 · 范例 0728-2f95-01-1 ---- */
-.def{position:absolute;left:54px;top:116px;width:1172px;height:44px;border:1px solid #C9C9C9;border-radius:22px;display:flex;align-items:center;padding-left:22px;font-size:17px}
-.def b{border-bottom:2px solid var(--warn);margin-right:12px;font-size:18px}
-.chev{position:absolute;top:178px;height:112px;background:linear-gradient(#F3F3F3,#E4E4E4);text-align:center}
-.chev .L{font:italic 800 62px/66px var(--serif);color:var(--navy)}
-.chev .c{font-size:13px;color:var(--g2)}
-.chev .q{font-size:13px;font-weight:700;margin-top:3px}
-.col{position:absolute;top:314px;width:214px;height:240px;padding:16px;font-size:15px;line-height:1.5}
-.col.hi{border:1.5px solid var(--navy2);background:#fff}
-.col h5{font-size:15px;font-weight:700}
-.col p{color:#444;margin:2px 0 16px}
-.col .pill{display:inline-block;margin-top:6px;border:1px solid #BEBEBE;border-radius:12px;padding:4px 12px;font-size:13px;color:var(--g2)}
-.col.hi .pill{color:var(--navy);border-color:var(--navy2)}
-.strip{position:absolute;left:54px;top:596px;width:1172px;height:72px;background:var(--panel);display:flex}
-.strip>div{flex:1;display:flex;align-items:center;justify-content:center;gap:14px;font-size:20px}
-.strip .mk{font-size:26px;font-weight:800}
-
-/* ---- P3 · 范例 0915-e7ee-01-2 ---- */
-.card3{position:absolute;left:820px;width:404px;background:#fff;border:1px solid #D8D8D8;border-radius:12px;padding:14px 18px}
-.card3 .st{display:inline-block;background:var(--panel);border-radius:10px;padding:2px 12px;font-size:13px;color:#444;margin-bottom:10px}
-.card3 .row{font-size:18px;display:flex;align-items:baseline;gap:10px}
-.card3 .row b{font-size:30px;font-weight:800}
-.band{padding:8px 12px;font-size:16px;margin-top:6px}
-.ck{font-size:16px;margin:8px 0 0 4px}
-.ck::before{content:"✓";color:var(--navy);font-weight:800;margin-right:12px}
-
-/* ---- P4 · 范例 0915-e7ee-04-2 ---- */
-.sub{position:absolute;font-size:14px;font-weight:700}
-.vs{position:absolute;left:62px;top:150px;width:400px;height:146px;background:var(--tint);display:flex;align-items:center;justify-content:space-around;text-align:center}
-.vs small{display:block;font-size:13px;color:var(--g2);line-height:1.5}
-.vs b{display:block;font-size:30px;font-weight:300;color:var(--navy);margin-top:8px;font-variant-numeric:tabular-nums}
-.vs .v{font-size:30px;font-weight:300;color:#555}
-.acc{position:absolute;left:62px;width:400px}
-.acc .t{display:inline-block;background:var(--panel);padding:2px 10px;font-size:15px}
-.acc .t i{font-style:normal;color:var(--navy2);font-weight:700;margin-right:10px}
-.acc p{font-size:15px;color:var(--g2);margin:6px 0 0 36px}
-.tbar{position:absolute;left:540px;top:118px;width:660px;height:38px;background:#fff;line-height:38px;text-align:center;font-size:15px;font-weight:700}
-
-/* ---- P5 · 范例 0915-e7ee-06-3 ---- */
-.lt{position:absolute;left:62px;top:150px;width:270px;border-top:1px solid #BBB;padding-top:14px}
-.lt .big{font-size:27px;font-weight:300;color:#444;line-height:1.1}
-.lt .s{font-size:16px;font-weight:700;margin-top:4px}
-.lt .lab{background:var(--tint);color:var(--navy);font-weight:700;font-size:14px;padding:3px 8px;margin-top:20px}
-.lt p{font-size:15px;color:#444;margin-top:8px;line-height:1.5}
-.lt .pl{margin:12px auto 0;width:170px;border:1px solid #C4C4C4;border-radius:11px;text-align:center;font-size:13px;color:var(--g2);padding:2px 0}
-.vline{position:absolute;left:362px;top:148px;height:520px;border-left:1.5px dotted #777}
-.optA{position:absolute;left:400px;top:182px;width:300px;height:356px;background:#F3F4F4;border-radius:14px;padding:44px 18px 0}
-.tag5{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;padding:2px 14px;font-size:13px;white-space:nowrap;color:#333}
-.optA h4{font-size:15px;font-weight:700;margin-top:6px}
-.optA h4::before{content:"✗";color:var(--warn);margin-right:8px}
-.optA p{font-size:14px;color:var(--g2);margin:4px 0 16px 22px}
-.optA .res{margin:28px 10px 0;border:1px dashed #AAA;border-radius:8px;background:#fff;text-align:center;font-size:15px;font-weight:700;padding:10px 0}
-.vs5{position:absolute;left:712px;top:342px;font-size:20px;font-weight:800}
-.optB{position:absolute;left:764px;top:176px;width:456px;height:370px;background:var(--tint);border:2px solid var(--navy2);border-radius:16px;padding:46px 20px 0;box-shadow:0 4px 10px rgba(0,0,0,.25)}
-.optB .hero{text-align:center;margin-top:14px;font-size:42px;font-weight:300;color:var(--navy)}
-.optB .hero::before{content:"✓";font-size:30px;margin-right:12px}
-.optB .hs{text-align:right;font-size:14px;color:var(--navy2);margin-right:20px}
-.optB h4{font-size:16px;font-weight:700;margin-top:10px}
-.optB .wr{background:#fff;border-radius:6px;padding:7px 14px;font-size:15px;margin-top:6px}
-.optB .tri{display:flex;gap:8px;margin-top:22px}
-.optB .tri div{flex:1;background:#fff;border-radius:6px;padding:8px 10px;font-size:14px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.18)}
-.optB .tri div::before{content:"";display:inline-block;width:9px;height:9px;border:2.5px solid #444;border-radius:50%;margin-right:7px}
-.cost{position:absolute;left:400px;top:572px;width:820px;height:34px;background:var(--panel);line-height:34px;padding-left:14px;font-size:15px}
-.tm{position:absolute;left:440px;top:624px;font-size:28px;font-weight:300;display:flex;align-items:center;gap:22px}
-.tm b{font-size:22px}
-.tm span{font-size:15px;color:var(--g2);margin-left:24px}
+html,body{height:100%;background:#DFE2E5;overflow:hidden;font-family:var(--font);color:var(--ink)}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;background:#fff;transform-origin:0 0;overflow:hidden}
+section{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .3s}
+section.on{opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){section{transition:none}}
+svg{position:absolute;left:0;top:0;font-family:var(--font)}
+.kick{position:absolute;left:64px;top:40px;font:700 12px var(--num);letter-spacing:3px;color:var(--g2)}
+.no{position:absolute;right:64px;top:34px;font:700 22px var(--num);color:var(--g3)}
+.ttl{position:absolute;left:64px;top:62px;font-size:36px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
+.ttl b{color:var(--acc)}
+#nav{position:absolute;left:64px;bottom:22px;display:flex;gap:6px}
+#nav i{width:22px;height:3px;background:var(--g4);cursor:pointer}#nav i.on{background:var(--acc)}
 </style>
 </head>
 <body>
 <div id="stage">
-
-<!-- P1 · 范例 catalog/slides/0427-37ae-04-3.jpg -->
-<section class="slide">
-  <div class="cap"><b>Executive Summary</b><span>- 截至 11/13 官方结算</span><i>MONEY-MAXXING</i><em>001</em></div>
-  <div class="dot">20 条预测已开奖，命中 15 条；Brier 0.1932，仍低于随机基准 0.25</div>
-  <div class="h1" style="left:44px;width:596px;top:118px">Scorecard</div>
-  <div class="k" style="left:76px"><div class="n">75.0%</div><div class="d">15 / 20</div><div class="l">Hit rate<br>命中率</div></div>
-  <div class="k" style="left:254px"><div class="n">0.1932</div><div class="d">基准 0.25</div><div class="l">Brier<br>校准得分</div></div>
-  <div class="k" style="left:432px"><div class="n">−6.14%</div><div class="d">−1,580.06 元</div><div class="l">Net P&amp;L<br>累计盈亏</div></div>
-  <div class="h1" style="left:640px;width:596px;top:118px">Pipeline</div>
-  <div class="abs" id="rings" style="left:660px;top:160px;width:560px;height:200px"></div>
-  <div class="abs" style="left:640px;top:112px;height:580px;border-left:1px solid #E2E2E2"></div>
-  <div class="abs" style="left:44px;top:404px;width:1192px;border-top:1px solid #E2E2E2"></div>
-  <div class="h1" style="left:44px;width:596px;top:422px">3 条带概率预测未中</div>
-  <ul class="ms">
-    <li><b>EP20-01 · p 0.78</b>110027 收 2.0689，阈值 2.0732</li>
-    <li><b>EP15-03 · p 0.65</b>012737 最高未触 0.6101</li>
-    <li><b>EP14-02 · p 0.52</b>012737 持有收益 −14.36 元</li>
-  </ul>
-  <div class="h1" style="left:640px;width:596px;top:422px">Pending</div>
-  <div class="oc big hi" style="left:672px">8</div><div class="ol" style="left:672px">待判定</div>
-  <div class="oc" style="left:806px">11/16<br>判 2 条</div><div class="ol" style="left:806px">最近一批</div>
-  <div class="oc big" style="left:940px">17</div><div class="ol" style="left:940px">带概率<br>已判样本</div>
-  <div class="oc" style="left:1074px">满 <b style="margin:0 4px">30</b> 条<br>再复盘</div><div class="ol" style="left:1074px">建议</div>
-</section>
-
-<!-- P2 · 范例 catalog/slides/0915-e7ee-02-3.jpg -->
-<section class="slide">
-  <div class="cap"><b>Pipeline</b><i>MONEY-MAXXING</i><em>002</em></div>
-  <div class="def"><b>五步流水线</b>先登记，后判分；只认官方净值</div>
-  <div id="p2"></div>
-  <div class="strip"><div><span class="mk" style="color:var(--warn)">✗</span>盘中估值</div><div style="border-left:1px solid #D0D0D0"><span class="mk" style="color:var(--navy)">✓</span>官方净值 / 收盘价</div></div>
-</section>
-
-<!-- P3 · 范例 catalog/slides/0915-e7ee-01-2.jpg -->
-<section class="slide">
-  <div class="cap"><b>Dumbbell Chart</b><span>- CASE STUDY：17 条带概率预测，说的概率 vs 实际结果</span><i>MONEY-MAXXING</i><em>003</em></div>
-  <div class="dot">连线越长错得越多：3 条未中把 Brier 从 0.1442 拉到 0.1932</div>
-  <div class="abs" id="p3" style="left:54px;top:110px;width:740px;height:590px"></div>
-  <div class="card3 sh" style="top:116px"><span class="st">Step 1：样本</span><div class="row"><b>17</b>条带概率 · 命中<b>14</b></div></div>
-  <div class="card3 sh" style="top:232px"><span class="st">Step 2：拆解</span>
-    <div class="band" style="background:#F6E9E7">未中 3 条　p 0.52 / 0.65 / 0.78</div>
-    <div class="band" style="background:var(--tint)">命中 14 条　p 0.45 – 0.78</div>
-    <div class="row" style="margin-top:12px;justify-content:center"><span style="color:var(--g3)">0.1442 →</span><b style="color:var(--navy)">0.1932</b></div></div>
-  <div class="card3 sh" style="top:470px"><span class="st">Step 3：读法</span>
-    <div class="ck">仍低于随机基准 0.25</div><div class="ck">声称 63.9% · 实际 82.4%</div><div class="ck">样本只有 17 条</div></div>
-</section>
-
-<!-- P4 · 范例 catalog/slides/0915-e7ee-04-2.jpg -->
-<section class="slide">
-  <div class="cap"><b>Bridge Chart</b><span>- CASE STUDY：满 30 天降费之后的两个交易日</span><i>MONEY-MAXXING</i><em>004</em></div>
-  <div class="dot">赎回费省下 40.68 元；随后两日组合账面变动 −330.96 元，是它的 8 倍</div>
-  <div class="sub" style="left:62px;top:122px">The Fee &amp; The Swing｜省费与波动</div>
-  <div class="vs"><div><small>赎回费少收<br>44.83 → 4.15</small><b>40.68</b></div><div class="v">VS</div><div><small>两日账面变动<br>11/12 – 11/13</small><b>−330.96</b></div></div>
-  <div class="sub" style="left:62px;top:330px">What happened｜发生了什么</div>
-  <div class="acc" style="top:364px"><span class="t"><i>1.</i>11/12 满 30 天，费率下调</span><p>4 笔中 2 笔降到 0</p></div>
-  <div class="acc" style="top:442px"><span class="t"><i>2.</i>11/12 单日 −146.49 元</span><p>在 1 日常态区间内</p></div>
-  <div class="acc" style="top:520px"><span class="t"><i>3.</i>11/13 单日 −184.46 元</span><p>在 1 日常态区间 −236 ～ +214 内</p></div>
-  <div class="tbar sh">累计亏损：11/11 → 11/13（元）</div>
-  <div class="abs" id="p4" style="left:520px;top:170px;width:710px;height:520px"></div>
-</section>
-
-<!-- P5 · 范例 catalog/slides/0915-e7ee-06-3.jpg -->
-<section class="slide">
-  <div class="cap"><b>Decision</b><span>- 需要您拍板：概率现在调，还是攒够样本再调</span><i>MONEY-MAXXING</i><em>005</em></div>
-  <div class="dot">只动记分方法，不动仓位；B 是我的建议，由您决定</div>
-  <div class="lt"><div class="big">Scorecard</div><div class="s">11/13 现状</div>
-    <div class="lab">带概率 17 条</div><p>命中 14 · Brier 0.1932<br>声称 63.9% · 实际 82.4%</p><div class="pl">偏保守，但样本小</div>
-    <div class="lab">legacy 3 条</div><p>命中 1 · 无概率<br>混进总命中率 75.0%</p><div class="pl">两种口径混在一起</div></div>
-  <div class="vline"></div>
-  <div class="sub" style="left:372px;top:146px;font-size:15px">两个选项</div>
-  <div class="optA"><span class="tag5">Option A：现在调高概率</span>
-    <h4>依据｜17 条</h4><p>3 条未中就让 Brier 变了 0.05</p>
-    <h4>风险｜追着噪音调</h4><p>下一批结果可能又反过来</p>
-    <div class="res">样本太小，调了也验证不了</div></div>
-  <div class="vs5">VS</div>
-  <div class="optB"><span class="tag5">Option B：攒够样本再复盘</span>
-    <div class="hero">30 条</div><div class="hs">现有 17 条，还差 13 条</div>
-    <h4>期间｜规则不变</h4><div class="wr">继续按基准率锚定登记概率</div>
-    <div class="tri"><div>新旧分开记分</div><div>统一各处口径</div><div>30 条时复盘</div></div></div>
-  <div class="cost">不涉及的事</div>
-  <div class="tm">Method <b>&gt;</b> Trades<span>•　买、卖、持有与仓位，不在本页范围</span></div>
-</section>
-
+<section><div class="kick">MONEY-MAXXING · 11/13</div><div class="no">01</div><div class="ttl">20 条开奖，<b>15 条命中</b></div><svg id="s1" width="1280" height="720"></svg></section>
+<section><div class="kick">HOW IT WORKS</div><div class="no">02</div><div class="ttl">先登记，后判分</div><svg id="s2" width="1280" height="720"></svg></section>
+<section><div class="kick">CALIBRATION</div><div class="no">03</div><div class="ttl">说 64%，<b>中了 82%</b></div><svg id="s3" width="1280" height="720"></svg></section>
+<section><div class="kick">ACCOUNT</div><div class="no">04</div><div class="ttl">亏 1,580 元，<b>近六成在一只基金</b></div><svg id="s4" width="1280" height="720"></svg></section>
+<section><div class="kick">DECISION</div><div class="no">05</div><div class="ttl">样本才 17 条，<b>攒到 30 条再调概率</b></div><svg id="s5" width="1280" height="720"></svg></section>
 <div id="nav"></div>
 </div>
 
 <script>
 (function(){
-  var qs=function(s){return document.querySelector(s)}, qsa=function(s){return [].slice.call(document.querySelectorAll(s))};
-  var stage=qs('#stage'), slides=qsa('.slide'), nav=qs('#nav'), cur=-1;
+  var $=function(s){return document.querySelector(s)}, $$=function(s){return [].slice.call(document.querySelectorAll(s))};
+  var C={ink:'#16181B',g1:'#5E6368',g2:'#9AA0A6',g3:'#C9CDD1',g4:'#E7E9EB',g5:'#F3F4F5',acc:'#12365C',acc2:'#5F82A8',tint:'#C9D7E6',tint2:'#E9EFF5'};
+  var NUM='"Helvetica Neue",Arial,system-ui,sans-serif', SERIF='Georgia,"Times New Roman",serif';
+
+  /* ================= 数据：origin/main 的 prediction_scorecard.md、STATUS.md（2026-11-13 结算） ================= */
+  var REG=28, PENDING=8, LEGACY_J=3, LEGACY_HIT=1;
+  // 17 条带概率且已判定的预测：[声称概率, 是否命中]
+  var P=[[.65,1],[.45,1],[.48,1],[.60,1],[.60,1],[.55,1],[.52,0],[.68,1],[.75,1],[.65,0],[.72,1],[.72,1],[.78,1],[.68,1],[.70,1],[.55,1],[.78,0]];
+  // 6 只基金的累计盈亏（元）
+  var F=[['110020','沪深300',-912.14],['110027','安心回报',-361.83],['012733','人工智能',-241.40],['024430','东方红',-50.71],['012737','创新药',-34.40],['014437','同业存单',20.42]];
+  var sum=function(a){return a.reduce(function(x,y){return x+y},0)}, avg=function(a){return sum(a)/a.length};
+  var hitsP=sum(P.map(function(r){return r[1]})), JUDGED=P.length+LEGACY_J, HITS=hitsP+LEGACY_HIT, MISS=JUDGED-HITS;
+  var claim=avg(P.map(function(r){return r[0]})), actual=hitsP/P.length, brier=avg(P.map(function(r){return Math.pow(r[0]-r[1],2)}));
+  var pnl=sum(F.map(function(f){return f[2]})), PRINCIPAL=25753.42;
+  console.assert(JUDGED===20&&HITS===15&&MISS===5&&JUDGED+PENDING===REG,'counts');
+  console.assert((claim*100).toFixed(1)==='63.9'&&(actual*100).toFixed(1)==='82.4'&&brier.toFixed(4)==='0.1932','calibration '+claim+' '+actual+' '+brier);
+  console.assert(pnl.toFixed(2)==='-1580.06'&&(pnl/PRINCIPAL*100).toFixed(2)==='-6.14','pnl '+pnl);
+  window.__deckCheck={judged:JUDGED,hits:HITS,claim:+(claim*100).toFixed(1),actual:+(actual*100).toFixed(1),brier:+brier.toFixed(4),pnl:+pnl.toFixed(2),share:+(F[0][2]/pnl*100).toFixed(1)};
+
+  function T(x,y,s,o){o=o||{};return '<text x="'+x+'" y="'+y+'" font-size="'+(o.fs||16)+'" fill="'+(o.c||C.g1)+'" text-anchor="'+(o.a||'start')+'" font-weight="'+(o.w||400)+'"'+(o.f?' font-family=\''+o.f+'\'':'')+(o.i?' font-style="italic"':'')+(o.ls?' letter-spacing="'+o.ls+'"':'')+'>'+s+'</text>'}
+  function fmt(v,d){return (v<0?'−':'')+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+  /* ---------- 01 桑基图 · 骨架取自 catalog/slides/0915-e7ee-04-3.jpg ---------- */
+  (function(){
+    var u=15, x1=150, x2=540, x3=920, w=16, top=190, gap=40, h='';
+    var yJ=top, yP=top+JUDGED*u;                                   // 左柱内：已判 / 待判 的分界
+    var y2P=top+JUDGED*u+gap;                                       // 中柱：待判块下移一个间隔
+    var y3H=top-20, y3M=y3H+HITS*u+gap;                             // 右柱：命中 / 未中
+    function band(xa,ya,xb,yb,ht,fill,extra){var m=(xa+xb)/2;return '<path d="M'+xa+' '+ya+' C'+m+' '+ya+' '+m+' '+yb+' '+xb+' '+yb+' L'+xb+' '+(yb+ht)+' C'+m+' '+(yb+ht)+' '+m+' '+(ya+ht)+' '+xa+' '+(ya+ht)+' Z" fill="'+fill+'" '+(extra||'')+'/>'}
+    h+=band(x1+w,yJ,x2,yJ,JUDGED*u,C.g4);
+    h+=band(x1+w,yP,x2,y2P,PENDING*u,'#fff','stroke="'+C.g3+'" stroke-width="1.5" stroke-dasharray="6 5"');
+    h+=band(x2+w,yJ,x3,y3H,HITS*u,C.tint);
+    h+=band(x2+w,yJ+HITS*u,x3,y3M,MISS*u,C.g5);
+    h+='<rect x="'+x1+'" y="'+top+'" width="'+w+'" height="'+REG*u+'" fill="'+C.g2+'"/>';
+    h+='<rect x="'+x2+'" y="'+yJ+'" width="'+w+'" height="'+JUDGED*u+'" fill="'+C.g1+'"/>';
+    h+='<rect x="'+x2+'" y="'+y2P+'" width="'+w+'" height="'+PENDING*u+'" fill="#fff" stroke="'+C.g2+'" stroke-width="1.5"/>';
+    h+='<rect x="'+x3+'" y="'+y3H+'" width="'+w+'" height="'+HITS*u+'" fill="'+C.acc+'"/>';
+    h+='<rect x="'+x3+'" y="'+y3M+'" width="'+w+'" height="'+MISS*u+'" fill="'+C.g3+'"/>';
+    h+=T(x1-18,top+REG*u/2+8,REG,{fs:52,c:C.g1,a:'end',w:700,f:NUM})+T(x1-18,top+REG*u/2+40,'登记',{fs:18,a:'end'});
+    h+=T(x2+w+18,yJ+50,JUDGED,{fs:44,c:C.ink,w:700,f:NUM})+T(x2+w+20,yJ+78,'开奖',{fs:18});
+    h+=T(x2+w+18,y2P+PENDING*u/2+4,PENDING,{fs:36,c:C.g2,w:700,f:NUM})+T(x2+w+20,y2P+PENDING*u/2+32,'待判',{fs:18,c:C.g2});
+    h+=T(x3+w+22,y3H+HITS*u/2+44,HITS,{fs:150,c:C.acc,w:800,f:NUM})+T(x3+w+206,y3H+HITS*u/2-18,'命中',{fs:22,c:C.acc,w:700})+T(x3+w+206,y3H+HITS*u/2+34,(HITS/JUDGED*100).toFixed(0)+'%',{fs:40,c:C.acc,w:300,f:NUM});
+    h+=T(x3+w+22,y3M+MISS*u/2+16,MISS,{fs:48,c:C.g2,w:700,f:NUM})+T(x3+w+66,y3M+MISS*u/2+12,'未中',{fs:18,c:C.g2});
+    $('#s1').innerHTML=h;
+  })();
+
+  /* ---------- 02 箭头轴 · 骨架取自 catalog/slides/0915-e7ee-03-3.jpg ---------- */
+  (function(){
+    var y=400, h='';
+    h+='<rect x="800" y="190" width="416" height="440" fill="'+C.tint2+'"/>';
+    h+='<rect x="64" y="'+(y-8)+'" width="1116" height="16" fill="'+C.acc+'"/><path d="M1172 '+(y-26)+' L1216 '+y+' L1172 '+(y+26)+' Z" fill="'+C.acc+'"/>';
+    var N=[[230,'Write','Gemini 写','概率 · 阈值 · 截止日',1],[560,'Check','Claude 核','算术 · 费率 · 措辞',-1],[900,'Grade','脚本判','只认官方净值',1]];
+    N.forEach(function(n){
+      var x=n[0], d=n[4];                                           // d=1：大字在线上方、说明在下方；d=-1 反过来
+      h+='<line x1="'+x+'" y1="'+y+'" x2="'+x+'" y2="'+(y+d*104)+'" stroke="'+C.g2+'" stroke-width="1.5"/>';
+      h+='<circle cx="'+x+'" cy="'+y+'" r="17" fill="#fff" stroke="'+C.g2+'" stroke-width="2"/>';
+      h+=T(x+34,d>0?y-34:y+66,n[1],{fs:46,c:C.acc2,w:300,f:NUM});
+      h+=T(x+18,d>0?y+122:y-146,n[2],{fs:26,c:C.ink,w:800});
+      h+=T(x+18,d>0?y+156:y-112,n[3],{fs:17,c:C.g1});
+    });
+    $('#s2').innerHTML=h;
+  })();
+
+  /* ---------- 03 斜率图 · 骨架取自 catalog/slides/0709-cdc1-06-2.jpg ---------- */
+  (function(){
+    var xa=430, xb=850, Y=function(p){return 640-(p-.4)/.6*430}, h='';
+    var B=[['p &lt; 0.60',function(p){return p<.6}],['0.60 – 0.69',function(p){return p>=.6&&p<.7}],['p ≥ 0.70',function(p){return p>=.7}]];
+    h+='<line x1="'+xa+'" y1="200" x2="'+xa+'" y2="650" stroke="'+C.g3+'"/><line x1="'+xb+'" y1="200" x2="'+xb+'" y2="650" stroke="'+C.g3+'"/>';
+    h+=T(xa,182,'声称概率',{fs:18,a:'middle'})+T(xb,182,'实际命中',{fs:18,a:'middle'});
+    // 参照：若报得准，线是平的
+    h+='<line x1="'+xa+'" y1="'+Y(claim)+'" x2="'+xb+'" y2="'+Y(claim)+'" stroke="'+C.g2+'" stroke-width="1.5" stroke-dasharray="5 5"/>'+T(xb+16,Y(claim)+6,'平线 = 报得准',{fs:15,c:C.g2});
+    var ends={};
+    B.forEach(function(b){
+      var L=P.filter(function(r){return b[1](r[0])}), c=avg(L.map(function(r){return r[0]})), a=sum(L.map(function(r){return r[1]}))/L.length;
+      h+='<line x1="'+xa+'" y1="'+Y(c)+'" x2="'+xb+'" y2="'+Y(a)+'" stroke="'+C.g3+'" stroke-width="2.5"/><circle cx="'+xa+'" cy="'+Y(c)+'" r="5.5" fill="'+C.g2+'"/><circle cx="'+xb+'" cy="'+Y(a)+'" r="5.5" fill="'+C.g2+'"/>';
+      h+=T(xa-18,Y(c)+6,b[0]+'　'+(c*100).toFixed(0)+'%',{fs:16,c:C.g1,a:'end',f:NUM});
+      var k=(a*100).toFixed(0); ends[k]=(ends[k]||0)+1; if(ends[k]===1) h+=T(xb+16,Y(a)+(a>actual?-4:20),k+'%',{fs:16,c:C.g1,f:NUM});
+    });
+    h+='<line x1="'+xa+'" y1="'+Y(claim)+'" x2="'+xb+'" y2="'+Y(actual)+'" stroke="'+C.acc+'" stroke-width="6" stroke-linecap="round"/><circle cx="'+xa+'" cy="'+Y(claim)+'" r="9" fill="'+C.acc+'"/><circle cx="'+xb+'" cy="'+Y(actual)+'" r="9" fill="'+C.acc+'"/>';
+    h+=T(xa-200,Y(claim)-56,(claim*100).toFixed(0)+'%',{fs:56,c:C.acc,a:'end',w:300,f:NUM});
+    h+=T(xb+110,Y(actual)+34,(actual*100).toFixed(0)+'%',{fs:120,c:C.acc,w:800,f:NUM});
+    h+=T(xb+118,Y(actual)+72,'14 / 17',{fs:24,c:C.acc2,f:NUM});
+    $('#s3').innerHTML=h;
+  })();
+
+  /* ---------- 04 瀑布图 · 骨架取自 catalog/slides/1008-f632-02-2.jpg ---------- */
+  (function(){
+    var y0=236, k=.222, W=98, G=44, x0=96, h='', run=0, Y=function(v){return y0-v*k};
+    h+='<line x1="64" y1="'+y0+'" x2="1216" y2="'+y0+'" stroke="'+C.g2+'"/>'+T(64,y0-10,'0',{fs:14,c:C.g2,f:NUM});
+    F.forEach(function(f,i){
+      var x=x0+i*(W+G), a=Y(run), b=Y(run+f[2]), top=Math.min(a,b), ht=Math.max(Math.abs(b-a),2), hi=i===0;
+      h+='<rect x="'+x+'" y="'+top+'" width="'+W+'" height="'+ht+'" fill="'+(hi?C.acc:C.g4)+'"/>';
+      if(hi) h+=T(x+W/2,top+ht/2+12,fmt(f[2],0),{fs:30,c:'#fff',a:'middle',w:700,f:NUM});
+      else h+=T(x+W/2,f[2]<0?b+26:top-10,(f[2]>0?'+':'')+fmt(f[2],0),{fs:20,c:C.g1,a:'middle',f:NUM});
+      h+='<line x1="'+(x+W)+'" y1="'+b+'" x2="'+(x+W+G)+'" y2="'+b+'" stroke="'+C.g2+'" stroke-dasharray="3 4"/>';
+      h+=T(x+W/2,646,f[1],{fs:17,c:hi?C.ink:C.g1,a:'middle',w:hi?800:400})+T(x+W/2,668,f[0],{fs:13,c:C.g2,a:'middle',f:NUM});
+      run+=f[2];
+    });
+    var xt=x0+6*(W+G);
+    h+='<rect x="'+xt+'" y="'+y0+'" width="'+W+'" height="'+(-pnl*k)+'" fill="#fff" stroke="'+C.ink+'" stroke-width="2"/>';
+    h+=T(xt+W/2,Y(pnl)-52,fmt(pnl,0),{fs:26,c:C.ink,a:'middle',w:800,f:NUM})+T(xt+W/2,Y(pnl)-22,fmt(pnl/PRINCIPAL*100,2)+'%',{fs:18,c:C.g1,a:'middle',f:NUM});
+    h+=T(xt+W/2,646,'合计',{fs:17,c:C.ink,a:'middle',w:800});
+    // 唯一的大数字：最大一块占净亏损的比例
+    h+=T(x0+W+G+4,Y(0)+150,(F[0][2]/pnl*100).toFixed(0)+'%',{fs:120,c:C.acc,w:800,f:NUM})+T(x0+W+G+10,Y(0)+186,'占净亏损',{fs:20,c:C.acc2});
+    $('#s4').innerHTML=h;
+  })();
+
+  /* ---------- 05 大数字卡 + 两个选项 + 三步 · 骨架取自 catalog/slides/0709-cdc1-02-2.jpg ---------- */
+  (function(){
+    var h='<defs><filter id="sh" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="3" dy="5" stdDeviation="4" flood-opacity=".22"/></filter></defs>';
+    // 主卡：17 / 30
+    h+='<rect x="64" y="176" width="300" height="250" rx="10" fill="'+C.tint2+'" stroke="'+C.acc2+'" stroke-width="1.5" filter="url(#sh)"/>';
+    h+='<rect x="236" y="162" width="118" height="30" fill="'+C.g3+'"/>'+T(295,183,'带概率样本',{fs:15,c:C.ink,a:'middle'});
+    h+=T(92,330,P.length,{fs:150,c:C.acc,w:400,f:SERIF,i:1})+T(268,330,'/ 30',{fs:34,c:C.acc2,f:SERIF,i:1});
+    h+='<rect x="92" y="372" width="244" height="10" rx="5" fill="#fff"/><rect x="92" y="372" width="'+(244*P.length/30)+'" height="10" rx="5" fill="'+C.acc+'"/>';
+    // 分叉到两个选项
+    h+='<path d="M214 426 V452 M124 452 H304 M124 452 V474 M304 452 V474" fill="none" stroke="'+C.g2+'" stroke-width="1.5"/>';
+    h+='<rect x="64" y="474" width="120" height="118" rx="8" fill="'+C.g5+'" stroke="'+C.g3+'" filter="url(#sh)"/>'+T(124,524,'A',{fs:34,c:C.g2,a:'middle',w:700,f:NUM})+T(124,560,'现在调',{fs:18,c:C.g1,a:'middle'});
+    h+='<rect x="244" y="474" width="120" height="118" rx="8" fill="#fff" stroke="'+C.acc+'" stroke-width="2.5" filter="url(#sh)"/>'+T(304,524,'B',{fs:34,c:C.acc,a:'middle',w:800,f:NUM})+T(304,560,'满 30 条再调',{fs:17,c:C.acc,a:'middle',w:700});
+    h+='<rect x="276" y="462" width="56" height="24" rx="12" fill="'+C.acc+'"/>'+T(304,479,'建议',{fs:14,c:'#fff',a:'middle'});
+    h+=T(214,632,'由您决定',{fs:16,c:C.g2,a:'middle',ls:4});
+    // 副卡：Brier
+    h+='<rect x="404" y="176" width="220" height="416" rx="10" fill="'+C.g5+'" filter="url(#sh)"/>';
+    h+=T(514,224,'Brier',{fs:24,c:C.g1,a:'middle',f:NUM})+T(514,330,brier.toFixed(4),{fs:54,c:C.acc,a:'middle',f:SERIF,i:1});
+    h+='<line x1="444" y1="390" x2="584" y2="390" stroke="'+C.g3+'"/>'+T(514,462,'0.25',{fs:40,c:C.g2,a:'middle',f:SERIF,i:1})+T(514,498,'基准',{fs:17,c:C.g2,a:'middle'});
+    // 分隔与右侧三步
+    h+='<line x1="664" y1="160" x2="664" y2="640" stroke="'+C.g2+'" stroke-dasharray="2 6" stroke-width="1.5"/>';
+    [['01','新旧分开记分'],['02','统一口径'],['03','满 30 条复盘']].forEach(function(s,i){
+      var y=250+i*140;
+      h+=T(704,y,s[0],{fs:76,c:C.g3,w:800,f:NUM})+'<path d="M840 '+(y-28)+' l10 10 l18 -22" fill="none" stroke="'+C.acc+'" stroke-width="3"/>'+T(884,y-16,s[1],{fs:26,c:C.ink,w:700});
+      if(i<2) h+='<line x1="704" y1="'+(y+44)+'" x2="1216" y2="'+(y+44)+'" stroke="'+C.g4+'" stroke-width="2"/>';
+    });
+    $('#s5').innerHTML=h;
+  })();
+
+  /* ---------- 翻页 ---------- */
+  var S=$$('section'), nav=$('#nav'), cur=-1, stage=$('#stage');
   function fit(){var s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='scale('+s+')';stage.style.left=((innerWidth-1280*s)/2)+'px';stage.style.top=((innerHeight-720*s)/2)+'px'}
-  addEventListener('resize',fit); fit();
-
-  /* ===== 数据：origin/main 的 prediction_scorecard.md 与 STATUS.md，生成于 2026-11-13 ===== */
-  // [id, 声称概率, 是否命中]，按判定日先后；Brier = (p − 结果)²
-  var P=[['12-01',.65,1],['12-02',.45,1],['13-01',.60,1],['13-02',.60,1],['14-01',.55,1],['15-01',.68,1],['17-02',.68,1],['15-02',.75,1],['16-01',.72,1],['17-03',.70,1],['19-01',.55,1],
-         ['12-03',.48,1],['14-02',.52,0],['15-03',.65,0],['16-02',.72,1],['17-01',.78,1],['20-01',.78,0]];
-  var br=function(r){return Math.pow(r[1]-r[2],2)}, mean=function(a){return a.reduce(function(x,y){return x+y},0)/a.length};
-  var B17=mean(P.map(br)), B11=mean(P.slice(0,11).map(br)), hits=P.filter(function(r){return r[2]}).length;
-  var FUND=[20.42,-912.14,-361.83,-241.40,-34.40,-50.71], pnl=FUND.reduce(function(a,b){return a+b},0);
-  var CUM=[-1249.10,-1395.59,-1580.06];           // 11/11、11/12、11/13 官方已结累计盈亏
-  var FEE0=44.83, FEE1=1.89+2.26;                 // 第 2 批 4 笔赎回费：11/11 口径 → 满 30 天后（11/13 净值）
-  console.assert(P.length===17&&hits===14,'n/hits');
-  console.assert(B17.toFixed(4)==='0.1932'&&B11.toFixed(4)==='0.1442','brier '+B17+' '+B11);
-  console.assert(pnl.toFixed(2)==='-1580.06','pnl '+pnl);
-  console.assert((mean(P.map(function(r){return r[1]}))*100).toFixed(1)==='63.9','claimed');
-  console.assert((FEE0-FEE1).toFixed(2)==='40.68'&&(CUM[2]-CUM[0]).toFixed(2)==='-330.96','fee/swing');
-  window.__deckCheck={n:P.length,hits:hits,b17:+B17.toFixed(4),b11:+B11.toFixed(4),pnl:+pnl.toFixed(2),save:+(FEE0-FEE1).toFixed(2),swing:+(CUM[2]-CUM[0]).toFixed(2)};
-
-  function T(x,y,s,o){o=o||{};return '<text x="'+x+'" y="'+y+'" font-size="'+(o.fs||13)+'" fill="'+(o.c||'#666')+'" text-anchor="'+(o.a||'middle')+'" font-weight="'+(o.w||400)+'">'+s+'</text>'}
-
-  /* ---- P1：三个带箭头的圆环 ---- */
-  (function(){
-    var h='', L=[['Gemini','写'],['Claude','核'],['脚本','判']];
-    L.forEach(function(t,i){
-      var cx=96+i*184, cy=100, r=74, up=i%2===0;
-      h+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#DCDCDC" stroke-width="6"/>';
-      // 深色弧：奇偶交替走上半圈 / 下半圈，末端带箭头
-      var a0=up?200:160, a1=up?340:20, rad=function(d){return d*Math.PI/180};
-      var x0=cx+r*Math.cos(rad(a0)), y0=cy+r*Math.sin(rad(a0)), x1=cx+r*Math.cos(rad(a1)), y1=cy+r*Math.sin(rad(a1));
-      h+='<path d="M'+x0.toFixed(1)+' '+y0.toFixed(1)+' A'+r+' '+r+' 0 0 '+(up?1:0)+' '+x1.toFixed(1)+' '+y1.toFixed(1)+'" fill="none" stroke="#0B2A4A" stroke-width="4"/>';
-      var ang=up?(a1+90):(a1-90);
-      h+='<path d="M-9 -8 L9 0 L-9 8 Z" fill="#0B2A4A" transform="translate('+x1.toFixed(1)+','+y1.toFixed(1)+') rotate('+ang+')"/>';
-      h+=T(cx,cy-4,t[0],{fs:22,c:'#111',w:800})+T(cx,cy+26,t[1],{fs:22,c:'#111',w:800});
-    });
-    qs('#rings').innerHTML='<svg width="560" height="200">'+h+'</svg>';
-  })();
-
-  /* ---- P2：五步 chevron + 五列 ---- */
-  (function(){
-    var S=[['S','Sync｜同步','“数据从哪来？”','净值 · 行情 · 快讯','portfolio_db.sqlite'],
-           ['O','OLS｜校准','“估值准不准？”','60 日回归校正','fund_est_tracking'],
-           ['S','Signal｜信号','“概率多大？”','250 日滚动窗口','forecast_signals'],
-           ['R','Register｜登记','“说了什么？”','Gemini 写，Claude 核','predictions.json'],
-           ['G','Grade｜判分','“谁说得对？”','官方净值自动判分','prediction_scorecard.md']], h='';
-    S.forEach(function(s,i){
-      var x=54+i*234.4, hi=i===4;
-      var clip=i===0?'polygon(0 0,calc(100% - 36px) 0,100% 50%,calc(100% - 36px) 100%,0 100%)':'polygon(0 0,calc(100% - 36px) 0,100% 50%,calc(100% - 36px) 100%,0 100%,36px 50%)';
-      h+='<div class="chev" style="left:'+x+'px;width:'+(i===4?234.4:240)+'px;clip-path:'+clip+'"><div class="L">'+s[0]+'</div><div class="c">'+s[1]+'</div><div class="q">'+s[2]+'</div></div>';
-      h+='<div class="col'+(hi?' hi':'')+'" style="left:'+(x+10)+'px"><h5>核心任务</h5><p>'+s[3]+'</p><h5>交付物</h5><span class="pill">'+s[4]+'</span></div>';
-      if(i<4) h+='<div class="abs" style="left:'+(x+229)+'px;top:322px;height:224px;border-left:1px solid #E0E0E0"></div>';
-    });
-    qs('#p2').innerHTML=h;
-  })();
-
-  /* ---- P3：哑铃图（灰点 = 声称概率；深色点 = 实际结果 0 或 1） ---- */
-  (function(){
-    var X=function(p){return 96+p*560}, top=58, step=29.5, h='';
-    h+='<rect x="'+(X(0)-2)+'" y="34" width="70" height="'+(P.length*step+20)+'" fill="#F6E9E7" opacity=".6"/><rect x="'+(X(1)-68)+'" y="34" width="70" height="'+(P.length*step+20)+'" fill="#E6EDF5"/>';
-    h+='<line x1="'+X(0)+'" y1="30" x2="'+X(0)+'" y2="'+(top+P.length*step)+'" stroke="#B03A2E" stroke-width="1.5"/><line x1="'+X(1)+'" y1="30" x2="'+X(1)+'" y2="'+(top+P.length*step)+'" stroke="#0B2A4A" stroke-width="1.5"/>';
-    h+=T(X(0),20,'未中',{fs:16,c:'#B03A2E'})+T(X(1),20,'命中',{fs:16,c:'#0B2A4A'})+T(X(.6),20,'● 声称概率',{fs:13,c:'#999'});
-    P.forEach(function(r,i){
-      var y=top+i*step, x0=X(r[1]), x1=X(r[2]), col=r[2]?'#0B2A4A':'#B03A2E';
-      h+='<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="'+(r[2]?'#DADADA':'#E3BDB8')+'" stroke-width="'+(r[2]?7:9)+'" stroke-linecap="round"/>';
-      h+='<circle cx="'+x0+'" cy="'+y+'" r="6" fill="#A8A8A8"/><circle cx="'+x1+'" cy="'+y+'" r="7" fill="'+col+'"/>';
-      h+=T(X(0)-18,y+5,r[0],{fs:13,c:r[2]?'#999':'#B03A2E',a:'end',w:r[2]?400:700});
-      h+=T((x0+x1)/2,y-6,br(r).toFixed(2).replace(/^0/,''),{fs:r[2]?11:13,c:r[2]?'#AAA':'#B03A2E',w:r[2]?400:800});
-    });
-    var by=top+P.length*step+8;
-    [0,.25,.5,.75,1].forEach(function(v){h+=T(X(v),by+14,v.toFixed(2),{fs:12,c:'#999'})});
-    qs('#p3').innerHTML='<svg width="740" height="590">'+h+'</svg>';
-  })();
-
-  /* ---- P4：桥图（柱高 = 累计亏损金额），对照区内按同一比例画出省下的 40.68 元 ---- */
-  (function(){
-    var bot=456, k=.23, Y=function(v){return bot-v*k}, h='', loss=CUM.map(function(v){return -v});
-    [0,400,800,1200,1600].forEach(function(v){h+=T(34,Y(v)+4,v,{fs:12,c:'#999',a:'end'})});
-    h+='<line x1="44" y1="'+bot+'" x2="700" y2="'+bot+'" stroke="#BBB"/>';
-    // 对照区（金色带）
-    h+='<rect x="468" y="18" width="104" height="'+(bot-18)+'" fill="#F6EFE0"/>'+T(520,12,'同比例对照',{fs:14,c:'#B8862F',w:700});
-    var W=78, cx=[100,224,348,520,636];
-    h+='<rect x="'+(cx[0]-W/2)+'" y="'+Y(loss[0])+'" width="'+W+'" height="'+(loss[0]*k)+'" fill="#EDEDED" stroke="#CFCFCF"/>'+T(cx[0],Y(loss[0]/2)+5,'1,249.10',{fs:15,c:'#444',w:700});
-    [[1,146.49,'11/12'],[2,184.46,'11/13']].forEach(function(d){
-      var i=d[0], y0=Y(loss[i]), ht=(loss[i]-loss[i-1])*k;
-      h+='<rect x="'+(cx[i]-W/2)+'" y="'+y0+'" width="'+W+'" height="'+ht+'" fill="#fff" stroke="#3E6A99" stroke-width="1.5"/>'+T(cx[i],y0-8,'+'+d[1].toFixed(2),{fs:15,c:'#0B2A4A',w:800});
-      h+='<line x1="'+(cx[i-1]+W/2)+'" y1="'+Y(loss[i-1])+'" x2="'+(cx[i]-W/2)+'" y2="'+Y(loss[i-1])+'" stroke="#AAA" stroke-dasharray="3 3"/>';
-    });
-    // 对照：省下的赎回费，按同一纵轴比例
-    var sv=FEE0-FEE1;
-    h+='<rect x="'+(cx[3]-W/2)+'" y="'+Y(sv)+'" width="'+W+'" height="'+(sv*k)+'" fill="#B8862F"/>'+T(cx[3],Y(sv)-10,sv.toFixed(2),{fs:16,c:'#B8862F',w:800});
-    h+='<rect x="'+(cx[3]-70)+'" y="'+(Y(sv)-92)+'" width="140" height="50" rx="5" fill="#fff" stroke="#BBB"/>'+T(cx[3],Y(sv)-70,'省下的赎回费',{fs:13,c:'#666'})+T(cx[3],Y(sv)-52,'未赎回，不计入盈亏',{fs:12,c:'#999'});
-    h+='<line x1="'+(cx[2]+W/2)+'" y1="'+Y(loss[2])+'" x2="'+(cx[4]-W/2)+'" y2="'+Y(loss[2])+'" stroke="#AAA" stroke-dasharray="3 3"/>';
-    h+='<rect x="'+(cx[4]-W/2)+'" y="'+Y(loss[2])+'" width="'+W+'" height="'+(loss[2]*k)+'" fill="#EDEDED" stroke="#CFCFCF"/>'+T(cx[4],Y(loss[2]/2)+5,'1,580.06',{fs:15,c:'#444',w:700});
-    ['11/11 累计','11/12 单日','11/13 单日','省费','11/13 累计'].forEach(function(t,i){h+=T(cx[i],bot+22,t,{fs:13,c:'#777'})});
-    qs('#p4').innerHTML='<svg width="710" height="520">'+h+'</svg>';
-  })();
-
-  /* ---- 导航 ---- */
-  slides.forEach(function(_,i){var d=document.createElement('i');d.onclick=function(){go(i)};nav.appendChild(d)});
-  function go(n){n=Math.max(0,Math.min(slides.length-1,n)); if(n===cur)return;
-    slides.forEach(function(s,i){s.classList.toggle('on',i===n)}); qsa('#nav i').forEach(function(d,i){d.classList.toggle('on',i===n)}); cur=n;
-    try{history.replaceState(null,'','#'+(n+1))}catch(e){}}
-  addEventListener('keydown',function(e){var k=e.key;
-    if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){e.preventDefault();go(cur+1)}
-    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||k==='Backspace'){e.preventDefault();go(cur-1)}
-    else if(/^[1-5]$/.test(k)) go(+k-1)});
-  stage.addEventListener('click',function(e){if(e.target.closest('#nav'))return; go(e.clientX>innerWidth/2?cur+1:cur-1)});
+  addEventListener('resize',fit);fit();
+  S.forEach(function(_,i){var d=document.createElement('i');d.onclick=function(e){e.stopPropagation();go(i)};nav.appendChild(d)});
+  function go(n){n=Math.max(0,Math.min(S.length-1,n));if(n===cur)return;S.forEach(function(s,i){s.classList.toggle('on',i===n)});$$('#nav i').forEach(function(d,i){d.classList.toggle('on',i===n)});cur=n;try{history.replaceState(null,'','#'+(n+1))}catch(e){}}
+  addEventListener('keydown',function(e){var k=e.key;if(k==='ArrowRight'||k==='ArrowDown'||k===' '||k==='PageDown'||k==='Enter'){e.preventDefault();go(cur+1)}else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||k==='Backspace'){e.preventDefault();go(cur-1)}else if(/^[1-5]$/.test(k))go(+k-1)});
+  stage.addEventListener('click',function(e){go(e.clientX>innerWidth/2?cur+1:cur-1)});
   var tx=null;addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
   addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>50)go(cur+(dx<0?1:-1))});
-  function fromHash(){var h=parseInt((location.hash||'').slice(1),10);go(h>=1&&h<=slides.length?h-1:0)}
+  function fromHash(){var h=parseInt((location.hash||'').slice(1),10);go(h>=1&&h<=S.length?h-1:0)}
   addEventListener('hashchange',fromHash);fromHash();
 })();
 </script>
