@@ -19,3 +19,8 @@ audio-lab/out/
 
 # money-maxxing（支付宝基金持仓量化跟踪与双模型对冲投研）
 money-maxxing/_backup/
+
+# claude-safe-env（本地隐私参数与清理备份）
+claude-safe-env/local.env
+claude-safe-env/*.local.js
+claude-safe-env/*_backup/

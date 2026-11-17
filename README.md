@@ -10,6 +10,7 @@
 | [`audio-lab/`](audio-lab/) | 音效复刻台：把两段参考视频里的音效和循环用纯 JS 合成复刻 | `dist/index.html`；命令见 `README.md` |
 | [`money-maxxing/`](money-maxxing/) | 支付宝基金持仓量化跟踪与双模型对冲投研：多源行情/公告自动同步、60 日动态 OLS 估值、条件胜率信号、Brier 记分卡与 850+ 基金咽喉备选库 | 状态看板 `STATUS.md`、记分卡 `prediction_scorecard.md`、线报档案 `intelligence_archive.md`；命令见 `README.md` |
 | [`ppt-skill/`](ppt-skill/) | PPT skill（说明待补充） | 入口见 `ppt-skill/` 内说明 |
+| [`claude-safe-env/`](claude-safe-env/) | Claude 跨平台安全隔离与 Clash Verge 三路分流工具集（Windows & macOS）：静态 ISP 链式落地、启动前网络安检、独立隔离 Chrome Profile 与旧 Cookie 精准清理 | 指南 `README.md`、Mac 入口 `mac/launch_claude_safe.sh`、Win 入口 `windows/安全启动Claude.bat` |
 
 ## 共用配置
 
