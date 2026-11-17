@@ -68,8 +68,28 @@ chmod +x mac/clean_claude_mac.sh mac/launch_claude_safe.sh
 
 ## 三路分流架构说明
 
-1. **Claude 生态（19 个核心/验证/支付域）** $\rightarrow$ `AI` $\rightarrow$ `🎯 独享美区落地`（通过 `⚡ 中转前置` 新加坡节点链式转发，节省静态 ISP 流量且彻底隔离）；
+1. **Claude 生态（23 个核心/验证/遥测/支付域）** $\rightarrow$ `AI` $\rightarrow$ `🎯 独享美区落地`（通过 `⚡ 中转前置` 新加坡节点链式转发，节省静态 ISP 流量且彻底隔离）；
+   - 包含 `claude.ai`、`anthropic.com`、`claudeusercontent.com`、`challenges.cloudflare.com`、`hcaptcha.com`、`hcaptcha.net`、`browser-intake-us5-datadoghq.com`、`datadoghq.com`、`stripe.com`、`workos.com`、`statsig.com`、`intercom.io` 等；
 2. **Gemini / Google AI / Antigravity 生态** $\rightarrow$ `🤖 国际AI` $\rightarrow$ `🇬🇧 V英国`；
 3. **其余外网（ChatGPT / GitHub / YouTube / 日常网页）** $\rightarrow$ `默认节点`。
 
 DoH DNS 策略（`dns.nameserver-policy`）同步按以上三路绑定对应出口，避免 DNS 地区与实际 TCP 出口分裂。
+
+---
+
+## 使用注意事项与防踩坑清单
+
+1. **桌面客户端登录跳到普通 Chrome 怎么处理（Windows & macOS 通用）**
+   - 桌面端首次登录会调用系统默认浏览器完成 OAuth 回调，往往会弹进平时的普通 Chrome（`Default` Profile）。
+   - **切勿在普通 Chrome 窗口点击登录**：直接复制普通 Chrome 地址栏里的登录网址，关掉该标签页，粘贴到脚本启动的 **`Claude-US` / `Chrome-Claude-US` 隔离窗口**中完成登录与验证，授权后会弹出提示自动回调桌面客户端。
+2. **运行期间不要关闭 Clash Verge 或切换成 `Global` 模式**
+   - `launch_claude_safe` 仅在启动前做安检拦截；若在 Claude 桌面端**已经运行期间**关闭 Clash Verge、关闭 TUN 模式或切换 `Global` 到其他国家，运行中的后台连接会立即更换出口 IP。
+   - 若需要“即使宿主机断网或误关代理也绝对无法直连公网”的物理级断网保护，请使用独立虚拟机（开机默认取消连接虚拟网卡 + 虚拟机防火墙仅放行宿主机代理端口）。
+3. **谨防全局脚本优先级冲突**
+   - Clash Verge Rev 中全局扩展脚本与单订阅扩展脚本共存时，需保证 Claude 相关规则置顶（`clash-verge-script.template.js` 已内置置顶清除与覆写逻辑，可压过全局脚本里的旧分流规则）。
+4. **静态 ISP 到期 / 更换 IP 时的操作顺序**
+   - 先停掉 Claude 桌面端与隔离 Chrome，再更新 Clash Verge 扩展脚本里的 `LANDING` 参数与 `local.env` 中的 `CLAUDE_EXPECTED_IP`，先跑一次 `--check`（或 `windows/launch_claude_safe.ps1 -CheckOnly`）确认 `[PASS]` 后再启动使用。
+5. **新号注册与环境卫生**
+   - 购买新 IP/代理后，先用 `python3 tools/check_ip.py --ip <IP>` 核查 RDAP 归属（避开跨洲广播段）与 `proxy`/`hosting` 标记；
+   - 不要复用此前已被封号账号用过的手机号、支付卡、浏览器 Profile 或旧 `ant-did` / `Cookies`（重装或换号前先跑一次清理脚本）；
+   - macOS 若未开启 TUN 模式，可在 `local.env` 中取消注释 `CLAUDE_PROXY_URL=http://127.0.0.1:7897`（按本机 Clash 端口填写）。
