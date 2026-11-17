@@ -1,5 +1,7 @@
 # 视觉系统：配色、字体字号层级、版式网格、留白、nerdy 绿体系
 
+> **数值口径**：本文件里的 hex、字号、间距、面积占比都是早期目测估算。和 `catalog/structure/README.md` 的共用规格或 `SKILL.md` 的统一规则冲突时，以后两者为准。
+
 > 依据：digest 中 61 篇笔记全部读完（日期均为 2026 年，下文用 MM-DD 标注）。
 > 所有 hex、字号、间距都是作者逐页拆解里的目测估算，没有取色器读数，下文给的是综合区间，不是实测值。
 > 复用说明：同一页幻灯片被反复贴进多篇笔记，例如 Amazon 斜率图、Jardine/Smith 箱线图、AIDMA vs AISAS、Zara 12x Faster、DMAIC、RCA 冰山、Moat/7S/SMART、3 Horizons。

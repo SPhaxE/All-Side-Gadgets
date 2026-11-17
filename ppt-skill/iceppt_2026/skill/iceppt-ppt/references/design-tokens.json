@@ -1,52 +1,78 @@
 {
- "_note": "数值来自 61 篇笔记的目测估算，非取色器实测；详见 references/01-visual-system.md",
+ "_note": "色值来自图库原图里大块实心区域的像素中位数（JPEG 上测，误差约 ±4/255）；字号由文字像素行高折算。和 catalog/structure/README.md 的共用规格是同一套数，改一处要同步另一处。",
  "colors": {
   "white": "FFFFFF",
-  "green": "0E7C66",
-  "green_dark": "1F5C46",
-  "green_mid": "6FB5A0",
-  "mint": "A9D3C4",
-  "green_bg": "E4F0EA",
-  "panel": "EEF2EF",
-  "card": "F1F1EE",
-  "head_gray": "E8E8E8",
-  "bar_gray": "D9D9D9",
+  "green": "067A63",
+  "green_mid": "66B09A",
+  "green_bg": "CFE4E0",
+  "green_bg_light": "E4F0EC",
+  "card": "F3F3F2",
+  "strip": "EDEDEB",
   "line": "D9D9D9",
+  "frame": "CFCFCF",
   "ink": "1A1A1A",
-  "gray2": "777777",
-  "gray3": "AAAAAA",
-  "red": "D0312D",
-  "red_dark": "8B1A1A"
+  "gray2": "555555",
+  "gray3": "999999",
+  "red": "C0392B",
+  "purple": "7B3FA0",
+  "orange": "E0A060",
+  "beige_band": "EFE9DC",
+  "wine": "521212",
+  "wine_sage_bg": "D0DDD6",
+  "wine_pink_bg": "E4D9D8"
  },
- "area_budget": {
-  "white_or_blank": "55-65%",
-  "gray_cards": "20-30%",
-  "light_green": "5-15%",
-  "solid_green": "<=10%",
-  "red": "<2%"
+ "area_measured": {
+  "strong_accent_median_pct": 0.2,
+  "strong_accent_p90_pct": 1.3,
+  "white_pct_range": "60-79",
+  "detail_density_range": "4.0-6.6"
  },
  "slide": {
+  "canvas_px": "1280x720",
   "width_in": 13.333,
-  "height_in": 7.5,
-  "margin_pct": "3-5%"
+  "height_in": 7.5
  },
- "font_pt": {
-  "page_no": "24-28 bold",
-  "title_en": "22-28 bold (default 24)",
-  "case_suffix": "14-18 regular",
-  "big_label_light_green": "22-30 light",
-  "conclusion": "11-14 bold (default 12)",
-  "card_title": "10-12 bold",
-  "body_dense": "7-10",
-  "body_presentation": "10-12",
-  "annotation": "6-9 gray",
-  "footnote": "6-8 light gray",
-  "kpi_number": "30-48 (default 36)"
+ "font_px_at_1280": {
+  "frame_title": "27-28 bold",
+  "page_no": "29 bold",
+  "case_suffix": "20 regular",
+  "brand_tag": "15 serif, letter-spacing 3",
+  "conclusion": "14-15 bold",
+  "en_big_label": "20-24 light",
+  "kpi_number": "26-44 light",
+  "block_title": "13-14 bold",
+  "card_title": "12.5-13 bold",
+  "body": "12-13",
+  "annotation": "10-11"
  },
- "spacing_in": {
-  "card_gap": "0.08-0.15",
-  "card_padding": "0.15-0.2",
-  "corner_radius_px": "6-12",
-  "line_pt": "<=1"
+ "font_pt_equiv": {
+  "body": "9-10",
+  "conclusion": "10.5-11",
+  "frame_title": "20-21"
+ },
+ "fonts": {
+  "cjk": [
+   "PingFang SC",
+   "Microsoft YaHei",
+   "Noto Sans CJK SC",
+   "Source Han Sans SC"
+  ],
+  "latin": [
+   "Open Sans",
+   "Noto Sans",
+   "Segoe UI",
+   "Helvetica Neue",
+   "Arial"
+  ],
+  "serif": [
+   "Georgia",
+   "Times New Roman"
+  ]
+ },
+ "shape": {
+  "card_radius_px": "8-14",
+  "frame_radius_px": 22,
+  "line_px": "1-1.5",
+  "shadow": "仅重点卡，右下方向柔和投影"
  }
 }

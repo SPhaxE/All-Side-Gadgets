@@ -38,7 +38,8 @@
    "tint_area": 0.7,
    "white_area": 61.2
   },
-  "file": "slides/0113-a878-01-1.jpg"
+  "file": "slides/0113-a878-01-1.jpg",
+  "structure": "structure/0113-a878-01-1.md"
  },
  {
   "tid": "0113-a878-01-2",
@@ -482,7 +483,8 @@
    "tint_area": 0.7,
    "white_area": 52.0
   },
-  "file": "slides/0208-c618-01-r1.jpg"
+  "file": "slides/0208-c618-01-r1.jpg",
+  "structure": "structure/0208-c618-01-r1.md"
  },
  {
   "tid": "0208-c618-01-r2",
@@ -5368,7 +5370,8 @@
    "tint_area": 2.2,
    "white_area": 64.5
   },
-  "file": "slides/0707-9acb-03-r2.jpg"
+  "file": "slides/0707-9acb-03-r2.jpg",
+  "structure": "structure/0707-9acb-03-r2.md"
  },
  {
   "tid": "0707-9acb-04-r2",
@@ -5625,7 +5628,8 @@
    "tint_area": 1.6,
    "white_area": 57.4
   },
-  "file": "slides/0709-cdc1-02-2.jpg"
+  "file": "slides/0709-cdc1-02-2.jpg",
+  "structure": "structure/0709-cdc1-02-2.md"
  },
  {
   "tid": "0709-cdc1-02-3",
@@ -7205,7 +7209,8 @@
    "tint_area": 1.4,
    "white_area": 69.3
   },
-  "file": "slides/0723-7aff-03-1.jpg"
+  "file": "slides/0723-7aff-03-1.jpg",
+  "structure": "structure/0723-7aff-03-1.md"
  },
  {
   "tid": "0723-7aff-03-2",
@@ -7596,7 +7601,8 @@
    "tint_area": 0.8,
    "white_area": 59.5
   },
-  "file": "slides/0728-2f95-01-2.jpg"
+  "file": "slides/0728-2f95-01-2.jpg",
+  "structure": "structure/0728-2f95-01-2.md"
  },
  {
   "tid": "0728-2f95-01-3",
@@ -9288,7 +9294,8 @@
    "tint_area": 3.7,
    "white_area": 72.1
   },
-  "file": "slides/0811-0bde-05-2.jpg"
+  "file": "slides/0811-0bde-05-2.jpg",
+  "structure": "structure/0811-0bde-05-2.md"
  },
  {
   "tid": "0811-0bde-05-3",
@@ -9432,7 +9439,8 @@
    "tint_area": 4.3,
    "white_area": 61.7
   },
-  "file": "slides/0812-7281-01-2.jpg"
+  "file": "slides/0812-7281-01-2.jpg",
+  "structure": "structure/0812-7281-01-2.md"
  },
  {
   "tid": "0812-7281-02-2",
@@ -9600,7 +9608,8 @@
    "tint_area": 2.4,
    "white_area": 75.8
   },
-  "file": "slides/0813-3dce-01-1.jpg"
+  "file": "slides/0813-3dce-01-1.jpg",
+  "structure": "structure/0813-3dce-01-1.md"
  },
  {
   "tid": "0813-3dce-01-2",
@@ -9687,7 +9696,8 @@
    "tint_area": 8.6,
    "white_area": 64.5
   },
-  "file": "slides/0813-3dce-02-1.jpg"
+  "file": "slides/0813-3dce-02-1.jpg",
+  "structure": "structure/0813-3dce-02-1.md"
  },
  {
   "tid": "0813-3dce-02-2",
@@ -10311,7 +10321,8 @@
    "tint_area": 4.3,
    "white_area": 71.0
   },
-  "file": "slides/0820-190f-03-2.jpg"
+  "file": "slides/0820-190f-03-2.jpg",
+  "structure": "structure/0820-190f-03-2.md"
  },
  {
   "tid": "0820-190f-03-3",
@@ -10708,7 +10719,8 @@
    "tint_area": 1.2,
    "white_area": 74.2
   },
-  "file": "slides/0828-0a9a-03-3.jpg"
+  "file": "slides/0828-0a9a-03-3.jpg",
+  "structure": "structure/0828-0a9a-03-3.md"
  },
  {
   "tid": "0831-ce9f-01-1",
@@ -10749,7 +10761,8 @@
    "tint_area": 2.5,
    "white_area": 66.0
   },
-  "file": "slides/0831-ce9f-01-1.jpg"
+  "file": "slides/0831-ce9f-01-1.jpg",
+  "structure": "structure/0831-ce9f-01-1.md"
  },
  {
   "tid": "0831-ce9f-01-2",
@@ -10829,7 +10842,8 @@
    "tint_area": 1.7,
    "white_area": 69.3
   },
-  "file": "slides/0831-ce9f-01-3.jpg"
+  "file": "slides/0831-ce9f-01-3.jpg",
+  "structure": "structure/0831-ce9f-01-3.md"
  },
  {
   "tid": "0903-b73f-03-2",
@@ -10914,7 +10928,8 @@
    "tint_area": 1.0,
    "white_area": 58.1
   },
-  "file": "slides/0903-b73f-03-3.jpg"
+  "file": "slides/0903-b73f-03-3.jpg",
+  "structure": "structure/0903-b73f-03-3.md"
  },
  {
   "tid": "0904-5e77-03-r1",
@@ -11091,7 +11106,8 @@
    "tint_area": 3.0,
    "white_area": 68.5
   },
-  "file": "slides/0909-71fb-02-r2.jpg"
+  "file": "slides/0909-71fb-02-r2.jpg",
+  "structure": "structure/0909-71fb-02-r2.md"
  },
  {
   "tid": "0909-71fb-10-1",
@@ -11447,7 +11463,8 @@
    "tint_area": 1.6,
    "white_area": 72.1
   },
-  "file": "slides/0915-e7ee-02-2.jpg"
+  "file": "slides/0915-e7ee-02-2.jpg",
+  "structure": "structure/0915-e7ee-02-2.md"
  },
  {
   "tid": "0915-e7ee-02-3",
@@ -11542,7 +11559,8 @@
    "tint_area": 0.9,
    "white_area": 70.5
   },
-  "file": "slides/0915-e7ee-03-2.jpg"
+  "file": "slides/0915-e7ee-03-2.jpg",
+  "structure": "structure/0915-e7ee-03-2.md"
  },
  {
   "tid": "0915-e7ee-03-3",
@@ -11722,7 +11740,8 @@
    "tint_area": 4.9,
    "white_area": 68.9
   },
-  "file": "slides/0915-e7ee-04-3.jpg"
+  "file": "slides/0915-e7ee-04-3.jpg",
+  "structure": "structure/0915-e7ee-04-3.md"
  },
  {
   "tid": "0915-e7ee-06-1",
@@ -11903,7 +11922,8 @@
    "tint_area": 11.6,
    "white_area": 69.4
   },
-  "file": "slides/0920-e4dd-01-1.jpg"
+  "file": "slides/0920-e4dd-01-1.jpg",
+  "structure": "structure/0920-e4dd-01-1.md"
  },
  {
   "tid": "0920-e4dd-01-3",
