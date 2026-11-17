@@ -68,8 +68,8 @@ chmod +x mac/clean_claude_mac.sh mac/launch_claude_safe.sh
 
 ## 三路分流架构说明
 
-1. **Claude 生态（23 个核心/验证/遥测/支付域）** $\rightarrow$ `AI` $\rightarrow$ `🎯 独享美区落地`（通过 `⚡ 中转前置` 新加坡节点链式转发，节省静态 ISP 流量且彻底隔离）；
-   - 包含 `claude.ai`、`anthropic.com`、`claudeusercontent.com`、`challenges.cloudflare.com`、`hcaptcha.com`、`hcaptcha.net`、`browser-intake-us5-datadoghq.com`、`datadoghq.com`、`stripe.com`、`workos.com`、`statsig.com`、`intercom.io` 等；
+1. **Claude 生态（25 个核心/验证/遥测/支付域）** $\rightarrow$ `AI` $\rightarrow$ `🎯 独享美区落地`（通过 `⚡ 中转前置` 新加坡节点链式转发，节省静态 ISP 流量且彻底隔离）；
+   - 包含 `claude.ai`、`anthropic.com`、`claudeusercontent.com`、`challenges.cloudflare.com`、`hcaptcha.com`、`hcaptcha.net`、`withpersona.com`、`persona-id.com`、`browser-intake-us5-datadoghq.com`、`datadoghq.com`、`stripe.com`、`workos.com`、`statsig.com`、`intercom.io` 等；
 2. **Gemini / Google AI / Antigravity 生态** $\rightarrow$ `🤖 国际AI` $\rightarrow$ `🇬🇧 V英国`；
 3. **其余外网（ChatGPT / GitHub / YouTube / 日常网页）** $\rightarrow$ `默认节点`。
 
@@ -93,3 +93,17 @@ DoH DNS 策略（`dns.nameserver-policy`）同步按以上三路绑定对应出�
    - 购买新 IP/代理后，先用 `python3 tools/check_ip.py --ip <IP>` 核查 RDAP 归属（避开跨洲广播段）与 `proxy`/`hosting` 标记；
    - 不要复用此前已被封号账号用过的手机号、支付卡、浏览器 Profile 或旧 `ant-did` / `Cookies`（重装或换号前先跑一次清理脚本）；
    - macOS 若未开启 TUN 模式，可在 `local.env` 中取消注释 `CLAUDE_PROXY_URL=http://127.0.0.1:7897`（按本机 Clash 端口填写）。
+
+---
+
+## 手机端同步方案（含 Persona KYC 验证场景）
+
+当网页/桌面端弹出 **Persona Verification Portal** 并要求手机扫码拍证件与人脸活体时，务必确保**手机与电脑走完全相同的美区静态 ISP 出口**（切勿让手机用国内蜂窝/Wi-Fi直连或另一条机场节点）：
+
+- **方法 A（临时最省事：走电脑 Clash Verge 局域网代理）**
+  1. 确保电脑 Clash Verge 已开启 `Allow LAN`（允许局域网连接），手机连入同一路由器 Wi-Fi 并**关闭手机自带 VPN 与蜂窝数据**；
+  2. 在手机 Wi-Fi 设置中将 HTTP 代理设为手动：主机填电脑局域网 IP，端口填 Clash 混杂端口（如 `23466`）；
+  3. 手机系统浏览器先访问 `https://claude.ai/cdn-cgi/trace`，确认 `ip=` 与电脑端静态 ISP 完全一致、`loc=US`，再用系统相机扫码并在该浏览器打开 Persona 页面（不要用微信扫一扫内置浏览器）。
+- **方法 B（长期移动端同款链式分流）**
+  - **Android（Clash Meta / FlClash）**：直接复用本仓库 `clash-verge-script.template.js` 同款分流与 `dialer-proxy` 逻辑；
+  - **iOS（Shadowrocket / Stash / Surge）**：导入订阅并新增你的美区静态 ISP `SOCKS5` 节点，将前置/代理通过（`dialer-proxy` / `underlying-proxy`）指向新加坡节点，把 `claude.ai`、`anthropic.com`、`withpersona.com`、`persona-id.com`、`hcaptcha.com` 指向该落地节点。

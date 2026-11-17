@@ -55,6 +55,8 @@ const CLAUDE_DOMAINS = [
   "challenges.cloudflare.com",
   "hcaptcha.com",
   "hcaptcha.net",
+  "withpersona.com",
+  "persona-id.com",
   "servd-anthropic-website.b-cdn.net",
   "o1158394.ingest.us.sentry.io",
   "datadoghq.com",
