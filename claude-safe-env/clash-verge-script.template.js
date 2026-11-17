@@ -58,6 +58,8 @@ const CLAUDE_DOMAINS = [
   "servd-anthropic-website.b-cdn.net",
   "o1158394.ingest.us.sentry.io",
   "datadoghq.com",
+  "us5-datadoghq.com",
+  "browser-intake-us5-datadoghq.com",
   "statsig.com",
   "statsigapi.net",
   "intercom.io",
