@@ -69,6 +69,10 @@ def pipe_get(pipe_name: str, path: str, secret: str = "set-your-secret") -> dict
 
 
 def main() -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     errors = []
     expected_ip = load_expected_ip()
     pipe_name = find_mihomo_pipe()

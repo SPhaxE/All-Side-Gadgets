@@ -3,12 +3,18 @@
     [switch]$SkipBrowser
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $CheckScript = Join-Path $ScriptDir "preflight_check.py"
 
-$output = & python $CheckScript 2>&1 | Out-String
+$rawLines = & python $CheckScript 2>&1
 $exitCode = $LASTEXITCODE
+$output = ($rawLines | ForEach-Object { $_.ToString() }) -join "`n"
 Write-Host $output
 
 if ($exitCode -ne 0) {
