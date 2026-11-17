@@ -34,25 +34,25 @@
      - 自动对 `predictions.json` 进行收盘打分并生成 [`prediction_scorecard.md`](prediction_scorecard.md)。
 3. **第 2 引擎（现实主流新闻深度检索与解读，每期必做、严禁省略！）**：
    - **为什么必须派发子代理？** 本地爬虫只能抓到行情数字、公告标题和最近十几分钟的滚动快讯，无法穿透阅读财报正文、机构调研纪要、国内外重磅政策全文与行业深度原因。纯看 K 线统计无法预知现实政策日程、财报落地与突发事件。
-   - **强制操作与 Model Routing 规则（2026-11-16 更新）**：所有子代理统一切换为 **`gemini-4-hydrogen-medium`（Gemini 4 Hydrogen Medium）**（若通过 `swarm` 派发则指定 `model="gemini-4-hydrogen-medium"`；若通过 `invoke_subagent` 派发则使用 `TypeName="research"`, `Model="inherit"`，不再使用 `Model="flash"`）。若子代理连续超过 2~3 分钟未返回，立即检查其日志并启用双预案：① 直接由主代理调用 `search_web` 补齐检索，或 ② 向用户输出结构化提示词，由用户在新窗口派发代理写入 `ep<N>_news_brief.md` 后直接读取。检索必须覆盖：
+   - **强制操作与 `503` 容灾预案**：每期写线报前，优先调用 `invoke_subagent`（`TypeName="research"`, `Model="flash"`，即 3.8 flash high 检索代理）进行全方位正反双向检索；**若子代理连续超过 2~3 分钟未返回，立即检查其 `transcript_full.jsonl` 日志——若发现服务端报 `503 No capacity available for model gemini-3.8-flash-tiered`，切勿死等！立即 kill 该卡死子代理，并启用双预案：① 直接由主代理调用 `search_web` 补齐检索，或 ② 向用户输出结构化提示词，由用户在新窗口派发代理写入 `d:\money maxxing\ep<N>_news_brief.md` 后直接读取**。检索必须覆盖：
      - **国内权威宏观与政策信源**：新华社、人民银行（公开市场操作与货币政策工具）、财政部、全国人大常委会议程/闭幕发布会、国家医保局（国谈双目录公布进展）等；
      - **主流财经媒体与行业深度分析**：财联社、东方财富、第一财经、财新、证券时报、新浪财经等对当日领涨/领跌板块（如光模块、国产算力、创新药、CXO、可转债）资金流向与基本面催化的深度报道；
      - **海外市场与产业链映射**：路透/彭博/美股财报细节（英伟达、AMD、Marvell、Lumentum、超微电脑、礼来、百济神州美股/港股季报）、美联储利率预期、10 年期美债收益率、美国国会/关税/生物安全法案动向；
-     - **重仓股公告正文核验**：针对本地 `stock_announcements` 抓到的重仓股公告标题，由 `gemini-4-hydrogen-medium` 子代理检索具体财务数字、回购进度、订单指引或临床/FDA 审批细节。
+     - **重仓股公告正文核验**：针对本地 `stock_announcements` 抓到的重仓股公告标题，由 `flash` 子代理检索具体财务数字、回购进度、订单指引或临床/FDA 审批细节。
    - 若在检索中发现新的固定 API 数据源，同步写进 `fund_tracker.py` 自动爬取入库。
 4. **读取 [`portfolio_latest.json`](portfolio_latest.json) 与 [`prediction_scorecard.md`](prediction_scorecard.md)**：
    - 核对记分卡最新判定结果。
    - **严守打分铁律**：盘中数据必须标注“盘中 HH:MM”，绝不用盘中数据宣布预测命中；一切命中判定以 `prediction_scorecard.md` 的官方收盘结算为准。
-5. **运用「`forecast_signals` 量化条件胜率 + `gemini-4-hydrogen-medium` 子代理现实新闻」双引擎登记高胜率新预测（写入 [`predictions.json`](predictions.json)）**：
+5. **运用「`forecast_signals` 量化条件胜率 + `flash` 子代理现实新闻」双引擎登记高胜率新预测（写入 [`predictions.json`](predictions.json)）**：
    - **共振与否决原则**：
      - 先看 `portfolio_latest.json -> forecast_signals -> fund_signals` 里的历史条件胜率（优先挑历史条件胜率 $\ge 60\%\sim65\%$ 的非对称结构，如安全缓冲垫守住型 `cond_3d_hold_above_minus_1_5sd`、大涨超 $p90$ 且重仓股内部撕裂后的短期震荡消化型 `cond_3d_at_flat_or_down`、以及超跌缩量后给足 5~8 个交易日窗口的触达型 `mode: "any"`）；
-     - 再用 `gemini-4-hydrogen-medium` 子代理收集到的**现实新闻与基本面事件**做校准：若现实新闻存在重大利空（如业绩暴雷、政策落空、海外巨头砍单），对纯技术面反弹预期实行**一票否决**；若量化高胜率形态与现实利好催化（如回购落地、财报超预期、美债利率下行）形成**双引擎共振**，则登记为高把握预测。
+     - 再用 `flash` 子代理收集到的**现实新闻与基本面事件**做校准：若现实新闻存在重大利空（如业绩暴雷、政策落空、海外巨头砍单），对纯技术面反弹预期实行**一票否决**；若量化高胜率形态与现实利好催化（如回购落地、财报超预期、美债利率下行）形成**双引擎共振**，则登记为高把握预测。
    - 追加预测时使用 Python `json.load`/`json.dump` 追加新字典，切勿改动已有条目的字段或格式（否则 SHA1 指纹校验会报错），然后运行 `python "d:\money maxxing\fund_tracker.py" grade` 确认 `issues: []`。
 6. **归档后台量化版并执行 `lint` 检查**：
    - 将本期结构化摘要追加至 [`reports.json`](reports.json)，将量化完整版追加至 [`intelligence_archive.md`](intelligence_archive.md)（开头包含记分卡汇总）。
    - 运行 `python "d:\money maxxing\fund_tracker.py" lint "d:\money maxxing\intelligence_archive.md" --section "第 N 期"`，确保**硬性问题为 0**。
 7. **向用户输出通俗易懂的「人话版」今日线报**：
-   - 清晰列出：① 昨天实打实到账多少、今天盘中/收盘大概赚亏多少（6 只基金挨个点名）；② 今天市场为什么这么走（把 `gemini-4-hydrogen-medium` 子代理查到的现实新闻用大白话讲透）；③ 记分卡开奖情况与双引擎新预测（带把握概率）；④ 今天操作指令与免手续费状态。
+   - 清晰列出：① 昨天实打实到账多少、今天盘中/收盘大概赚亏多少（6 只基金挨个点名）；② 今天市场为什么这么走（把 `flash` 子代理查到的现实新闻用大白话讲透）；③ 记分卡开奖情况与双引擎新预测（带把握概率）；④ 今天操作指令与 `2026-11-12` 免手续费日倒计时。
 8. **同步到 GitHub（每期收尾必做，用户 `2026-11-10` 指令）**：
    - 运行 `python "d:\money maxxing\github_sync.py" -m "第 N 期"`，把本目录（不含 `_backup/`）镜像到本地克隆 `D:\All-Side-Gadgets\money-maxxing\`，提交并推送到 `SPhaxE/All-Side-Gadgets` 的 `main` 分支；每次数据变动（含晚间净值补录）后都要跑，推送失败需向用户报告原因。
 
