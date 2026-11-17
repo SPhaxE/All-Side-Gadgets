@@ -29,11 +29,11 @@
 ## 每期工作流（「本地量化数据库 + 现实新闻检索子代理」双引擎闭环）
 
 1. **同步量化底座**：运行 `python fund_tracker.py sync`，自动同步基金净值、A股指数与两市总成交额、12只核心重仓股与国债ETF、隔夜美股与AI芯片龙头、250天全市场K线、60日动态OLS盘中估值校准、东方财富重仓股公告标题、新浪7x24快讯，并计算量化预测信号 `forecast_signals` 与自动打分。
-2. **派发 `flash` 检索子代理搜集并解读现实主流新闻（每期必做，不可省略）**：
-   - 调用 `invoke_subagent`（`TypeName="research"`, `Model="flash"`），针对当日盘面异动、宏观政策日程（央行、财政部、全国人大常委会、国家医保局、美联储/美债/关税）以及重仓股财报/公告正文，对国内外主流信息源（新华社、财联社、东方财富、财新、路透/彭博、美股财报纪要等）进行全方位正反面检索与深度解读。
+2. **派发 `gemini-4-hydrogen-medium` 检索子代理搜集并解读现实主流新闻（每期必做，不可省略）**：
+   - **Model Routing 规则（2026-11-16 更新）**：所有子代理（含新闻检索、数据分析与并行研究）统一路由至 **`gemini-4-hydrogen-medium`（Gemini 4 Hydrogen Medium）**（若通过 `swarm` 派发则显式指定 `model="gemini-4-hydrogen-medium"`；若通过 `invoke_subagent` 派发则使用 `TypeName="research"`, `Model="inherit"` 继承主线 `gemini-4-hydrogen-medium`，不再使用 `flash`）。针对当日盘面异动、宏观政策日程（央行、财政部、全国人大常委会、国家医保局、美联储/美债/关税）以及重仓股财报/公告正文，对国内外主流信息源（新华社、财联社、东方财富、财新、路透/彭博、美股财报纪要等）进行全方位正反面检索与深度解读。
    - 若在检索中发现新的固定数据接口，同步写进 `fund_tracker.py` 自动爬取存档。
 3. **结合「量化信号 + 现实新闻」做高胜率预测**：
-   - 读 `portfolio_latest.json` 里的 `holdings`、`forecast_signals`、`risk_context`、`lots_if_redeemed`、`fee_calendar`、`track_record`，并结合 `flash` 子代理传回的现实新闻正反面证据（共振加权或一票否决），制定本期预测。
+   - 读 `portfolio_latest.json` 里的 `holdings`、`forecast_signals`、`risk_context`、`lots_if_redeemed`、`fee_calendar`、`track_record`，并结合 `gemini-4-hydrogen-medium` 子代理传回的现实新闻正反面证据（共振加权或一票否决），制定本期预测。
 4. **写线报（双层制）**：
    - **后台存档**：结构化摘要写进 `reports.json`，量化完整版写进 `intelligence_archive.md`（开头贴记分卡汇总）。
    - **给用户的聊天回复**：严格贴合用户画像（在读大学生、金融知识不多），用大白话、直观易懂的口吻把“账面亏赚 + 现实新闻原因 + 预测与把握 + 操作建议”讲清楚，不加生硬的免责套话。

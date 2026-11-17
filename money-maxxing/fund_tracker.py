@@ -371,7 +371,7 @@ def init_db(conn: sqlite3.Connection):
         "INSERT OR REPLACE INTO fund_top_holdings VALUES (?, ?, ?, ?, ?)",
         top_holdings_seed,
     )
-    now_str = datetime.now().isoformat(timespec="seconds")
+    now_str = datetime.now(CN_TZ).replace(tzinfo=None).isoformat(timespec="seconds")
     # 线报正文由 Gemini 写在 reports.json；review_notes 由侧评审填写
     for rep in load_json_list(REPORTS_PATH):
         cur.execute(
@@ -557,7 +557,7 @@ def validate_prediction(p: dict) -> list:
 def grade_predictions(conn: sqlite3.Connection) -> dict:
     cur = conn.cursor()
     preds = load_json_list(PREDICTIONS_PATH)
-    now_str = datetime.now().isoformat(timespec="seconds")
+    now_str = datetime.now(CN_TZ).replace(tzinfo=None).isoformat(timespec="seconds")
     today = datetime.now(CN_TZ).date().isoformat()
     shares = {}
     principal = {}
@@ -669,7 +669,7 @@ def write_scorecard(summary: dict, results: list, preds: list):
     lines = [
         "# 预测记分卡（由 `python fund_tracker.py grade` 按收盘数据自动生成，请勿手改）",
         "",
-        f"> 生成时间：{datetime.now().isoformat(timespec='seconds')}｜判定口径：基金用单位净值，指数用日收盘价，盘中数据不参与判定。",
+        f"> 生成时间：{datetime.now(CN_TZ).replace(tzinfo=None).isoformat(timespec='seconds')}｜判定口径：基金用单位净值，指数用日收盘价，盘中数据不参与判定。",
         "",
         "## 汇总",
         "",
@@ -760,7 +760,7 @@ US_KLINE_TARGETS = [
 
 def sync_kline_history(cur, full: bool = False):
     """自动回补近 250 个交易日的指数、底层 ETF、核心重仓股与美股日 K 线。"""
-    now_str = datetime.now().isoformat(timespec="seconds")
+    now_str = datetime.now(CN_TZ).replace(tzinfo=None).isoformat(timespec="seconds")
     for sym, secid, atype, name in KLINE_TARGETS:
         cnt = cur.execute("SELECT COUNT(*) FROM asset_kline_history WHERE symbol=?", (sym,)).fetchone()[0]
         limit = 260 if (full or cnt < 200) else 10
@@ -1045,7 +1045,7 @@ def sync_all(full: bool = False):
     conn = sqlite3.connect(DB_PATH)
     init_db(conn)
     cur = conn.cursor()
-    now_str = datetime.now().isoformat(timespec="seconds")
+    now_str = datetime.now(CN_TZ).replace(tzinfo=None).isoformat(timespec="seconds")
 
     # 1. Fetch Tencent real-time quotes for indices, underlying ETFs, and 12 key heavyweight stocks
     qt_map = {}
