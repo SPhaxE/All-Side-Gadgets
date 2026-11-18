@@ -24,3 +24,8 @@ money-maxxing/_backup/
 claude-safe-env/local.env
 claude-safe-env/*.local.js
 claude-safe-env/*_backup/
+
+# chatgpt-safe-env（本地隐私参数与清理备份）
+chatgpt-safe-env/local.env
+chatgpt-safe-env/*.local.js
+chatgpt-safe-env/*_backup/
